@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Arithmetic Made Difficult - Basics</title>
+    <link rel="stylesheet" href="../../css/default.css" />
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  </head>
+
+  <body>
+    <header>
+      <div class="logo">
+        <a href="../../">Arithmetic Made Difficult</a>
+      </div>
+      <nav>
+        <a href="../../">Home</a>
+        <a href="../../about.html">About</a>
+      </nav>
+    </header>
+
+    <main role="main">
+      <h1>Basics</h1>
+      <p>In these pages we’ll be writing lots of proofs using <em>natural deduction</em>. A complete tutorial on natural deduction is beyond our scope, but two of its features are important to us. First, it is similar to the way we reason informally (hence the name <em>natural</em>). Second, natural deduction proofs can be mechanically checked for correctness using a very simple algorithm.</p>
+<h2 id="judgements">Judgements</h2>
+<p>The basic unit of a natural deduction proof is the <em>judgement</em>. Judgements are statements that may or may not be supported by evidence. This evidence comes in the form of an <em>inference rule</em>. Inference rules are sometimes visualized using a tableau; here’s a very simple example.</p>
+<p><span class="math display">\[\begin{array}{c}
+P \\ \hline
+P
+\end{array}\]</span></p>
+<p>In this table, <span class="math inline">\(P\)</span> is a <em>judgement variable</em>. The <span class="math inline">\(P\)</span> above the line is called a <em>premise</em> of the rule, and the one below is called the <em>consequence</em> of the rule. In words, this rule says:</p>
+<p><em>If we have evidence supporting <span class="math inline">\(P\)</span>, then we have evidence supporting <span class="math inline">\(P\)</span>.</em></p>
+<p>Profound! I’m going to state this one more time, using slightly different syntax.</p>
+<pre class="mycelium"><code>rule reiterate
+if
+  * P
+then
+  * P</code></pre>
+<p>Here we’ve given this rule a name: the Reiterate rule. What’s notable about this syntax is that it is understood by a special tool that knows the rules of natural deduction and can make sure we use them correctly. We’ll revisit this point later.</p>
+<h2 id="compound-judgements">Compound Judgements</h2>
+<p>We can think of the judgement variable <span class="math inline">\(P\)</span> above as a <em>simple</em> judgement. It is also possible to form <em>compound</em> judgements using the following special logical symbols <strong>and no others</strong>: <span class="math inline">\(\wedge\)</span>, <span class="math inline">\(\vee\)</span>, <span class="math inline">\(\Rightarrow\)</span>, <span class="math inline">\(\Leftrightarrow\)</span>, and <span class="math inline">\(\neg\)</span>. For example, if <span class="math inline">\(P\)</span>, <span class="math inline">\(Q\)</span>, and <span class="math inline">\(R\)</span> are judgements, then the following strings of symbols are also judgements.</p>
+<p><span class="math display">\[\begin{array}{ccc}
+P \wedge Q &amp; \neg P &amp; P \vee Q \\
+P \Rightarrow Q &amp; (P \wedge Q) \Leftrightarrow \neg R &amp; P \vee (Q \vee R)
+\end{array}\]</span></p>
+<p>We can use inference rules to govern the behavior of each of these symbols. To be systematic about it, each symbol has one or more <em>introduction</em> rules, where the symbol appears in the consequence, and one or more <em>elimination</em> rules, where the symbol appears among the premises. Some of these inference rules are baked into the checking tool for reasons we’ll explain as we go. But most of them can be defined like <code>reiterate</code> above.</p>
+<p>For example, here is the elimination rule for <span class="math inline">\(\Rightarrow\)</span>.</p>
+<p><span class="math display">\[\begin{array}{ccc}
+P &amp;   &amp; P \Rightarrow Q \\ \hline
+  &amp; Q &amp;
+\end{array}\]</span></p>
+<p>Note how <span class="math inline">\(\Rightarrow\)</span> appears above the line (i.e. in the premises) but not below (in the consequence).</p>
+<pre class="mycelium"><code>rule impl-elim
+if
+  * P
+  * P =&gt; Q
+then
+  * Q</code></pre>
+<h2 id="proof">Proof</h2>
+<p>A <em>proof</em> is a list of judgements, each supported by evidence: either a reference to an inference rule, or an explicit assumption. A proof is <em>valid</em> if each step is valid; an invoked inference rule is valid if it can be matched against the referenced lines in the proof, and assumptions are always valid.</p>
+<p>If a proof is valid, then its last line and assumptions become the consequence and premises of a new <em>derived</em> inference rule, a.k.a., a theorem.</p>
+<p>Let’s look at an example.</p>
+<pre class="mycelium"><code>theorem impl-elim-2
+if
+  * P
+  * P =&gt; Q
+  * Q =&gt; R
+then
+  * R
+
+proof
+1. P : assumption 1
+2. P =&gt; Q : assumption 2
+3. Q : use impl-elim; 1, 2
+4. Q =&gt; R : assumption 3
+5. R : use impl-elim; 3, 4</code></pre>
+<p>We’re using the goofy syntax again, but this is reasonably readable. It looks like the inference rules, but now we have a <code>proof</code> block. Each line in the proof has a label, a judgement, and evidence. Assumptions are numbered as they appear in the premises of the theorem, and <code>use</code> refers to a known inference rule, in this case the <span class="math inline">\(\Rightarrow\)</span>-elimination rule.</p>
+<p>Notably, this proof is <em>machine checked</em>. We have a program that parses this text, extracts the inference rules, and parses and validates the proof. Does this mean the proofs are guaranteed to have no errors? No; there could always be a bug in the checking tool. But computers never get bored or tired of pushing symbols around. Checked proofs are much less likely to have errors than those written only for human readers as long as we’re careful that the checker is working correctly.</p>
+<p>I mentioned that inference rules should come in elimination/introduction pairs. So, what is the introduction rule for <span class="math inline">\(\Rightarrow\)</span>? This is one of the special cases, and involves two different kinds of evidence. The best way to see this is with an example.</p>
+<pre class="mycelium"><code>theorem syllogism
+if
+  * P =&gt; Q
+  * Q =&gt; R
+then
+  * P =&gt; R
+
+proof
+1.   P : hypothesis hyp-P
+2.   P =&gt; Q : assumption 1
+3.   Q : use impl-elim; 1, 2
+4.   Q =&gt; R : assumption 2
+5.   R : use impl-elim; 3, 4
+6. P =&gt; R : discharge hyp-P; 5</code></pre>
+<p>This proof introduces two new kinds of evidence: <code>hypothesis</code> and <code>discharge</code>. Together these are the introduction rule for <span class="math inline">\(\Rightarrow\)</span>. <code>hypothesis</code> lets us pull a supported judgement out of thin air, but this comes with a price: the hypothesis must be <code>discharge</code>d before the proof is done, and the judgement must appear on the left of a <span class="math inline">\(\Rightarrow\)</span>. Hypotheses are also given a name (<code>hyp-P</code> here) so we can tell them apart.</p>
+<p>Typically when writing natural deduction proofs hypotheses and statements that depend on them are indented, to help us remember that they need to be discharged. The proof checking tool doesn’t need this, but it’s easier on human eyes.</p>
+<p>Hypotheses and assumptions are similar; both let us pull judgements out of nowhere. But hypotheses must be discharged and can’t be used again after that, while assumptions are never discharged.</p>
+<pre class="mycelium"><code>theorem impl-idemp
+* P =&gt; P
+
+proof
+1.   P : hypothesis hyp-P
+2. P =&gt; P : discharge hyp-P; 1</code></pre>
+    </main>
+
+    <footer>
+      Site generated by
+      <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+    </footer>
+  </body>
+</html>
