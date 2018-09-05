@@ -8,6 +8,9 @@ We can represent booleans as a type with exactly two values.
 type \true :: Bool
 
 type \false :: Bool
+
+rule bool-disc
+* ~(\true == \false)
 ~~~
 
 A special function $\if$ lets us discriminate based on a boolean value.

@@ -36,10 +36,10 @@ And this is how we will systematically add new inference rules for reasoning abo
 
 1. A _type_, representing the initial $F$-algebra $\mathcal{A}$;
 2. One or more _constructors_, representing the algebra map $F(\mathcal{A}) \rightarrow \mathcal{A}$;
-3. A _deconstruction operator_, representing the unique algebra morphism $\mathcal{A} \rightarrow x$;
-4. One or more _inference rules_ stating that the analysis operator is a unique $F$-algebra morphism;
-5. An inference rule stating an _analysis principle_ for $\mathcal{A}$.
+3. One or more _discriminators_, showing that the constructors are distinct from each other;
+4. A _destructor_, representing the unique algebra morphism $\mathcal{A} \rightarrow x$;
+5. An _analysis principle_ for $\mathcal{A}$.
 
-Taken together, these ingredients make it possible to define recursive types and carry out proofs by induction on them. The deconstruction operator is especially interesting; it will turn out to be "fold" on lists, "countdown" on natural numbers, and "if" on booleans.
+Taken together, these ingredients make it possible to define recursive types and carry out proofs by induction on them. The destructor is especially interesting; it will turn out to be "fold" on lists, "countdown" on natural numbers, and "if" on booleans.
 
 Hopefully this will make more sense when we see some examples.

@@ -56,3 +56,38 @@ proof
 4.   ~P : use neg-intro; 3, 2
 5. (~Q) => (~P) : discharge hyp-Q; 4
 ~~~
+
+A slightly more useful version of contraposition is called _modus tollens_.
+
+~~~ {.mycelium}
+theorem modus-tollens
+if
+  * P => Q
+  * ~Q
+then
+  * ~P
+
+proof
+1. P => Q : assumption 1
+2. ~Q : assumption 2
+3. P => ~Q : use simp; 2
+4. ~P : use neg-intro; 1, 3
+~~~
+
+Another handy tool is the _disjunctive syllogism_.
+
+~~~ {.mycelium}
+theorem disj-syllogism
+if
+  * P \/ Q
+  * ~P
+then
+  * Q
+
+proof
+1. P \/ Q : assumption 1
+2. ~P : assumption 2
+3. P => Q : use neg-elim; 2
+4. Q => Q : use impl-idemp;
+5. Q : use disj-elim; 1, 3, 4
+~~~

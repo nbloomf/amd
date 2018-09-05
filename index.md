@@ -34,4 +34,5 @@ Contents
   * Arithmetic
     * [Previous](src/Naturals/Previous.html)
     * [Plus](src/Naturals/Plus.html)
+    * [Times](src/Naturals/Times.html)
 * Lists

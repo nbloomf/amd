@@ -115,6 +115,18 @@ proof
 13. \plus(\next(a))(b) == \next(\plus(a)(b)) : use nat-induction; 3, 12
 ~~~
 
+We can move $\next$ from one argument to the other inside $\plus$.
+
+~~~ {.mycelium}
+theorem plus-next
+* \plus(\next(a))(b) == \plus(a)(\next(b))
+
+proof
+1. \plus(\next(a))(b) : chain
+    == \next(\plus(a)(b)) : use plus-next-l;
+    == \plus(a)(\next(b)) : flop use plus-next-r;
+~~~
+
 $\plus$ is commutative.
 
 ~~~ {.mycelium}

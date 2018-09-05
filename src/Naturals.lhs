@@ -8,6 +8,9 @@ We can define the natural numbers $\Nat$ as the initial $F$-algebra for the func
 type \zero :: Nat
 
 type \next :: Nat -> Nat
+
+rule nat-disc
+* ~(\zero == \next(n))
 ~~~
 
 The unique homomorphism from $\Nat$ to some other $F$-algebra is denoted $\natrec$, and is the unique map making the following diagram commute.

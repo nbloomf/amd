@@ -20,7 +20,8 @@ modules = \
   src/Types/Maybe.lhs \
   src/Naturals.lhs \
   src/Naturals/Previous.lhs \
-  src/Naturals/Plus.lhs
+  src/Naturals/Plus.lhs \
+  src/Naturals/Times.lhs
 
 build:
 	stack exec site build
