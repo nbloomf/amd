@@ -15,25 +15,82 @@
         <a href="../../">Arithmetic Made Difficult</a>
       </div>
       <nav>
-        <a href="../../">Home</a>
+        <a href="../../">Contents</a>
         <a href="../../about.html">About</a>
       </nav>
     </header>
 
     <main role="main">
       <h1>Negation</h1>
-      <pre class="mycelium"><code>rule neg-intro
-if
-  * A =&gt; B
-  * A =&gt; (~B)
-then
-  * ~A
+      <!-- LaTeX Macros -->
+<div style="display:none;">
+<!-- Functions -->
+\(\newcommand{\id}{\mathsf{id}}\)
+\(\newcommand{\comp}{\mathsf{comp}}\)
+\(\newcommand{\app}{\mathsf{app}}\)
+\(\newcommand{\const}{\mathsf{const}}\)
+\(\newcommand{\flip}{\mathsf{flip}}\)
+\(\newcommand{\clone}{\mathsf{clone}}\)
 
-rule neg-elim
+<!-- Unit -->
+\(\newcommand{\Unit}{\mathsf{Unit}}\)
+\(\newcommand{\unit}{\mathsf{unit}}\)
+\(\newcommand{\only}{\mathsf{only}}\)
+
+<!-- Pair -->
+\(\newcommand{\Pair}{\mathsf{Pair}}\)
+\(\newcommand{\pair}{\mathsf{pair}}\)
+\(\newcommand{\fst}{\mathsf{fst}}\)
+\(\newcommand{\snd}{\mathsf{snd}}\)
+\(\newcommand{\tup}{\mathsf{tup}}\)
+
+<!-- Either -->
+\(\newcommand{\Either}{\mathsf{Either}}\)
+\(\newcommand{\either}{\mathsf{either}}\)
+\(\newcommand{\lft}{\mathsf{lft}}\)
+\(\newcommand{\rgt}{\mathsf{rgt}}\)
+
+<!-- Maybe -->
+\(\newcommand{\Maybe}{\mathsf{Maybe}}\)
+\(\newcommand{\nothing}{\mathsf{nothing}}\)
+\(\newcommand{\just}{\mathsf{just}}\)
+\(\newcommand{\opt}{\mathsf{opt}}\)
+
+<!-- Bool -->
+\(\newcommand{\Bool}{\mathsf{Bool}}\)
+\(\newcommand{\true}{\mathsf{true}}\)
+\(\newcommand{\false}{\mathsf{false}}\)
+\(\newcommand{\if}{\mathsf{if}}\)
+\(\newcommand{\and}{\mathsf{and}}\)
+\(\newcommand{\or}{\mathsf{or}}\)
+\(\newcommand{\not}{\mathsf{not}}\)
+\(\newcommand{\eq}{\mathsf{eq}}\)
+
+<!-- Nat -->
+\(\newcommand{\Nat}{\mathsf{Nat}}\)
+\(\newcommand{\zero}{\mathsf{zero}}\)
+\(\newcommand{\next}{\mathsf{next}}\)
+\(\newcommand{\natrec}{\mathsf{natrec}}\)
+\(\newcommand{\prev}{\mathsf{prev}}\)
+\(\newcommand{\plus}{\mathsf{plus}}\)
+\(\newcommand{\times}{\mathsf{times}}\)
+</div>
+<!-- End LaTeX Macros -->
+
+<p>Negation is a little different. We’re only interested in constructive proofs here, so our logic will not include the law of the excluded middle. This makes it <em>intuitionistic</em>. The intuitionistic introduction rule for negation looks sort of like proof by contradiction; if <span class="math inline">\(P\)</span> implies both <span class="math inline">\(Q\)</span> and not <span class="math inline">\(Q\)</span>, then we must have not <span class="math inline">\(P\)</span>.</p>
+<pre class="mycelium"><code>rule neg-intro
 if
-  * ~A
+  * P =&gt; Q
+  * P =&gt; (~Q)
 then
-  * A =&gt; B</code></pre>
+  * ~P</code></pre>
+<p>The intuitionistic elimination rule for negation looks a little bit like ex falso quodlibet (from false, anything is possible), although we should try not to think of judgements as true and false, but as supported and unsupported.</p>
+<pre class="mycelium"><code>rule neg-elim
+if
+  * ~P
+then
+  * P =&gt; Q</code></pre>
+<p>One more theorem that doesn’t really fit here, but we need it next and couldn’t prove it before: the <em>simplification</em> rule. If we have evidence for <span class="math inline">\(P\)</span>, then we have evidence for the implication <span class="math inline">\(Q \Rightarrow P\)</span> for any <span class="math inline">\(Q\)</span>.</p>
 <pre class="mycelium"><code>theorem simp
 if
   * P
@@ -46,6 +103,7 @@ proof
 3.   P /\ Q : use conj-intro; 1, 2
 4.   P : use conj-elim-l; 3
 5. Q =&gt; P : discharge hyp-Q; 4</code></pre>
+<p>Intuitionistic logic is very different from classical logic – the basic difference is that we don’t have the law of the excluded middle, so we can’t prove <span class="math inline">\(P\)</span> by assuming <span class="math inline">\(\neg P\)</span> and getting a contradiction. We do have a version of the contraposition principle, though.</p>
 <pre class="mycelium"><code>theorem contraposition
 if
   * P =&gt; Q
@@ -58,6 +116,7 @@ proof
 3.   P =&gt; Q : assumption 1
 4.   ~P : use neg-intro; 3, 2
 5. (~Q) =&gt; (~P) : discharge hyp-Q; 4</code></pre>
+
     </main>
 
     <footer>

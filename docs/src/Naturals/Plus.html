@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Arithmetic Made Difficult - Plus</title>
+    <link rel="stylesheet" href="../../css/default.css" />
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  </head>
+
+  <body>
+    <header>
+      <div class="logo">
+        <a href="../../">Arithmetic Made Difficult</a>
+      </div>
+      <nav>
+        <a href="../../">Contents</a>
+        <a href="../../about.html">About</a>
+      </nav>
+    </header>
+
+    <main role="main">
+      <h1>Plus</h1>
+      <!-- LaTeX Macros -->
+<div style="display:none;">
+<!-- Functions -->
+\(\newcommand{\id}{\mathsf{id}}\)
+\(\newcommand{\comp}{\mathsf{comp}}\)
+\(\newcommand{\app}{\mathsf{app}}\)
+\(\newcommand{\const}{\mathsf{const}}\)
+\(\newcommand{\flip}{\mathsf{flip}}\)
+\(\newcommand{\clone}{\mathsf{clone}}\)
+
+<!-- Unit -->
+\(\newcommand{\Unit}{\mathsf{Unit}}\)
+\(\newcommand{\unit}{\mathsf{unit}}\)
+\(\newcommand{\only}{\mathsf{only}}\)
+
+<!-- Pair -->
+\(\newcommand{\Pair}{\mathsf{Pair}}\)
+\(\newcommand{\pair}{\mathsf{pair}}\)
+\(\newcommand{\fst}{\mathsf{fst}}\)
+\(\newcommand{\snd}{\mathsf{snd}}\)
+\(\newcommand{\tup}{\mathsf{tup}}\)
+
+<!-- Either -->
+\(\newcommand{\Either}{\mathsf{Either}}\)
+\(\newcommand{\either}{\mathsf{either}}\)
+\(\newcommand{\lft}{\mathsf{lft}}\)
+\(\newcommand{\rgt}{\mathsf{rgt}}\)
+
+<!-- Maybe -->
+\(\newcommand{\Maybe}{\mathsf{Maybe}}\)
+\(\newcommand{\nothing}{\mathsf{nothing}}\)
+\(\newcommand{\just}{\mathsf{just}}\)
+\(\newcommand{\opt}{\mathsf{opt}}\)
+
+<!-- Bool -->
+\(\newcommand{\Bool}{\mathsf{Bool}}\)
+\(\newcommand{\true}{\mathsf{true}}\)
+\(\newcommand{\false}{\mathsf{false}}\)
+\(\newcommand{\if}{\mathsf{if}}\)
+\(\newcommand{\and}{\mathsf{and}}\)
+\(\newcommand{\or}{\mathsf{or}}\)
+\(\newcommand{\not}{\mathsf{not}}\)
+\(\newcommand{\eq}{\mathsf{eq}}\)
+
+<!-- Nat -->
+\(\newcommand{\Nat}{\mathsf{Nat}}\)
+\(\newcommand{\zero}{\mathsf{zero}}\)
+\(\newcommand{\next}{\mathsf{next}}\)
+\(\newcommand{\natrec}{\mathsf{natrec}}\)
+\(\newcommand{\prev}{\mathsf{prev}}\)
+\(\newcommand{\plus}{\mathsf{plus}}\)
+\(\newcommand{\times}{\mathsf{times}}\)
+</div>
+<!-- End LaTeX Macros -->
+
+<p>We can define <span class="math inline">\(\plus\)</span> on natural numbers in terms of <span class="math inline">\(\natrec\)</span>.</p>
+<pre class="mycelium"><code>type \plus :: Nat -&gt; Nat -&gt; Nat
+
+rule def-plus
+* \plus(a)(b) == \natrec(a)(\next)(b)</code></pre>
+<p>And we can characterize <span class="math inline">\(\plus\)</span> as the unique solution to a system of defining equations.</p>
+<pre class="mycelium"><code>theorem plus-unique
+if
+  * t(a)(\zero) == a
+  * \comp(t(a))(\next) == \comp(\next)(t(a))
+then
+  * t(a) == \plus(a)
+
+proof
+1. t(a)(\zero) == a : assumption 1
+2. \comp(t(a))(\next) == \comp(\next)(t(a)) : assumption 2
+3. t(a) == \natrec(a)(\next) : use natrec-unique; 1, 2
+4. t(a)(b) : chain
+    == \natrec(a)(\next)(b) : use fun-ap; 3
+    == \plus(a)(b) : flop use def-plus;
+5. ∀k. t(a)(k) == \plus(a)(k) : forall-intro b -&gt; k; 4
+6. t(a) == \plus(a) : use fun-eq; 5</code></pre>
+<p><span class="math inline">\(\zero\)</span> is a left identity for <span class="math inline">\(\plus\)</span>.</p>
+<pre class="mycelium"><code>theorem plus-zero-l
+* \plus(\zero)(a) == a
+
+proof
+1. \plus(\zero)(a) : chain
+    == \natrec(\zero)(\next)(a) : use def-plus;
+    == \id(a) : flop use natrec-zero-next; at f in f(a)
+    == a : use def-id;</code></pre>
+<p><span class="math inline">\(\zero\)</span> is a right identity for plus.</p>
+<pre class="mycelium"><code>theorem plus-zero-r
+* \plus(a)(\zero) == a
+
+proof
+1. \plus(a)(\zero) : chain
+    == \natrec(a)(\next)(\zero) : use def-plus;
+    == a : use natrec-zero;</code></pre>
+<p>We can pull <span class="math inline">\(\next\)</span> out of the right argument of <span class="math inline">\(\plus\)</span>.</p>
+<pre class="mycelium"><code>theorem plus-next-r
+* \plus(a)(\next(b)) == \next(\plus(a)(b))
+
+proof
+1. \plus(a)(\next(b)) : chain
+    == \natrec(a)(\next)(\next(b)) : use def-plus;
+    == \next(\natrec(a)(\next)(b)) : use natrec-next;
+    == \next(\plus(a)(b)) : flop use def-plus; at z in \next(z)</code></pre>
+<p>We can pull <span class="math inline">\(\next\)</span> out of the left argument of <span class="math inline">\(\plus\)</span>.</p>
+<pre class="mycelium"><code>theorem plus-next-l
+* \plus(\next(a))(b) == \next(\plus(a)(b))
+
+proof
+1.    b == \zero : hypothesis zero
+2.    \plus(\next(a))(b) : chain
+       == \plus(\next(a))(\zero)
+           : hypothesis zero at z in \plus(\next(a))(z)
+       == \next(a) : use plus-zero-r;
+       == \next(\plus(a)(\zero))
+           : flop use plus-zero-r; at z in \next(z)
+       == \next(\plus(a)(b))
+           : flop hypothesis zero at z in \next(\plus(a)(z))
+3.  (b == \zero) =&gt; (\plus(\next(a))(b) == \next(\plus(a)(b)))
+     : discharge zero; 2
+4.    (b == n) =&gt; (\plus(\next(a))(b) == \next(\plus(a)(b)))
+       : hypothesis n
+5.    (n == n) =&gt; (\plus(\next(a))(n) == \next(\plus(a)(n)))
+       : sub [b :-&gt; n]; 4
+6.    n == n : eq-intro
+7.    \plus(\next(a))(n) == \next(\plus(a)(n)) : use impl-elim; 6, 5
+8.      b == \next(n) : hypothesis next
+9.      \plus(\next(a))(b) : chain
+         == \plus(\next(a))(\next(n))
+             : hypothesis next at z in \plus(\next(a))(z)
+         == \next(\plus(\next(a))(n)) : use plus-next-r;
+         == \next(\next(\plus(a)(n))) : use ap-eq; 7
+         == \next(\plus(a)(\next(n)))
+             : flop use plus-next-r; at z in \next(z)
+         == \next(\plus(a)(b))
+             : flop hypothesis next at z in \next(\plus(a)(z))
+10.   (b == \next(n)) =&gt; (\plus(\next(a))(b) == \next(\plus(a)(b)))
+       : discharge next; 9
+11. ((b == n) =&gt; (\plus(\next(a))(b) == \next(\plus(a)(b)))) =&gt;
+      ((b == \next(n)) =&gt; (\plus(\next(a))(b) == \next(\plus(a)(b))))
+     : discharge n; 10
+12. ∀k. ((b == k) =&gt; (\plus(\next(a))(b) == \next(\plus(a)(b)))) =&gt;
+      ((b == \next(k)) =&gt; (\plus(\next(a))(b) == \next(\plus(a)(b))))
+     : forall-intro n -&gt; k; 11
+13. \plus(\next(a))(b) == \next(\plus(a)(b)) : use nat-induction; 3, 12</code></pre>
+<p><span class="math inline">\(\plus\)</span> is commutative.</p>
+<pre class="mycelium"><code>theorem plus-comm
+* \plus(a)(b) == \plus(b)(a)
+
+proof
+1.    a == \zero : hypothesis zero
+2.    \plus(a)(b) : chain
+       == \plus(\zero)(b) : hypothesis zero at z in \plus(z)(b)
+       == b : use plus-zero-l;
+       == \plus(b)(\zero) : flop use plus-zero-r;
+       == \plus(b)(a) : flop hypothesis zero at z in \plus(b)(z)
+3.  (a == \zero) =&gt; (\plus(a)(b) == \plus(b)(a)) : discharge zero; 2
+4.    (a == n) =&gt; (\plus(a)(b) == \plus(b)(a)) : hypothesis n
+5.    (n == n) =&gt; (\plus(n)(b) == \plus(b)(n)) : sub [a :-&gt; n]; 4
+6.    n == n : eq-intro
+7.    \plus(n)(b) == \plus(b)(n) : use impl-elim; 6, 5
+8.      a == \next(n) : hypothesis next
+9.      \plus(a)(b) : chain
+         == \plus(\next(n))(b) : hypothesis next at z in \plus(z)(b)
+         == \next(\plus(n)(b)) : use plus-next-l;
+         == \next(\plus(b)(n)) : use ap-eq; 7
+         == \plus(b)(\next(n)) : flop use plus-next-r;
+         == \plus(b)(a) : flop hypothesis next at z in \plus(b)(z)
+10.   (a == \next(n)) =&gt; (\plus(a)(b) == \plus(b)(a))
+       : discharge next; 9
+11. ((a == n) =&gt; (\plus(a)(b) == \plus(b)(a))) =&gt;
+      ((a == \next(n)) =&gt; (\plus(a)(b) == \plus(b)(a)))
+     : discharge n; 10
+12. ∀k. ((a == k) =&gt; (\plus(a)(b) == \plus(b)(a))) =&gt;
+      ((a == \next(k)) =&gt; (\plus(a)(b) == \plus(b)(a)))
+     : forall-intro n -&gt; k; 11
+13. \plus(a)(b) == \plus(b)(a) : use nat-induction; 3, 12</code></pre>
+<p><span class="math inline">\(\plus\)</span> is associative.</p>
+<pre class="mycelium"><code>theorem plus-assoc-l
+* \plus(a)(\plus(b)(c)) == \plus(\plus(a)(b))(c)
+
+proof
+1.    c == \zero : hypothesis c-zero
+2.    \plus(a)(\plus(b)(c)) : chain
+       == \plus(a)(\plus(b)(\zero))
+           : hypothesis c-zero at z in \plus(a)(\plus(b)(z))
+       == \plus(a)(b) : use plus-zero-r; at z in \plus(a)(z)
+       == \plus(\plus(a)(b))(\zero) : flop use plus-zero-r;
+       == \plus(\plus(a)(b))(c)
+           : flop hypothesis c-zero at z in \plus(\plus(a)(b))(z)
+3.  (c == \zero) =&gt; (\plus(a)(\plus(b)(c)) == \plus(\plus(a)(b))(c))
+     : discharge c-zero; 2
+4.    (c == n) =&gt; (\plus(a)(\plus(b)(c)) == \plus(\plus(a)(b))(c))
+       : hypothesis c-n
+5.    (n == n) =&gt; (\plus(a)(\plus(b)(n)) == \plus(\plus(a)(b))(n))
+       : sub [c :-&gt; n]; 4
+6.    n == n : eq-intro
+7.    \plus(a)(\plus(b)(n)) == \plus(\plus(a)(b))(n)
+       : use impl-elim; 6, 5
+8.      c == \next(n) : hypothesis c-next
+9.      \plus(a)(\plus(b)(c)) : chain
+         == \plus(a)(\plus(b)(\next(n)))
+             : hypothesis c-next at z in \plus(a)(\plus(b)(z))
+         == \plus(a)(\next(\plus(b)(n)))
+             : use plus-next-r; at z in \plus(a)(z)
+         == \next(\plus(a)(\plus(b)(n)))
+             : use plus-next-r;
+         == \next(\plus(\plus(a)(b))(n)) : use ap-eq; 7
+         == \plus(\plus(a)(b))(\next(n)) : flop use plus-next-r;
+         == \plus(\plus(a)(b))(c)
+             : flop hypothesis c-next at z in \plus(\plus(a)(b))(z)
+10.   (c == \next(n)) =&gt; (\plus(a)(\plus(b)(c)) == \plus(\plus(a)(b))(c))
+       : discharge c-next; 9
+11. ((c == n) =&gt; (\plus(a)(\plus(b)(c)) == \plus(\plus(a)(b))(c))) =&gt;
+      ((c == \next(n)) =&gt; (\plus(a)(\plus(b)(c)) == \plus(\plus(a)(b))(c)))
+     : discharge c-n; 10
+12. ∀k. ((c == k) =&gt; (\plus(a)(\plus(b)(c)) == \plus(\plus(a)(b))(c))) =&gt;
+      ((c == \next(k)) =&gt; (\plus(a)(\plus(b)(c)) == \plus(\plus(a)(b))(c)))
+     : forall-intro n -&gt; k; 11
+13. \plus(a)(\plus(b)(c)) == \plus(\plus(a)(b))(c)
+     : use nat-induction; 3, 12
+
+
+theorem plus-assoc-r
+* \plus(\plus(a)(b))(c) == \plus(a)(\plus(b)(c))
+
+proof
+1. \plus(a)(\plus(b)(c)) == \plus(\plus(a)(b))(c) : use plus-assoc-l;
+2. \plus(\plus(a)(b))(c) == \plus(a)(\plus(b)(c)) : use eq-sym; 1</code></pre>
+<p>And <span class="math inline">\(\plus\)</span> is cancellative. This proof is strange because the induction step is trivial.</p>
+<pre class="mycelium"><code>theorem plus-cancel-r
+if
+  * \plus(a)(c) == \plus(b)(c)
+then
+  * a == b
+
+proof
+1.    c == \zero : hypothesis c-zero
+2.    a : chain
+       == \plus(a)(\zero) : flop use plus-zero-r;
+       == \plus(a)(c) : flop hypothesis c-zero at z in \plus(a)(z)
+       == \plus(b)(c) : assumption 1
+       == \plus(b)(\zero) : hypothesis c-zero at z in \plus(b)(z)
+       == b : use plus-zero-r;
+3.  (c == \zero) =&gt; (a == b) : discharge c-zero; 2
+4.    (c == n) =&gt; (a == b) : hypothesis c-n
+5.    (n == n) =&gt; (a == b) : sub [c :-&gt; n]; 4
+6.    n == n : eq-intro
+7.      c == \next(n) : hypothesis c-next
+8.      a == b : use impl-elim; 6, 5
+9.      (c == \next(n)) /\ (a == b) : use conj-intro; 7, 8
+10.     a == b : use conj-elim-r; 9
+11.   (c == \next(n)) =&gt; (a == b) : discharge c-next; 10
+12. ((c == n) =&gt; (a == b)) =&gt; ((c == \next(n)) =&gt; (a == b))
+     : discharge c-n; 11
+13. ∀k. ((c == k) =&gt; (a == b)) =&gt; ((c == \next(k)) =&gt; (a == b))
+     : forall-intro n -&gt; k; 12
+14. a == b : use nat-induction; 3, 13
+
+
+theorem plus-cancel-l
+if
+  * \plus(c)(a) == \plus(c)(b)
+then
+  * a == b
+
+proof
+1. \plus(a)(c) : chain
+    == \plus(c)(a) : use plus-comm;
+    == \plus(c)(b) : assumption 1
+    == \plus(b)(c) : use plus-comm;
+2. a == b : use plus-cancel-r; 1</code></pre>
+
+    </main>
+
+    <footer>
+      Site generated by
+      <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+    </footer>
+  </body>
+</html>

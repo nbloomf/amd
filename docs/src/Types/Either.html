@@ -15,38 +15,181 @@
         <a href="../../">Arithmetic Made Difficult</a>
       </div>
       <nav>
-        <a href="../../">Home</a>
+        <a href="../../">Contents</a>
         <a href="../../about.html">About</a>
       </nav>
     </header>
 
     <main role="main">
       <h1>Either</h1>
-      <pre class="mycelium"><code>type \lft :: a -&gt; Either a b
+      <!-- LaTeX Macros -->
+<div style="display:none;">
+<!-- Functions -->
+\(\newcommand{\id}{\mathsf{id}}\)
+\(\newcommand{\comp}{\mathsf{comp}}\)
+\(\newcommand{\app}{\mathsf{app}}\)
+\(\newcommand{\const}{\mathsf{const}}\)
+\(\newcommand{\flip}{\mathsf{flip}}\)
+\(\newcommand{\clone}{\mathsf{clone}}\)
+
+<!-- Unit -->
+\(\newcommand{\Unit}{\mathsf{Unit}}\)
+\(\newcommand{\unit}{\mathsf{unit}}\)
+\(\newcommand{\only}{\mathsf{only}}\)
+
+<!-- Pair -->
+\(\newcommand{\Pair}{\mathsf{Pair}}\)
+\(\newcommand{\pair}{\mathsf{pair}}\)
+\(\newcommand{\fst}{\mathsf{fst}}\)
+\(\newcommand{\snd}{\mathsf{snd}}\)
+\(\newcommand{\tup}{\mathsf{tup}}\)
+
+<!-- Either -->
+\(\newcommand{\Either}{\mathsf{Either}}\)
+\(\newcommand{\either}{\mathsf{either}}\)
+\(\newcommand{\lft}{\mathsf{lft}}\)
+\(\newcommand{\rgt}{\mathsf{rgt}}\)
+
+<!-- Maybe -->
+\(\newcommand{\Maybe}{\mathsf{Maybe}}\)
+\(\newcommand{\nothing}{\mathsf{nothing}}\)
+\(\newcommand{\just}{\mathsf{just}}\)
+\(\newcommand{\opt}{\mathsf{opt}}\)
+
+<!-- Bool -->
+\(\newcommand{\Bool}{\mathsf{Bool}}\)
+\(\newcommand{\true}{\mathsf{true}}\)
+\(\newcommand{\false}{\mathsf{false}}\)
+\(\newcommand{\if}{\mathsf{if}}\)
+\(\newcommand{\and}{\mathsf{and}}\)
+\(\newcommand{\or}{\mathsf{or}}\)
+\(\newcommand{\not}{\mathsf{not}}\)
+\(\newcommand{\eq}{\mathsf{eq}}\)
+
+<!-- Nat -->
+\(\newcommand{\Nat}{\mathsf{Nat}}\)
+\(\newcommand{\zero}{\mathsf{zero}}\)
+\(\newcommand{\next}{\mathsf{next}}\)
+\(\newcommand{\natrec}{\mathsf{natrec}}\)
+\(\newcommand{\prev}{\mathsf{prev}}\)
+\(\newcommand{\plus}{\mathsf{plus}}\)
+\(\newcommand{\times}{\mathsf{times}}\)
+</div>
+<!-- End LaTeX Macros -->
+
+<p><span class="math inline">\(\Either\ a\ b\)</span> acts like <span class="math inline">\(\Pair\)</span> with all the arrows reversed. Given types <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span>, there is a type <span class="math inline">\(\Either\ a\ b\)</span> and two functions <span class="math inline">\(\lft : a \rightarrow \Either\ a\ b\)</span> and <span class="math inline">\(\rgt : b \rightarrow \Either\ a\ b\)</span> with the property that if <span class="math inline">\(x\)</span> is a type and <span class="math inline">\(\sigma : a \rightarrow x\)</span> and <span class="math inline">\(\tau : x \rightarrow b\)</span> functions then there is a unique function <span class="math inline">\(\either(\sigma)(\tau) : \Either\ a\ b \rightarrow x\)</span> such that the following diagram commutes.</p>
+<p><span class="math display">\[\require{AMScd}
+\begin{CD}
+a @&gt;{\lft}&gt;&gt; \Either\ a\ b @&lt;{\rgt}&lt;&lt; b \\
+@V{\sigma}VV @VV{\either(\sigma)(\tau)}V @VV{\tau}V \\
+x @= x @= x
+\end{CD}\]</span></p>
+<p>We can describe the types of <span class="math inline">\(\lft\)</span>, <span class="math inline">\(\rgt\)</span>, and <span class="math inline">\(\either\)</span>.</p>
+<pre class="mycelium"><code>type \lft :: a -&gt; Either a b
 
 type \rgt :: b -&gt; Either a b
 
-type \either :: (a -&gt; t) -&gt; (b -&gt; t) -&gt; Either a b -&gt; t
-
-rule either-lft
+type \either :: (a -&gt; t) -&gt; (b -&gt; t) -&gt; Either a b -&gt; t</code></pre>
+<p>Next, the commutativity of the diagram.</p>
+<pre class="mycelium"><code>rule either-lft
 * \either(f)(g)(\lft(a)) == f(a)
 
 rule either-rgt
-* \either(f)(g)(\rgt(b)) == g(b)
-
-rule either-unique
+* \either(f)(g)(\rgt(b)) == g(b)</code></pre>
+<p>And the uniqueness of <span class="math inline">\(\either\)</span>.</p>
+<pre class="mycelium"><code>rule either-unique
 if
-  * t(f)(g)(\lft(a)) == f(a)
-  * t(f)(g)(\rgt(b)) == g(b)
+  * \comp(h)(\lft) == f
+  * \comp(h)(\rgt) == g
 then
-  * t == \either
-
-rule either-induction
+  * h == \either(f)(g)</code></pre>
+<p>And the induction principle for <span class="math inline">\(\Either\)</span>.</p>
+<pre class="mycelium"><code>rule either-induction
 if
   * ∀a. ((m == \lft(a)) =&gt; P)
   * ∀b. ((m == \rgt(b)) =&gt; P)
 then
   * P</code></pre>
+<p>From uniqueness, we can characterize <span class="math inline">\(\id\)</span> in terms of <span class="math inline">\(\either\)</span>.</p>
+<pre class="mycelium"><code>theorem either-lft-rgt
+* \id == \either(\lft)(\rgt)
+
+proof
+1. \comp(\id)(\lft)(x) : chain
+    == \id(\lft(x)) : use def-comp;
+    == \lft(x) : use def-id;
+2. ∀t. \comp(\id)(\lft)(t) == \lft(t)
+    : forall-intro x -&gt; t; 1
+3. \comp(\id)(\lft) == \lft : use fun-eq; 2
+4. \comp(\id)(\rgt)(x) : chain
+    == \id(\rgt(x)) : use def-comp;
+    == \rgt(x) : use def-id;
+5. ∀t. \comp(\id)(\rgt)(t) == \rgt(t)
+    : forall-intro x -&gt; t; 4
+6. \comp(\id)(\rgt) == \rgt : use fun-eq; 5
+7. \id == \either(\lft)(\rgt)
+    : use either-unique; 3, 6</code></pre>
+<p>Composition distributes over <span class="math inline">\(\either\)</span> from the left.</p>
+<pre class="mycelium"><code>theorem comp-either-dist-l
+* \comp(w)(\either(f)(g)) == \either(\comp(w)(f))(\comp(w)(g))
+
+proof
+1. \comp(\comp(w)(\either(f)(g)))(\lft)(a) : chain
+    == \comp(w)(\either(f)(g))(\lft(a)) : use def-comp;
+    == w(\either(f)(g)(\lft(a))) : use def-comp;
+    == w(f(a)) : use either-lft; at z in w(z)
+    == \comp(w)(f)(a) : flop use def-comp;
+2. ∀x. \comp(\comp(w)(\either(f)(g)))(\lft)(x) == \comp(w)(f)(x)
+    : forall-intro a -&gt; x; 1
+3. \comp(\comp(w)(\either(f)(g)))(\lft) == \comp(w)(f)
+    : use fun-eq; 2
+4. \comp(\comp(w)(\either(f)(g)))(\rgt)(a) : chain
+    == \comp(w)(\either(f)(g))(\rgt(a)) : use def-comp;
+    == w(\either(f)(g)(\rgt(a))) : use def-comp;
+    == w(g(a)) : use either-rgt; at z in w(z)
+    == \comp(w)(g)(a) : flop use def-comp;
+5. ∀x. \comp(\comp(w)(\either(f)(g)))(\rgt)(x) == \comp(w)(g)(x)
+    : forall-intro a -&gt; x; 4
+6. \comp(\comp(w)(\either(f)(g)))(\rgt) == \comp(w)(g)
+    : use fun-eq; 5
+7. \comp(w)(\either(f)(g)) == \either(\comp(w)(f))(\comp(w)(g))
+    : use either-unique; 3, 6</code></pre>
+<p>Both <span class="math inline">\(\lft\)</span> and <span class="math inline">\(\rgt\)</span> are injective.</p>
+<pre class="mycelium"><code>theorem lft-inj
+if
+  * \lft(a) == \lft(b)
+then
+  * a == b
+
+proof
+1. \true : chain
+    == \eq(a)(a) : flop use eq-refl;
+    == \either(\eq(a))(\const(\true))(\lft(a))
+        : flop use either-lft;
+    == \either(\eq(a))(\const(\true))(\lft(b))
+        : assumption 1 at z in \either(\eq(a))(\const(\true))(z)
+    == \eq(a)(b) : use either-lft;
+2. \eq(a)(b) == \true : use eq-sym; 1
+3. a == b : use eq-dereify; 2
+
+
+theorem rgt-inj
+if
+  * \rgt(a) == \rgt(b)
+then
+  * a == b
+
+proof
+1. \true : chain
+    == \eq(a)(a) : flop use eq-refl;
+    == \either(\const(\true))(\eq(a))(\rgt(a))
+        : flop use either-rgt;
+    == \either(\const(\true))(\eq(a))(\rgt(b))
+        : assumption 1 at z in \either(\const(\true))(\eq(a))(z)
+    == \eq(a)(b) : use either-rgt;
+2. \eq(a)(b) == \true : use eq-sym; 1
+3. a == b : use eq-dereify; 2</code></pre>
+
     </main>
 
     <footer>

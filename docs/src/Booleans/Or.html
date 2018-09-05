@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Arithmetic Made Difficult - Or</title>
+    <link rel="stylesheet" href="../../css/default.css" />
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  </head>
+
+  <body>
+    <header>
+      <div class="logo">
+        <a href="../../">Arithmetic Made Difficult</a>
+      </div>
+      <nav>
+        <a href="../../">Contents</a>
+        <a href="../../about.html">About</a>
+      </nav>
+    </header>
+
+    <main role="main">
+      <h1>Or</h1>
+      <!-- LaTeX Macros -->
+<div style="display:none;">
+<!-- Functions -->
+\(\newcommand{\id}{\mathsf{id}}\)
+\(\newcommand{\comp}{\mathsf{comp}}\)
+\(\newcommand{\app}{\mathsf{app}}\)
+\(\newcommand{\const}{\mathsf{const}}\)
+\(\newcommand{\flip}{\mathsf{flip}}\)
+\(\newcommand{\clone}{\mathsf{clone}}\)
+
+<!-- Unit -->
+\(\newcommand{\Unit}{\mathsf{Unit}}\)
+\(\newcommand{\unit}{\mathsf{unit}}\)
+\(\newcommand{\only}{\mathsf{only}}\)
+
+<!-- Pair -->
+\(\newcommand{\Pair}{\mathsf{Pair}}\)
+\(\newcommand{\pair}{\mathsf{pair}}\)
+\(\newcommand{\fst}{\mathsf{fst}}\)
+\(\newcommand{\snd}{\mathsf{snd}}\)
+\(\newcommand{\tup}{\mathsf{tup}}\)
+
+<!-- Either -->
+\(\newcommand{\Either}{\mathsf{Either}}\)
+\(\newcommand{\either}{\mathsf{either}}\)
+\(\newcommand{\lft}{\mathsf{lft}}\)
+\(\newcommand{\rgt}{\mathsf{rgt}}\)
+
+<!-- Maybe -->
+\(\newcommand{\Maybe}{\mathsf{Maybe}}\)
+\(\newcommand{\nothing}{\mathsf{nothing}}\)
+\(\newcommand{\just}{\mathsf{just}}\)
+\(\newcommand{\opt}{\mathsf{opt}}\)
+
+<!-- Bool -->
+\(\newcommand{\Bool}{\mathsf{Bool}}\)
+\(\newcommand{\true}{\mathsf{true}}\)
+\(\newcommand{\false}{\mathsf{false}}\)
+\(\newcommand{\if}{\mathsf{if}}\)
+\(\newcommand{\and}{\mathsf{and}}\)
+\(\newcommand{\or}{\mathsf{or}}\)
+\(\newcommand{\not}{\mathsf{not}}\)
+\(\newcommand{\eq}{\mathsf{eq}}\)
+
+<!-- Nat -->
+\(\newcommand{\Nat}{\mathsf{Nat}}\)
+\(\newcommand{\zero}{\mathsf{zero}}\)
+\(\newcommand{\next}{\mathsf{next}}\)
+\(\newcommand{\natrec}{\mathsf{natrec}}\)
+\(\newcommand{\prev}{\mathsf{prev}}\)
+\(\newcommand{\plus}{\mathsf{plus}}\)
+\(\newcommand{\times}{\mathsf{times}}\)
+</div>
+<!-- End LaTeX Macros -->
+
+<p>Next we define <span class="math inline">\(\or\)</span>.</p>
+<pre class="mycelium"><code>type \or :: Bool -&gt; Bool -&gt; Bool
+
+rule def-or
+* \or(p)(q) == \if(\true)(\if(\true)(\false)(q))(p)</code></pre>
+<p>And we can compute <span class="math inline">\(\or\)</span> explicitly.</p>
+<pre class="mycelium"><code>theorem or-false-false
+* \or(\false)(\false) == \false
+
+proof
+1. \or(\false)(\false) : chain
+    == \if(\true)(\if(\true)(\false)(\false))(\false) : use def-or;
+    == \if(\true)(\false)(\false) : use if-false;
+    == \false : use if-false;
+
+theorem or-false-true
+* \or(\false)(\true) == \true
+
+proof
+1. \or(\false)(\true) : chain
+    == \if(\true)(\if(\true)(\false)(\true))(\false) : use def-or;
+    == \if(\true)(\false)(\true) : use if-false;
+    == \true : use if-true;
+
+theorem or-true-l
+* \or(\true)(q) == \true
+
+proof
+1. \or(\true)(q) : chain
+    == \if(\true)(\if(\true)(\false)(q))(\true) : use def-or;
+    == \true : use if-true;</code></pre>
+<p>That last property says that <span class="math inline">\(\true\)</span> acts like a zero for <span class="math inline">\(\or\)</span>; we can also say <span class="math inline">\(\false\)</span> acts like an identity.</p>
+<pre class="mycelium"><code>theorem or-false-l
+* \or(\false)(q) == q
+
+proof
+1.   q == \true : hypothesis q-T
+2.   \or(\false)(q) : chain
+      == \or(\false)(\true) : hypothesis q-T at w in \or(\false)(w)
+      == \true : use or-false-true;
+      == q : use eq-sym; 1
+3. (q == \true) =&gt; (\or(\false)(q) == q) : discharge q-T; 2
+4.   q == \false : hypothesis q-F
+5.   \or(\false)(q) : chain
+      == \or(\false)(\false) : hypothesis q-F at w in \or(\false)(w)
+      == \false : use or-false-false;
+      == q : use eq-sym; 4
+6. (q == \false) =&gt; (\or(\false)(q) == q) : discharge q-F; 5
+7. \or(\false)(q) == q : use bool-induction; 3, 6</code></pre>
+<p>From here the other properties of <span class="math inline">\(\or\)</span> are straightforward. It is idempotent:</p>
+<pre class="mycelium"><code>theorem or-idemp
+* \or(q)(q) == q
+
+proof
+1.   q == \true : hypothesis T
+2.   \or(q)(q) : chain
+      == \or(\true)(q) : hypothesis T at z in \or(z)(q)
+      == \true : use or-true-l;
+      == q : flop hypothesis T
+3. (q == \true) =&gt; (\or(q)(q) == q) : discharge T; 2
+4.   q == \false : hypothesis F
+5.   \or(q)(q) : chain
+      == \or(\false)(q) : hypothesis F at z in \or(z)(q)
+      == q : use or-false-l;
+6. (q == \false) =&gt; (\or(q)(q) == q) : discharge F; 5
+7. \or(q)(q) == q : use bool-induction; 3, 6</code></pre>
+<p><span class="math inline">\(\or\)</span> is commutative:</p>
+<pre class="mycelium"><code>theorem or-comm
+* \or(p)(q) == \or(q)(p)
+
+proof
+1.    q == \true : hypothesis q-T
+2.      p == \true : hypothesis p-T
+3.      \or(p)(q) : chain
+         == \or(\true)(q) : hypothesis p-T at z in \or(z)(q)
+         == \true : use or-true-l;
+         == \or(\true)(p) : flop use or-true-l;
+         == \or(q)(p) : flop hypothesis q-T at z in \or(z)(p)
+4.    (p == \true) =&gt; (\or(p)(q) == \or(q)(p)) : discharge p-T; 3
+5.      p == \false : hypothesis p-F
+6.      \or(p)(q) : chain
+         == \or(\false)(q) : hypothesis p-F at z in \or(z)(q)
+         == q : use or-false-l;
+         == \true : hypothesis q-T
+         == \or(\true)(p) : flop use or-true-l;
+         == \or(q)(p) : flop hypothesis q-T at z in \or(z)(p)
+7.    (p == \false) =&gt; (\or(p)(q) == \or(q)(p)) : discharge p-F; 6
+8.    \or(p)(q) == \or(q)(p) : use bool-induction; 4, 7
+9.  (q == \true) =&gt; (\or(p)(q) == \or(q)(p)) : discharge q-T; 8
+10.   q == \false : hypothesis q-F
+11.     p == \true : hypothesis p-T
+12.     \or(p)(q) : chain
+         == \or(\true)(q) : hypothesis p-T at z in \or(z)(q)
+         == \true : use or-true-l;
+         == \or(\false)(\true) : flop use or-false-true;
+         == \or(q)(\true) : flop hypothesis q-F at z in \or(z)(\true)
+         == \or(q)(p) : flop hypothesis p-T at z in \or(q)(z)
+13.   (p == \true) =&gt; (\or(p)(q) == \or(q)(p)) : discharge p-T; 12
+14.     p == \false : hypothesis p-F
+15.     \or(p)(q) : chain
+         == \or(\false)(q) : hypothesis p-F at z in \or(z)(q)
+         == q : use or-false-l;
+         == \false : hypothesis q-F
+         == p : flop hypothesis p-F
+         == \or(\false)(p) : flop use or-false-l;
+         == \or(q)(p) : flop hypothesis q-F at z in \or(z)(p)
+16.   (p == \false) =&gt; (\or(p)(q) == \or(q)(p)) : discharge p-F; 15
+17.   \or(p)(q) == \or(q)(p) : use bool-induction; 13, 16
+18. (q == \false) =&gt; (\or(p)(q) == \or(q)(p)) : discharge q-F; 17
+19. \or(p)(q) == \or(q)(p) : use bool-induction; 9, 18</code></pre>
+<p>And <span class="math inline">\(\or\)</span> is associative.</p>
+<pre class="mycelium"><code>theorem or-assoc-l
+* \or(p)(\or(q)(r)) == \or(\or(p)(q))(r)
+
+proof
+1.   p == \true : hypothesis p-T
+2.   \or(p)(\or(q)(r)) : chain
+      == \or(\true)(\or(q)(r))
+          : hypothesis p-T at z in \or(z)(\or(q)(r))
+      == \true : use or-true-l;
+      == \or(\true)(r) : flop use or-true-l;
+      == \or(\or(\true)(q))(r)
+          : flop use or-true-l; at z in \or(z)(r)
+      == \or(\or(p)(q))(r)
+          : flop hypothesis p-T at z in \or(\or(z)(q))(r)
+3. (p == \true) =&gt; (\or(p)(\or(q)(r)) == \or(\or(p)(q))(r))
+    : discharge p-T; 2
+4.   p == \false : hypothesis p-F
+5.   \or(p)(\or(q)(r)) : chain
+      == \or(\false)(\or(q)(r))
+          : hypothesis p-F at z in \or(z)(\or(q)(r))
+      == \or(q)(r) : use or-false-l;
+      == \or(\or(\false)(q))(r)
+          : flop use or-false-l; at z in \or(z)(r)
+      == \or(\or(p)(q))(r)
+          : flop hypothesis p-F at z in \or(\or(z)(q))(r)
+6. (p == \false) =&gt; (\or(p)(\or(q)(r)) == \or(\or(p)(q))(r))
+    : discharge p-F; 5
+7. \or(p)(\or(q)(r)) == \or(\or(p)(q))(r)
+    : use bool-induction; 3, 6
+
+
+theorem or-assoc-r
+* \or(\or(p)(q))(r) == \or(p)(\or(q)(r))
+
+proof
+1. \or(p)(\or(q)(r)) == \or(\or(p)(q))(r) : use or-assoc-l;
+2. \or(\or(p)(q))(r) == \or(p)(\or(q)(r)) : use eq-sym; 1</code></pre>
+<p><span class="math inline">\(\or\)</span> also distributes over <span class="math inline">\(\and\)</span>.</p>
+<pre class="mycelium"><code>theorem or-and-dist-l
+* \or(p)(\and(q)(r)) == \and(\or(p)(q))(\or(p)(r))
+
+proof
+1.   p == \true : hypothesis p-T
+2.   \or(p)(\and(q)(r)) : chain
+      == \or(\true)(\and(q)(r))
+          : hypothesis p-T at z in \or(z)(\and(q)(r))
+      == \true : use or-true-l;
+      == \and(\true)(\true) : flop use and-true-true;
+      == \and(\or(\true)(q))(\true)
+          : flop use or-true-l; at z in \and(z)(\true)
+      == \and(\or(\true)(q))(\or(\true)(r))
+          : flop use or-true-l; at z in \and(\or(\true)(q))(z)
+      == \and(\or(p)(q))(\or(p)(r))
+          : flop hypothesis p-T at z in \and(\or(z)(q))(\or(z)(r))
+3. (p == \true) =&gt; (\or(p)(\and(q)(r)) == \and(\or(p)(q))(\or(p)(r)))
+    : discharge p-T; 2
+4.   p == \false : hypothesis p-F
+5.   \or(p)(\and(q)(r)) : chain
+      == \or(\false)(\and(q)(r))
+          : hypothesis p-F at z in \or(z)(\and(q)(r))
+      == \and(q)(r) : use or-false-l;
+      == \and(\or(\false)(q))(r)
+          : flop use or-false-l; at z in \and(z)(r)
+      == \and(\or(\false)(q))(\or(\false)(r))
+          : flop use or-false-l; at z in \and(\or(\false)(q))(z)
+      == \and(\or(p)(q))(\or(p)(r))
+          : flop hypothesis p-F at z in \and(\or(z)(q))(\or(z)(r))
+6. (p == \false) =&gt; (\or(p)(\and(q)(r)) == \and(\or(p)(q))(\or(p)(r)))
+    : discharge p-F; 5
+7. \or(p)(\and(q)(r)) == \and(\or(p)(q))(\or(p)(r))
+    : use bool-induction; 3, 6
+
+
+theorem or-and-dist-r
+* \or(\and(p)(q))(r) == \and(\or(p)(r))(\or(q)(r))
+
+proof
+1. \or(\and(p)(q))(r) : chain
+    == \or(r)(\and(p)(q)) : use or-comm;
+    == \and(\or(r)(p))(\or(r)(q))
+        : use or-and-dist-l;
+    == \and(\or(p)(r))(\or(r)(q))
+        : use or-comm; at z in \and(z)(\or(r)(q))
+    == \and(\or(p)(r))(\or(q)(r))
+        : use or-comm; at z in \and(\or(p)(r))(z)</code></pre>
+<p>And <span class="math inline">\(\and\)</span> distributes over <span class="math inline">\(\or\)</span>.</p>
+<pre class="mycelium"><code>theorem and-or-dist-l
+* \and(p)(\or(q)(r)) == \or(\and(p)(q))(\and(p)(r))
+
+proof
+1.   p == \true : hypothesis p-T
+2.   \and(p)(\or(q)(r)) : chain
+      == \and(\true)(\or(q)(r))
+          : hypothesis p-T at z in \and(z)(\or(q)(r))
+      == \or(q)(r) : use and-true-l;
+      == \or(\and(\true)(q))(r)
+          : flop use and-true-l; at z in \or(z)(r)
+      == \or(\and(\true)(q))(\and(\true)(r))
+          : flop use and-true-l; at z in \or(\and(\true)(q))(z)
+      == \or(\and(p)(q))(\and(p)(r))
+          : flop hypothesis p-T at z in \or(\and(z)(q))(\and(z)(r))
+3. (p == \true) =&gt; (\and(p)(\or(q)(r)) == \or(\and(p)(q))(\and(p)(r)))
+    : discharge p-T; 2
+4.   p == \false : hypothesis p-F
+5.   \and(p)(\or(q)(r)) : chain
+      == \and(\false)(\or(q)(r))
+          : hypothesis p-F at z in \and(z)(\or(q)(r))
+      == \false : use and-false-l;
+      == \or(\false)(\false) : flop use or-false-false;
+      == \or(\and(\false)(q))(\false)
+          : flop use and-false-l; at z in \or(z)(\false)
+      == \or(\and(\false)(q))(\and(\false)(r))
+          : flop use and-false-l; at z in \or(\and(\false)(q))(z)
+      == \or(\and(p)(q))(\and(p)(r))
+          : flop hypothesis p-F at z in \or(\and(z)(q))(\and(z)(r))
+6. (p == \false) =&gt; (\and(p)(\or(q)(r)) == \or(\and(p)(q))(\and(p)(r)))
+    : discharge p-F; 5
+7. \and(p)(\or(q)(r)) == \or(\and(p)(q))(\and(p)(r))
+    : use bool-induction; 3, 6
+
+
+theorem and-or-dist-r
+* \and(\or(p)(q))(r) == \or(\and(p)(r))(\and(q)(r))
+
+proof
+1. \and(\or(p)(q))(r) : chain
+    == \and(r)(\or(p)(q)) : use and-comm;
+    == \or(\and(r)(p))(\and(r)(q))
+        : use and-or-dist-l;
+    == \or(\and(p)(r))(\and(r)(q))
+        : use and-comm; at z in \or(z)(\and(r)(q))
+    == \or(\and(p)(r))(\and(q)(r))
+        : use and-comm; at z in \or(\and(p)(r))(z)</code></pre>
+
+    </main>
+
+    <footer>
+      Site generated by
+      <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+    </footer>
+  </body>
+</html>

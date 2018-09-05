@@ -15,27 +15,97 @@
         <a href="../../">Arithmetic Made Difficult</a>
       </div>
       <nav>
-        <a href="../../">Home</a>
+        <a href="../../">Contents</a>
         <a href="../../about.html">About</a>
       </nav>
     </header>
 
     <main role="main">
       <h1>Identity and Composition</h1>
-      <pre class="mycelium"><code>type \id :: a -&gt; a
+      <!-- LaTeX Macros -->
+<div style="display:none;">
+<!-- Functions -->
+\(\newcommand{\id}{\mathsf{id}}\)
+\(\newcommand{\comp}{\mathsf{comp}}\)
+\(\newcommand{\app}{\mathsf{app}}\)
+\(\newcommand{\const}{\mathsf{const}}\)
+\(\newcommand{\flip}{\mathsf{flip}}\)
+\(\newcommand{\clone}{\mathsf{clone}}\)
 
-rule def-id
-* \id(x) == x</code></pre>
+<!-- Unit -->
+\(\newcommand{\Unit}{\mathsf{Unit}}\)
+\(\newcommand{\unit}{\mathsf{unit}}\)
+\(\newcommand{\only}{\mathsf{only}}\)
+
+<!-- Pair -->
+\(\newcommand{\Pair}{\mathsf{Pair}}\)
+\(\newcommand{\pair}{\mathsf{pair}}\)
+\(\newcommand{\fst}{\mathsf{fst}}\)
+\(\newcommand{\snd}{\mathsf{snd}}\)
+\(\newcommand{\tup}{\mathsf{tup}}\)
+
+<!-- Either -->
+\(\newcommand{\Either}{\mathsf{Either}}\)
+\(\newcommand{\either}{\mathsf{either}}\)
+\(\newcommand{\lft}{\mathsf{lft}}\)
+\(\newcommand{\rgt}{\mathsf{rgt}}\)
+
+<!-- Maybe -->
+\(\newcommand{\Maybe}{\mathsf{Maybe}}\)
+\(\newcommand{\nothing}{\mathsf{nothing}}\)
+\(\newcommand{\just}{\mathsf{just}}\)
+\(\newcommand{\opt}{\mathsf{opt}}\)
+
+<!-- Bool -->
+\(\newcommand{\Bool}{\mathsf{Bool}}\)
+\(\newcommand{\true}{\mathsf{true}}\)
+\(\newcommand{\false}{\mathsf{false}}\)
+\(\newcommand{\if}{\mathsf{if}}\)
+\(\newcommand{\and}{\mathsf{and}}\)
+\(\newcommand{\or}{\mathsf{or}}\)
+\(\newcommand{\not}{\mathsf{not}}\)
+\(\newcommand{\eq}{\mathsf{eq}}\)
+
+<!-- Nat -->
+\(\newcommand{\Nat}{\mathsf{Nat}}\)
+\(\newcommand{\zero}{\mathsf{zero}}\)
+\(\newcommand{\next}{\mathsf{next}}\)
+\(\newcommand{\natrec}{\mathsf{natrec}}\)
+\(\newcommand{\prev}{\mathsf{prev}}\)
+\(\newcommand{\plus}{\mathsf{plus}}\)
+\(\newcommand{\times}{\mathsf{times}}\)
+</div>
+<!-- End LaTeX Macros -->
+
+<p>The object language of our logic is <em>simply typed lambda calculus</em>. Later we’ll start defining interesting types, but to begin we need to define some basic, generic functions.</p>
+<p>Before we get too far, we need to nail down what it means for two functions to be equal. First, lets think about one of the <em>consequences</em> of two functions being equal.</p>
+<pre class="mycelium"><code>theorem fun-ap
+if
+  * f == g
+then
+  * f(x) == g(x)
+
+proof
+1. f == g : assumption 1
+2. f(x) == f(x) : eq-intro
+3. f(x) == g(x) : eq-elim h (f(x) == h(x)); 1, 2</code></pre>
+<pre class="mycelium"><code>theorem ap-eq
+if
+  * x == y
+then
+  * f(x) == f(y)
+
+proof
+1. x == y : assumption 1
+2. f(x) : chain
+    == f(y) : assumption 1 at z in f(z)</code></pre>
+<p>That is, if two functions are equal, then their outputs are equal for any given input. We’ll say that this goes both ways.</p>
 <pre class="mycelium"><code>rule fun-eq
 if
   * ∀x. f(x) == g(x)
 then
   * f == g</code></pre>
-<pre class="mycelium"><code>rule fun-ap
-if
-  * f == g
-then
-  * f(x) == g(x)</code></pre>
+<p>(Here’s a helper theorem we’ll need later.)</p>
 <pre class="mycelium"><code>theorem fun-ap-2
 if
   * f == g
@@ -46,10 +116,17 @@ proof
 1. f == g : assumption 1
 2. f(x) == g(x) : use fun-ap; 1
 3. f(x)(y) == g(x)(y) : use fun-ap; 2</code></pre>
+<p>The simplest function is the <em>identity</em>, which takes an input and returns it unchanged.</p>
+<pre class="mycelium"><code>type \id :: a -&gt; a
+
+rule def-id
+* \id(x) == x</code></pre>
+<p>There’s not a whole lot we can do with the identity function by itself, but things get a little more interesting when we can <em>compose</em> functions. If <span class="math inline">\(f : a \rightarrow b\)</span> and <span class="math inline">\(g : b \rightarrow c\)</span> are functions, then their composite <span class="math inline">\(g \circ f\)</span> is the function <span class="math inline">\(a \rightarrow c\)</span> that applies <span class="math inline">\(g\)</span> to the output of <span class="math inline">\(f\)</span>.</p>
 <pre class="mycelium"><code>type \comp :: (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 
 rule def-comp
 * \comp(g)(f)(a) == g(f(a))</code></pre>
+<p>Composition is a partial multiplication on functions, and the identity function is its neutral element. Functions are unchanged when we compose with identity from the left:</p>
 <pre class="mycelium"><code>theorem comp-id-l
 * \comp(\id)(f) == f
 
@@ -59,6 +136,7 @@ proof
     == f(a) : use def-id;
 2. ∀x. \comp(\id)(f)(x) == f(x) : forall-intro a -&gt; x; 1
 3. \comp(\id)(f) == f : use fun-eq; 2</code></pre>
+<p>As well as from the right.</p>
 <pre class="mycelium"><code>theorem comp-id-r
 * \comp(f)(\id) == f
 
@@ -68,6 +146,26 @@ proof
     == f(a) : use def-id; at z in f(z)
 2. ∀x. \comp(f)(\id)(x) == f(x) : forall-intro a -&gt; x; 1
 3. \comp(f)(\id) == f : use fun-eq; 2</code></pre>
+<p>We can also reify function application with <span class="math inline">\(\app\)</span>.</p>
+<pre class="mycelium"><code>type \app :: (a -&gt; b) -&gt; a -&gt; b
+
+rule def-app
+* \app(f)(x) == f(x)</code></pre>
+<p>Now <span class="math inline">\(\app\)</span> distributes over <span class="math inline">\(\comp\)</span>.</p>
+<pre class="mycelium"><code>theorem app-comp-dist-l
+* \app(\comp(g)(f)) == \comp(\app(g))(\app(f))
+
+proof
+1. \app(\comp(g)(f))(x) : chain
+    == \comp(g)(f)(x) : use def-app;
+    == g(f(x)) : use def-comp;
+    == \app(g)(f(x)) : flop use def-app;
+    == \app(g)(\app(f)(x)) : flop use def-app; at z in \app(g)(z)
+    == \comp(\app(g))(\app(f))(x) : flop use def-comp;
+2. ∀u. \app(\comp(g)(f))(u) == \comp(\app(g))(\app(f))(u)
+    : forall-intro x -&gt; u; 1
+3. \app(\comp(g)(f)) == \comp(\app(g))(\app(f)) : use fun-eq; 2</code></pre>
+
     </main>
 
     <footer>

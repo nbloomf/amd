@@ -15,283 +15,111 @@
         <a href="../">Arithmetic Made Difficult</a>
       </div>
       <nav>
-        <a href="../">Home</a>
+        <a href="../">Contents</a>
         <a href="../about.html">About</a>
       </nav>
     </header>
 
     <main role="main">
       <h1>Booleans</h1>
-      <ul>
-<li>Constructors</li>
-<li>Algebra map</li>
-<li>Destruction rules</li>
-<li>Uniqueness property</li>
-<li>Induction principle</li>
-</ul>
+      <!-- LaTeX Macros -->
+<div style="display:none;">
+<!-- Functions -->
+\(\newcommand{\id}{\mathsf{id}}\)
+\(\newcommand{\comp}{\mathsf{comp}}\)
+\(\newcommand{\app}{\mathsf{app}}\)
+\(\newcommand{\const}{\mathsf{const}}\)
+\(\newcommand{\flip}{\mathsf{flip}}\)
+\(\newcommand{\clone}{\mathsf{clone}}\)
+
+<!-- Unit -->
+\(\newcommand{\Unit}{\mathsf{Unit}}\)
+\(\newcommand{\unit}{\mathsf{unit}}\)
+\(\newcommand{\only}{\mathsf{only}}\)
+
+<!-- Pair -->
+\(\newcommand{\Pair}{\mathsf{Pair}}\)
+\(\newcommand{\pair}{\mathsf{pair}}\)
+\(\newcommand{\fst}{\mathsf{fst}}\)
+\(\newcommand{\snd}{\mathsf{snd}}\)
+\(\newcommand{\tup}{\mathsf{tup}}\)
+
+<!-- Either -->
+\(\newcommand{\Either}{\mathsf{Either}}\)
+\(\newcommand{\either}{\mathsf{either}}\)
+\(\newcommand{\lft}{\mathsf{lft}}\)
+\(\newcommand{\rgt}{\mathsf{rgt}}\)
+
+<!-- Maybe -->
+\(\newcommand{\Maybe}{\mathsf{Maybe}}\)
+\(\newcommand{\nothing}{\mathsf{nothing}}\)
+\(\newcommand{\just}{\mathsf{just}}\)
+\(\newcommand{\opt}{\mathsf{opt}}\)
+
+<!-- Bool -->
+\(\newcommand{\Bool}{\mathsf{Bool}}\)
+\(\newcommand{\true}{\mathsf{true}}\)
+\(\newcommand{\false}{\mathsf{false}}\)
+\(\newcommand{\if}{\mathsf{if}}\)
+\(\newcommand{\and}{\mathsf{and}}\)
+\(\newcommand{\or}{\mathsf{or}}\)
+\(\newcommand{\not}{\mathsf{not}}\)
+\(\newcommand{\eq}{\mathsf{eq}}\)
+
+<!-- Nat -->
+\(\newcommand{\Nat}{\mathsf{Nat}}\)
+\(\newcommand{\zero}{\mathsf{zero}}\)
+\(\newcommand{\next}{\mathsf{next}}\)
+\(\newcommand{\natrec}{\mathsf{natrec}}\)
+\(\newcommand{\prev}{\mathsf{prev}}\)
+\(\newcommand{\plus}{\mathsf{plus}}\)
+\(\newcommand{\times}{\mathsf{times}}\)
+</div>
+<!-- End LaTeX Macros -->
+
+<p>We can represent booleans as a type with exactly two values.</p>
 <pre class="mycelium"><code>type \true :: Bool
 
-type \false :: Bool
-
-type \if :: a -&gt; a -&gt; Bool -&gt; a
-
-rule if-true
+type \false :: Bool</code></pre>
+<p>A special function <span class="math inline">\(\if\)</span> lets us discriminate based on a boolean value.</p>
+<pre class="mycelium"><code>type \if :: a -&gt; a -&gt; Bool -&gt; a</code></pre>
+<p>Now <span class="math inline">\(\if\)</span> is a homomorphism:</p>
+<pre class="mycelium"><code>rule if-true
 * \if(x)(y)(\true) == x
 
 rule if-false
-* \if(x)(y)(\false) == y
-
-rule if-unique
+* \if(x)(y)(\false) == y</code></pre>
+<p>And is unique.</p>
+<pre class="mycelium"><code>rule if-unique
 if
-  * t(x)(y)(\true) == x
-  * t(x)(y)(\false) == y
+  * t(\true) == x
+  * t(\false) == y
 then
-  * t == \if</code></pre>
+  * t == \if(x)(y)</code></pre>
+<p>Finally, we have an induction principle for <span class="math inline">\(\Bool\)</span>.</p>
 <pre class="mycelium"><code>rule bool-induction
 if
   * (q == \true) =&gt; P
   * (q == \false) =&gt; P
 then
   * P</code></pre>
+<p><span class="math inline">\(\Bool\)</span> is the first concrete type we’ve seen, and there’s a lot to say about it, so we’ll split it up over several sections. First, like the other inductive types, we can characterize <span class="math inline">\(\id\)</span> in terms of the universal arrow.</p>
 <pre class="mycelium"><code>theorem if-true-false
-* \if(\true)(\false) == \id
+* \id == \if(\true)(\false)
 
 proof
-1.   q == \true : hypothesis T
-2.   \if(\true)(\false)(q) : chain
-      == \if(\true)(\false)(\true) : hypothesis T at w in \if(\true)(\false)(w)
-      == \true : use if-true;
-      == q : use eq-sym; 1
-      == \id(q) : flop use def-id;
-3. (q == \true) =&gt; (\if(\true)(\false)(q) == \id(q)) : discharge T; 2
-4.   q == \false : hypothesis F
-5.   \if(\true)(\false)(q) : chain
-      == \if(\true)(\false)(\false) : hypothesis F at w in \if(\true)(\false)(w)
-      == \false : use if-false;
-      == q : use eq-sym; 4
-      == \id(q) : flop use def-id;
-6. (q == \false) =&gt; (\if(\true)(\false)(q) == \id(q)) : discharge F; 5
-7. \if(\true)(\false)(q) == \id(q) : use bool-induction; 3, 6
-8. ∀x. \if(\true)(\false)(x) == \id(x) : forall-intro q -&gt; x; 7
-9. \if(\true)(\false) == \id : use fun-eq; 8</code></pre>
+1. \id(\true) == \true : use def-id;
+2. \id(\false) == \false : use def-id;
+3. \id == \if(\true)(\false) : use if-unique; 1, 2</code></pre>
+<p>We can also characterize <span class="math inline">\(\const\)</span> as an <span class="math inline">\(\if\)</span>.</p>
 <pre class="mycelium"><code>theorem if-const
-* \if(a)(a) == \const(a)
+* \const(a) == \if(a)(a)
 
 proof
-1.   q == \true : hypothesis T
-2.   \if(a)(a)(q) : chain
-      == \if(a)(a)(\true) : hypothesis T at w in \if(a)(a)(w)
-      == a : use if-true;
-3. (q == \true) =&gt; (\if(a)(a)(q) == a) : discharge T; 2
-4.   q == \false : hypothesis F
-5.   \if(a)(a)(q) : chain
-      == \if(a)(a)(\false) : hypothesis F at w in \if(a)(a)(w)
-      == a : use if-false;
-6. (q == \false) =&gt; (\if(a)(a)(q) == a) : discharge F; 5
-7. \if(a)(a)(q) : chain
-    == a : use bool-induction; 3, 6
-    == \const(a)(q) : flop use def-const;
-8. ∀x. \if(a)(a)(x) == \const(a)(x) : forall-intro q -&gt; x; 7
-9. \if(a)(a) == \const(a) : use fun-eq; 8</code></pre>
-<pre class="mycelium"><code>type \and :: Bool -&gt; Bool -&gt; Bool
+1. \const(a)(\true) == a : use def-const;
+2. \const(a)(\false) == a : use def-const;
+3. \const(a) == \if(a)(a) : use if-unique; 1, 2</code></pre>
 
-rule def-and
-* \and(p)(q) == \if(\if(\true)(\false)(q))(\false)(p)</code></pre>
-<pre class="mycelium"><code>theorem and-idemp
-* \and(q)(q) == q
-
-proof
-1.   q == \true : hypothesis T
-2.   \and(q)(q) : chain
-       == \if(\if(\true)(\false)(q))(\false)(q) : use def-and;
-       == \if(\if(\true)(\false)(\true))(\false)(\true)
-           : hypothesis T at w in \if(\if(\true)(\false)(w))(\false)(w)
-       == \if(\true)(\false)(\true) : use if-true;
-       == \true : use if-true;
-       == q : use eq-sym; 1
-3. (q == \true) =&gt; (\and(q)(q) == q) : discharge T; 2
-4.   q == \false : hypothesis F
-5.   \and(q)(q) : chain
-       == \if(\if(\true)(\false)(q))(\false)(q) : use def-and;
-       == \if(\if(\true)(\false)(\false))(\false)(\false)
-           : hypothesis F at w in \if(\if(\true)(\false)(w))(\false)(w)
-       == \false : use if-false;
-       == q : use eq-sym; 4
-6. (q == \false) =&gt; (\and(q)(q) == q) : discharge F; 5
-7. \and(q)(q) == q : use bool-induction; 3, 6</code></pre>
-<pre class="mycelium"><code>theorem and-true-true
-* \and(\true)(\true) == \true
-
-proof
-1. \and(\true)(\true) : chain
-    == \if(\if(\true)(\false)(\true))(\false)(\true) : use def-and;
-    == \if(\true)(\false)(\true) : use if-true;
-    == \true : use if-true;
-
-
-theorem and-true-false
-* \and(\true)(\false) == \false
-
-proof
-1. \and(\true)(\false) : chain
-    == \if(\if(\true)(\false)(\false))(\false)(\true) : use def-and;
-    == \if(\true)(\false)(\false) : use if-true;
-    == \false : use if-false;
-
-
-theorem and-false-l
-* \and(\false)(q) == \false
-
-proof
-1. \and(\false)(q) : chain
-    == \if(\if(\true)(\false)(q))(\false)(\false) : use def-and;
-    == \false : use if-false;</code></pre>
-<pre class="mycelium"><code>theorem and-true-l
-* \and(\true)(q) == q
-
-proof
-1.   q == \true : hypothesis q-T
-2.     \and(\true)(q) : chain
-        == \and(\true)(\true) : hypothesis q-T at w in \and(\true)(w)
-        == \true : use and-true-true;
-        == q : use eq-sym; 1
-3. (q == \true) =&gt; (\and(\true)(q) == q) : discharge q-T; 2
-4.   q == \false : hypothesis q-F
-5.     \and(\true)(q) : chain
-         == \and(\true)(\false) : hypothesis q-F at w in \and(\true)(w)
-         == \false : use and-true-false;
-         == q : use eq-sym; 4
-6. (q == \false) =&gt; (\and(\true)(q) == q) : discharge q-F; 5
-7. \and(\true)(q) == q : use bool-induction; 3, 6</code></pre>
-<pre class="mycelium"><code>theorem and-comm
-* \and(p)(q) == \and(q)(p)
-
-proof
-1.    q == \true : hypothesis q-T
-2.      p == \true : hypothesis p-T
-3.      \and(p)(q) : chain
-         == \and(\true)(q) : hypothesis p-T at w in \and(w)(q)
-         == \and(\true)(\true)
-             : hypothesis q-T at w in \and(\true)(w)
-         == \and(q)(\true) : use eq-sym; 1 at w in \and(w)(\true)
-         == \and(q)(p) : use eq-sym; 2 at w in \and(q)(w)
-4.    (p == \true) =&gt; (\and(p)(q) == \and(q)(p)) : discharge p-T; 3
-5.      p == \false : hypothesis p-F
-6.      \and(p)(q) : chain
-         == \and(\false)(q) : hypothesis p-F at w in \and(w)(q)
-         == \false : use and-false-l;
-         == \and(\true)(\false) : flop use and-true-false;
-         == \and(q)(\false) : use eq-sym; 1 at w in \and(w)(\false)
-         == \and(q)(p) : use eq-sym; 5 at w in \and(q)(w)
-7.    (p == \false) =&gt; (\and(p)(q) == \and(q)(p)) : discharge p-F; 6
-8.    \and(p)(q) == \and(q)(p) : use bool-induction; 4, 7
-9.  (q == \true) =&gt; (\and(p)(q) == \and(q)(p)) : discharge q-T; 8
-10.   q == \false : hypothesis q-F
-11.     p == \true : hypothesis p-T
-12.     \and(p)(q) : chain
-         == \and(\true)(q) : hypothesis p-T at w in \and(w)(q)
-         == \and(\true)(\false)
-             : hypothesis q-F at w in \and(\true)(w)
-         == \false : use and-true-false;
-         == \and(\false)(\true) : flop use and-false-l;
-         == \and(q)(\true) : use eq-sym; 10 at w in \and(w)(\true)
-         == \and(q)(p) : use eq-sym; 11 at w in \and(q)(w)
-13.   (p == \true) =&gt; (\and(p)(q) == \and(q)(p)) : discharge p-T; 12
-14.     p == \false : hypothesis p-F
-15.     \and(p)(q) : chain
-         == \and(\false)(q) : hypothesis p-F at w in \and(w)(q)
-         == \false : use and-false-l;
-         == \and(\false)(p) : flop use and-false-l;
-         == \and(q)(p) : use eq-sym; 10 at w in \and(w)(p)
-16.   (p == \false) =&gt; (\and(p)(q) == \and(q)(p)) : discharge p-F; 15
-17.   \and(p)(q) == \and(q)(p) : use bool-induction; 13, 16
-18. (q == \false) =&gt; (\and(p)(q) == \and(q)(p)) : discharge q-F; 17
-19. \and(p)(q) == \and(q)(p) : use bool-induction; 9, 18</code></pre>
-<pre class="mycelium"><code>theorem and-assoc-l
-* \and(p)(\and(q)(r)) == \and(\and(p)(q))(r)
-
-proof
-1.   p == \true : hypothesis p-T
-2.     \and(p)(\and(q)(r)) : chain
-        == \and(\true)(\and(q)(r))
-            : hypothesis p-T at w in \and(w)(\and(q)(r))
-        == \and(q)(r) : use and-true-l;
-        == \and(\and(\true)(q))(r)
-            : flop use and-true-l; at w in \and(w)(r)
-        == \and(\and(p)(q))(r)
-            : use eq-sym; 1 at w in \and(\and(w)(q))(r)
-3. (p == \true) =&gt; (\and(p)(\and(q)(r)) == \and(\and(p)(q))(r))
-    : discharge p-T; 2
-4.   p == \false : hypothesis p-F
-5.     \and(p)(\and(q)(r)) : chain
-        == \and(\false)(\and(q)(r))
-            : hypothesis p-F at w in \and(w)(\and(q)(r))
-        == \false : use and-false-l;
-        == \and(\false)(r) : flop use and-false-l;
-        == \and(\and(\false)(q))(r)
-            : flop use and-false-l; at w in \and(w)(r)
-        == \and(\and(p)(q))(r)
-            : use eq-sym; 4 at w in \and(\and(w)(q))(r)
-6. (p == \false) =&gt; (\and(p)(\and(q)(r)) == \and(\and(p)(q))(r))
-    : discharge p-F; 5
-7. \and(p)(\and(q)(r)) == \and(\and(p)(q))(r)
-    : use bool-induction; 3, 6
-
-theorem and-assoc-r
-* \and(\and(p)(q))(r) == \and(p)(\and(q)(r))
-
-proof
-1. \and(p)(\and(q)(r)) == \and(\and(p)(q))(r) : use and-assoc-l;
-2. \and(\and(p)(q))(r) == \and(p)(\and(q)(r)) : use eq-sym; 1</code></pre>
-<pre class="mycelium"><code>type \or :: Bool -&gt; Bool -&gt; Bool
-
-rule def-or
-* \or(p)(q) == \if(\true)(\if(\true)(\false)(q))(p)
-
-
-
-theorem or-false-false
-* \or(\false)(\false) == \false
-
-proof
-1. \or(\false)(\false) : chain
-    == \if(\true)(\if(\true)(\false)(\false))(\false) : use def-or;
-    == \if(\true)(\false)(\false) : use if-false;
-    == \false : use if-false;
-
-theorem or-false-true
-* \or(\false)(\true) == \true
-
-proof
-1. \or(\false)(\true) : chain
-    == \if(\true)(\if(\true)(\false)(\true))(\false) : use def-or;
-    == \if(\true)(\false)(\true) : use if-false;
-    == \true : use if-true;
-
-theorem or-true-l
-* \or(\true)(q) == \true
-
-proof
-1. \or(\true)(q) : chain
-    == \if(\true)(\if(\true)(\false)(q))(\true) : use def-or;
-    == \true : use if-true;</code></pre>
-<pre class="mycelium"><code>theorem or-false-l
-* \or(\false)(q) == q
-
-proof
-1.   q == \true : hypothesis q-T
-2.   \or(\false)(q) : chain
-      == \or(\false)(\true) : hypothesis q-T at w in \or(\false)(w)
-      == \true : use or-false-true;
-      == q : use eq-sym; 1
-3. (q == \true) =&gt; (\or(\false)(q) == q) : discharge q-T; 2
-4.   q == \false : hypothesis q-F
-5.   \or(\false)(q) : chain
-      == \or(\false)(\false) : hypothesis q-F at w in \or(\false)(w)
-      == \false : use or-false-false;
-      == q : use eq-sym; 4
-6. (q == \false) =&gt; (\or(\false)(q) == q) : discharge q-F; 5
-7. \or(\false)(q) == q : use bool-induction; 3, 6</code></pre>
     </main>
 
     <footer>

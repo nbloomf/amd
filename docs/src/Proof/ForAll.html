@@ -15,14 +15,69 @@
         <a href="../../">Arithmetic Made Difficult</a>
       </div>
       <nav>
-        <a href="../../">Home</a>
+        <a href="../../">Contents</a>
         <a href="../../about.html">About</a>
       </nav>
     </header>
 
     <main role="main">
       <h1>For All</h1>
-      <p>Equality is the first kind of judgement that allows reasoning about expressions; the other is <em>universal quantification</em>. If <span class="math inline">\(P\)</span> is a judgement, and <span class="math inline">\(x\)</span> an expression variable, then <span class="math display">\[\forall x . P\]</span> is a judgement, representing the statement <em>for all <span class="math inline">\(x\)</span>, we have <span class="math inline">\(P\)</span></em>. The introduction and elimination rules for <span class="math inline">\(\forall\)</span> are a little different from our other rules because they involve <em>side conditions</em>.</p>
+      <!-- LaTeX Macros -->
+<div style="display:none;">
+<!-- Functions -->
+\(\newcommand{\id}{\mathsf{id}}\)
+\(\newcommand{\comp}{\mathsf{comp}}\)
+\(\newcommand{\app}{\mathsf{app}}\)
+\(\newcommand{\const}{\mathsf{const}}\)
+\(\newcommand{\flip}{\mathsf{flip}}\)
+\(\newcommand{\clone}{\mathsf{clone}}\)
+
+<!-- Unit -->
+\(\newcommand{\Unit}{\mathsf{Unit}}\)
+\(\newcommand{\unit}{\mathsf{unit}}\)
+\(\newcommand{\only}{\mathsf{only}}\)
+
+<!-- Pair -->
+\(\newcommand{\Pair}{\mathsf{Pair}}\)
+\(\newcommand{\pair}{\mathsf{pair}}\)
+\(\newcommand{\fst}{\mathsf{fst}}\)
+\(\newcommand{\snd}{\mathsf{snd}}\)
+\(\newcommand{\tup}{\mathsf{tup}}\)
+
+<!-- Either -->
+\(\newcommand{\Either}{\mathsf{Either}}\)
+\(\newcommand{\either}{\mathsf{either}}\)
+\(\newcommand{\lft}{\mathsf{lft}}\)
+\(\newcommand{\rgt}{\mathsf{rgt}}\)
+
+<!-- Maybe -->
+\(\newcommand{\Maybe}{\mathsf{Maybe}}\)
+\(\newcommand{\nothing}{\mathsf{nothing}}\)
+\(\newcommand{\just}{\mathsf{just}}\)
+\(\newcommand{\opt}{\mathsf{opt}}\)
+
+<!-- Bool -->
+\(\newcommand{\Bool}{\mathsf{Bool}}\)
+\(\newcommand{\true}{\mathsf{true}}\)
+\(\newcommand{\false}{\mathsf{false}}\)
+\(\newcommand{\if}{\mathsf{if}}\)
+\(\newcommand{\and}{\mathsf{and}}\)
+\(\newcommand{\or}{\mathsf{or}}\)
+\(\newcommand{\not}{\mathsf{not}}\)
+\(\newcommand{\eq}{\mathsf{eq}}\)
+
+<!-- Nat -->
+\(\newcommand{\Nat}{\mathsf{Nat}}\)
+\(\newcommand{\zero}{\mathsf{zero}}\)
+\(\newcommand{\next}{\mathsf{next}}\)
+\(\newcommand{\natrec}{\mathsf{natrec}}\)
+\(\newcommand{\prev}{\mathsf{prev}}\)
+\(\newcommand{\plus}{\mathsf{plus}}\)
+\(\newcommand{\times}{\mathsf{times}}\)
+</div>
+<!-- End LaTeX Macros -->
+
+<p>Equality is the first kind of judgement that allows reasoning about expressions; the other is <em>universal quantification</em>. If <span class="math inline">\(P\)</span> is a judgement, and <span class="math inline">\(x\)</span> an expression variable, then <span class="math display">\[\forall x . P\]</span> is a judgement, representing the statement <em>for all <span class="math inline">\(x\)</span>, we have <span class="math inline">\(P\)</span></em>. The introduction and elimination rules for <span class="math inline">\(\forall\)</span> are a little different from our other rules because they involve <em>side conditions</em>.</p>
 <p>The <span class="math inline">\(\forall\)</span>-introduction rule looks like this:</p>
 <p><span class="math display">\[\begin{array}{c}
 P[w \mapsto a] \\ \hline
@@ -49,6 +104,7 @@ proof
 5. P /\ Q : use conj-intro; 2, 4
 6. ∀x. P /\ Q : forall-intro y -&gt; x; 5</code></pre>
 <p>This example is not great, because the statements inside of <span class="math inline">\(\forall\)</span> have no expression variables at all. We’ll see better examples later.</p>
+
     </main>
 
     <footer>

@@ -15,17 +15,74 @@
         <a href="../../">Arithmetic Made Difficult</a>
       </div>
       <nav>
-        <a href="../../">Home</a>
+        <a href="../../">Contents</a>
         <a href="../../about.html">About</a>
       </nav>
     </header>
 
     <main role="main">
       <h1>Flip</h1>
-      <pre class="mycelium"><code>type \flip :: (a -&gt; b -&gt; c) -&gt; b -&gt; a -&gt; c
+      <!-- LaTeX Macros -->
+<div style="display:none;">
+<!-- Functions -->
+\(\newcommand{\id}{\mathsf{id}}\)
+\(\newcommand{\comp}{\mathsf{comp}}\)
+\(\newcommand{\app}{\mathsf{app}}\)
+\(\newcommand{\const}{\mathsf{const}}\)
+\(\newcommand{\flip}{\mathsf{flip}}\)
+\(\newcommand{\clone}{\mathsf{clone}}\)
+
+<!-- Unit -->
+\(\newcommand{\Unit}{\mathsf{Unit}}\)
+\(\newcommand{\unit}{\mathsf{unit}}\)
+\(\newcommand{\only}{\mathsf{only}}\)
+
+<!-- Pair -->
+\(\newcommand{\Pair}{\mathsf{Pair}}\)
+\(\newcommand{\pair}{\mathsf{pair}}\)
+\(\newcommand{\fst}{\mathsf{fst}}\)
+\(\newcommand{\snd}{\mathsf{snd}}\)
+\(\newcommand{\tup}{\mathsf{tup}}\)
+
+<!-- Either -->
+\(\newcommand{\Either}{\mathsf{Either}}\)
+\(\newcommand{\either}{\mathsf{either}}\)
+\(\newcommand{\lft}{\mathsf{lft}}\)
+\(\newcommand{\rgt}{\mathsf{rgt}}\)
+
+<!-- Maybe -->
+\(\newcommand{\Maybe}{\mathsf{Maybe}}\)
+\(\newcommand{\nothing}{\mathsf{nothing}}\)
+\(\newcommand{\just}{\mathsf{just}}\)
+\(\newcommand{\opt}{\mathsf{opt}}\)
+
+<!-- Bool -->
+\(\newcommand{\Bool}{\mathsf{Bool}}\)
+\(\newcommand{\true}{\mathsf{true}}\)
+\(\newcommand{\false}{\mathsf{false}}\)
+\(\newcommand{\if}{\mathsf{if}}\)
+\(\newcommand{\and}{\mathsf{and}}\)
+\(\newcommand{\or}{\mathsf{or}}\)
+\(\newcommand{\not}{\mathsf{not}}\)
+\(\newcommand{\eq}{\mathsf{eq}}\)
+
+<!-- Nat -->
+\(\newcommand{\Nat}{\mathsf{Nat}}\)
+\(\newcommand{\zero}{\mathsf{zero}}\)
+\(\newcommand{\next}{\mathsf{next}}\)
+\(\newcommand{\natrec}{\mathsf{natrec}}\)
+\(\newcommand{\prev}{\mathsf{prev}}\)
+\(\newcommand{\plus}{\mathsf{plus}}\)
+\(\newcommand{\times}{\mathsf{times}}\)
+</div>
+<!-- End LaTeX Macros -->
+
+<p>All functions in the simply typed lambda calculus take only one argument; we can simulate functions of multiple arguments by making the <em>output</em> another function. This imposes a strict order on the arguments. <span class="math inline">\(\flip\)</span> is a handy function that can rearrange another function’s arguments.</p>
+<pre class="mycelium"><code>type \flip :: (a -&gt; b -&gt; c) -&gt; b -&gt; a -&gt; c
 
 rule def-flip
 * \flip(f)(b)(a) == f(a)(b)</code></pre>
+<p><span class="math inline">\(\flip\)</span> is an involution:</p>
 <pre class="mycelium"><code>theorem flip-invol
 * \comp(\flip)(\flip) == \id
 
@@ -35,12 +92,14 @@ proof
     == \flip(f)(b)(a) : use def-flip;
     == f(a)(b) : use def-flip;
     == \id(f)(a)(b) : flop use def-id; at w in w(a)(b)
-2. ∀v. \comp(\flip)(\flip)(f)(a)(v) == \id(f)(a)(v) : forall-intro b -&gt; v; 1
+2. ∀v. \comp(\flip)(\flip)(f)(a)(v) == \id(f)(a)(v)
+    : forall-intro b -&gt; v; 1
 3. \comp(\flip)(\flip)(f)(a) == \id(f)(a) : use fun-eq; 2
 4. ∀v. \comp(\flip)(\flip)(f)(v) == \id(f)(v) : forall-intro a -&gt; v; 3
 5. \comp(\flip)(\flip)(f) == \id(f) : use fun-eq; 4
 6. ∀v. \comp(\flip)(\flip)(v) == \id(v) : forall-intro f -&gt; v; 5
 7. \comp(\flip)(\flip) == \id : use fun-eq; 6</code></pre>
+<p><span class="math inline">\(\flip\)</span> interacts with <span class="math inline">\(\const\)</span>:</p>
 <pre class="mycelium"><code>theorem flip-const
 * \flip(\const) == \const(\id)
 
@@ -50,10 +109,12 @@ proof
     == a : use def-const;
     == \id(a) : flop use def-id;
     == \const(\id)(b)(a) : flop use def-const; at f in f(a)
-2. ∀x. \flip(\const)(b)(x) == \const(\id)(b)(x) : forall-intro a -&gt; x; 1
+2. ∀x. \flip(\const)(b)(x) == \const(\id)(b)(x)
+    : forall-intro a -&gt; x; 1
 3. \flip(\const)(b) == \const(\id)(b) : use fun-eq; 2
 4. ∀x. \flip(\const)(x) == \const(\id)(x) : forall-intro b -&gt; x; 3
 5. \flip(\const) == \const(\id) : use fun-eq; 4</code></pre>
+
     </main>
 
     <footer>

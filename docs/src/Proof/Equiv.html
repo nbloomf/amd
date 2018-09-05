@@ -15,14 +15,125 @@
         <a href="../../">Arithmetic Made Difficult</a>
       </div>
       <nav>
-        <a href="../../">Home</a>
+        <a href="../../">Contents</a>
         <a href="../../about.html">About</a>
       </nav>
     </header>
 
     <main role="main">
       <h1>Equivalence</h1>
-      
+      <!-- LaTeX Macros -->
+<div style="display:none;">
+<!-- Functions -->
+\(\newcommand{\id}{\mathsf{id}}\)
+\(\newcommand{\comp}{\mathsf{comp}}\)
+\(\newcommand{\app}{\mathsf{app}}\)
+\(\newcommand{\const}{\mathsf{const}}\)
+\(\newcommand{\flip}{\mathsf{flip}}\)
+\(\newcommand{\clone}{\mathsf{clone}}\)
+
+<!-- Unit -->
+\(\newcommand{\Unit}{\mathsf{Unit}}\)
+\(\newcommand{\unit}{\mathsf{unit}}\)
+\(\newcommand{\only}{\mathsf{only}}\)
+
+<!-- Pair -->
+\(\newcommand{\Pair}{\mathsf{Pair}}\)
+\(\newcommand{\pair}{\mathsf{pair}}\)
+\(\newcommand{\fst}{\mathsf{fst}}\)
+\(\newcommand{\snd}{\mathsf{snd}}\)
+\(\newcommand{\tup}{\mathsf{tup}}\)
+
+<!-- Either -->
+\(\newcommand{\Either}{\mathsf{Either}}\)
+\(\newcommand{\either}{\mathsf{either}}\)
+\(\newcommand{\lft}{\mathsf{lft}}\)
+\(\newcommand{\rgt}{\mathsf{rgt}}\)
+
+<!-- Maybe -->
+\(\newcommand{\Maybe}{\mathsf{Maybe}}\)
+\(\newcommand{\nothing}{\mathsf{nothing}}\)
+\(\newcommand{\just}{\mathsf{just}}\)
+\(\newcommand{\opt}{\mathsf{opt}}\)
+
+<!-- Bool -->
+\(\newcommand{\Bool}{\mathsf{Bool}}\)
+\(\newcommand{\true}{\mathsf{true}}\)
+\(\newcommand{\false}{\mathsf{false}}\)
+\(\newcommand{\if}{\mathsf{if}}\)
+\(\newcommand{\and}{\mathsf{and}}\)
+\(\newcommand{\or}{\mathsf{or}}\)
+\(\newcommand{\not}{\mathsf{not}}\)
+\(\newcommand{\eq}{\mathsf{eq}}\)
+
+<!-- Nat -->
+\(\newcommand{\Nat}{\mathsf{Nat}}\)
+\(\newcommand{\zero}{\mathsf{zero}}\)
+\(\newcommand{\next}{\mathsf{next}}\)
+\(\newcommand{\natrec}{\mathsf{natrec}}\)
+\(\newcommand{\prev}{\mathsf{prev}}\)
+\(\newcommand{\plus}{\mathsf{plus}}\)
+\(\newcommand{\times}{\mathsf{times}}\)
+</div>
+<!-- End LaTeX Macros -->
+
+<p>The last of the logical rules of inference are the rules for <span class="math inline">\(\Leftrightarrow\)</span>. These are pretty boring.</p>
+<pre class="mycelium"><code>rule equiv-intro
+if
+  * P =&gt; Q
+  * Q =&gt; P
+then
+  * P &lt;=&gt; Q
+
+rule equiv-elim-r
+if
+  * P &lt;=&gt; Q
+then
+  * P =&gt; Q
+
+rule equiv-elim-l
+if
+  * P &lt;=&gt; Q
+then
+  * Q =&gt; P</code></pre>
+<p>We won’t need to use equivalence a ton, but here are some basic properties anyway.</p>
+<pre class="mycelium"><code>theorem equiv-refl
+* P &lt;=&gt; P
+
+proof
+1. P =&gt; P : use impl-idemp;
+2. P &lt;=&gt; P : use equiv-intro; 1, 1</code></pre>
+<p>It is symmetric:</p>
+<pre class="mycelium"><code>theorem equiv-sym
+if
+  * P &lt;=&gt; Q
+then
+  * Q &lt;=&gt; P
+
+proof
+1. P &lt;=&gt; Q : assumption 1
+2. P =&gt; Q : use equiv-elim-r; 1
+3. Q =&gt; P : use equiv-elim-l; 1
+4. Q &lt;=&gt; P : use equiv-intro; 3, 2</code></pre>
+<p>And it is transitive.</p>
+<pre class="mycelium"><code>theorem equiv-trans
+if
+  * P &lt;=&gt; Q
+  * Q &lt;=&gt; R
+then
+  * P &lt;=&gt; R
+
+proof
+1. P &lt;=&gt; Q : assumption 1
+2. Q &lt;=&gt; R : assumption 2
+3. P =&gt; Q : use equiv-elim-r; 1
+4. Q =&gt; R : use equiv-elim-r; 2
+5. P =&gt; R : use syllogism; 3, 4
+6. R =&gt; Q : use equiv-elim-l; 2
+7. Q =&gt; P : use equiv-elim-l; 1
+8. R =&gt; P : use syllogism; 6, 7
+9. P &lt;=&gt; R : use equiv-intro; 5, 8</code></pre>
+
     </main>
 
     <footer>

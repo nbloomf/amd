@@ -15,14 +15,69 @@
         <a href="../../">Arithmetic Made Difficult</a>
       </div>
       <nav>
-        <a href="../../">Home</a>
+        <a href="../../">Contents</a>
         <a href="../../about.html">About</a>
       </nav>
     </header>
 
     <main role="main">
       <h1>Equality</h1>
-      <p>The inference rules we’ve seen so far for dealing with conjunction, disjunction, and implication all operate on judgements. But as it happens, we’ve got some extra simple judgements for dealing with “values”. To be precise, the <em>values</em> our logic knows about are just simply typed lambda expressions. We’ll talk more about lambda expressions later. For now all we need to do is see how we can manipulate them in logic. There are two ways, and the first – <em>equality</em> – is the subject of this page.</p>
+      <!-- LaTeX Macros -->
+<div style="display:none;">
+<!-- Functions -->
+\(\newcommand{\id}{\mathsf{id}}\)
+\(\newcommand{\comp}{\mathsf{comp}}\)
+\(\newcommand{\app}{\mathsf{app}}\)
+\(\newcommand{\const}{\mathsf{const}}\)
+\(\newcommand{\flip}{\mathsf{flip}}\)
+\(\newcommand{\clone}{\mathsf{clone}}\)
+
+<!-- Unit -->
+\(\newcommand{\Unit}{\mathsf{Unit}}\)
+\(\newcommand{\unit}{\mathsf{unit}}\)
+\(\newcommand{\only}{\mathsf{only}}\)
+
+<!-- Pair -->
+\(\newcommand{\Pair}{\mathsf{Pair}}\)
+\(\newcommand{\pair}{\mathsf{pair}}\)
+\(\newcommand{\fst}{\mathsf{fst}}\)
+\(\newcommand{\snd}{\mathsf{snd}}\)
+\(\newcommand{\tup}{\mathsf{tup}}\)
+
+<!-- Either -->
+\(\newcommand{\Either}{\mathsf{Either}}\)
+\(\newcommand{\either}{\mathsf{either}}\)
+\(\newcommand{\lft}{\mathsf{lft}}\)
+\(\newcommand{\rgt}{\mathsf{rgt}}\)
+
+<!-- Maybe -->
+\(\newcommand{\Maybe}{\mathsf{Maybe}}\)
+\(\newcommand{\nothing}{\mathsf{nothing}}\)
+\(\newcommand{\just}{\mathsf{just}}\)
+\(\newcommand{\opt}{\mathsf{opt}}\)
+
+<!-- Bool -->
+\(\newcommand{\Bool}{\mathsf{Bool}}\)
+\(\newcommand{\true}{\mathsf{true}}\)
+\(\newcommand{\false}{\mathsf{false}}\)
+\(\newcommand{\if}{\mathsf{if}}\)
+\(\newcommand{\and}{\mathsf{and}}\)
+\(\newcommand{\or}{\mathsf{or}}\)
+\(\newcommand{\not}{\mathsf{not}}\)
+\(\newcommand{\eq}{\mathsf{eq}}\)
+
+<!-- Nat -->
+\(\newcommand{\Nat}{\mathsf{Nat}}\)
+\(\newcommand{\zero}{\mathsf{zero}}\)
+\(\newcommand{\next}{\mathsf{next}}\)
+\(\newcommand{\natrec}{\mathsf{natrec}}\)
+\(\newcommand{\prev}{\mathsf{prev}}\)
+\(\newcommand{\plus}{\mathsf{plus}}\)
+\(\newcommand{\times}{\mathsf{times}}\)
+</div>
+<!-- End LaTeX Macros -->
+
+<p>The inference rules we’ve seen so far for dealing with conjunction, disjunction, and implication all operate on judgements. But as it happens, we’ve got some extra simple judgements for dealing with “values”. To be precise, the <em>values</em> our logic knows about are just simply typed lambda expressions. We’ll talk more about lambda expressions later. For now all we need to do is see how we can manipulate them in logic. There are two ways, and the first – <em>equality</em> – is the subject of this page.</p>
 <p>If <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> are lambda expressions, then <span class="math inline">\(x = y\)</span> is the simple judgement asserting that <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> are equal. We take equality of lambda expressions to be an undefined concept governed precisely by its inference rules.</p>
 <p>The <span class="math inline">\(=\)</span>-intro rule is simple enough to state: every lambda expression is equal to itself, and this does not require evidence. Lower case latin characters like <span class="math inline">\(x\)</span> will always represent expression variables.</p>
 <p><span class="math display">\[\begin{array}{c}
@@ -74,6 +129,7 @@ proof
     == z : assumption 2
     == w : assumption 3</code></pre>
 <p>The syntax condenses an equation chain to a single “line” in the proof, where each equality is annotated with just its own justification. The entire line reduces to the statement that <span class="math inline">\(x = w\)</span>. We can’t refer back to individual equalities in the chain, but that is almost never necessary anyway. The full story behind equation chains is a little more complicated than this example demonstrates, but we’re not ready to see the full power of equation chains yet. Suffice it to say for now that each successive <code>==</code> line in the proof for <code>eq-trans-3</code> gets expanded to about 4 lines of raw natural deduction that would otherwise require jumping around to follow.</p>
+
     </main>
 
     <footer>

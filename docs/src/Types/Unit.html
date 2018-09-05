@@ -15,42 +15,113 @@
         <a href="../../">Arithmetic Made Difficult</a>
       </div>
       <nav>
-        <a href="../../">Home</a>
+        <a href="../../">Contents</a>
         <a href="../../about.html">About</a>
       </nav>
     </header>
 
     <main role="main">
       <h1>Unit</h1>
-      <pre class="mycelium"><code>type \unit :: Unit
+      <!-- LaTeX Macros -->
+<div style="display:none;">
+<!-- Functions -->
+\(\newcommand{\id}{\mathsf{id}}\)
+\(\newcommand{\comp}{\mathsf{comp}}\)
+\(\newcommand{\app}{\mathsf{app}}\)
+\(\newcommand{\const}{\mathsf{const}}\)
+\(\newcommand{\flip}{\mathsf{flip}}\)
+\(\newcommand{\clone}{\mathsf{clone}}\)
 
-type \only :: a -&gt; Unit -&gt; a
+<!-- Unit -->
+\(\newcommand{\Unit}{\mathsf{Unit}}\)
+\(\newcommand{\unit}{\mathsf{unit}}\)
+\(\newcommand{\only}{\mathsf{only}}\)
 
-rule only-unit
-* \only(a)(\unit) == a
+<!-- Pair -->
+\(\newcommand{\Pair}{\mathsf{Pair}}\)
+\(\newcommand{\pair}{\mathsf{pair}}\)
+\(\newcommand{\fst}{\mathsf{fst}}\)
+\(\newcommand{\snd}{\mathsf{snd}}\)
+\(\newcommand{\tup}{\mathsf{tup}}\)
 
-rule unit-only-unique
+<!-- Either -->
+\(\newcommand{\Either}{\mathsf{Either}}\)
+\(\newcommand{\either}{\mathsf{either}}\)
+\(\newcommand{\lft}{\mathsf{lft}}\)
+\(\newcommand{\rgt}{\mathsf{rgt}}\)
+
+<!-- Maybe -->
+\(\newcommand{\Maybe}{\mathsf{Maybe}}\)
+\(\newcommand{\nothing}{\mathsf{nothing}}\)
+\(\newcommand{\just}{\mathsf{just}}\)
+\(\newcommand{\opt}{\mathsf{opt}}\)
+
+<!-- Bool -->
+\(\newcommand{\Bool}{\mathsf{Bool}}\)
+\(\newcommand{\true}{\mathsf{true}}\)
+\(\newcommand{\false}{\mathsf{false}}\)
+\(\newcommand{\if}{\mathsf{if}}\)
+\(\newcommand{\and}{\mathsf{and}}\)
+\(\newcommand{\or}{\mathsf{or}}\)
+\(\newcommand{\not}{\mathsf{not}}\)
+\(\newcommand{\eq}{\mathsf{eq}}\)
+
+<!-- Nat -->
+\(\newcommand{\Nat}{\mathsf{Nat}}\)
+\(\newcommand{\zero}{\mathsf{zero}}\)
+\(\newcommand{\next}{\mathsf{next}}\)
+\(\newcommand{\natrec}{\mathsf{natrec}}\)
+\(\newcommand{\prev}{\mathsf{prev}}\)
+\(\newcommand{\plus}{\mathsf{plus}}\)
+\(\newcommand{\times}{\mathsf{times}}\)
+</div>
+<!-- End LaTeX Macros -->
+
+<p>Our first inductive type is called <span class="math inline">\(\Unit\)</span>, and represents a type with only one inhabitant, called <span class="math inline">\(\unit\)</span> (lower case). So <span class="math inline">\(\Unit\)</span> has only one constructor, which takes no arguments.</p>
+<pre class="mycelium"><code>type \unit :: Unit</code></pre>
+<p>There’s not much we can do with a type having only one value. We can, however, define something like <span class="math inline">\(\const\)</span> with it.</p>
+<pre class="mycelium"><code>type \only :: a -&gt; Unit -&gt; a</code></pre>
+<p>In fact <span class="math inline">\(\Unit\)</span> is the initial algebra of the constant functor to <span class="math inline">\(\Unit\)</span>. Since it has “only one” inhabitant, functions from it to some type <span class="math inline">\(a\)</span> can be identified with values of type <span class="math inline">\(a\)</span>, and <span class="math inline">\(\only\)</span> is precisely the universal map from <span class="math inline">\(\Unit\)</span> to some other <span class="math inline">\(F\)</span>-algebra.</p>
+<p>To use <span class="math inline">\(\only\)</span> and <span class="math inline">\(\unit\)</span> in this way, we need some inference rules to express that (1) <span class="math inline">\(\only\)</span> is an <span class="math inline">\(F\)</span>-algebra morphism and (2) it is unique with this property.</p>
+<p>Stating that <span class="math inline">\(\only\)</span> is a morphism is a little tricky since we’ve identified <span class="math inline">\(a\)</span> with functions <span class="math inline">\(\Unit \rightarrow a\)</span>. But if we tilt our heads just right, and remember that <span class="math inline">\(F(x) = \Unit\)</span> and <span class="math inline">\(F(f) = \id\)</span>, this diagram:</p>
+<p><span class="math display">\[\require{AMScd}
+\begin{CD}
+F(\Unit) @&gt;{\id}&gt;&gt; \Unit \\
+@V{\id}VV @VV{\only(\const(a))}V \\
+F(x) @&gt;&gt;{\const(a)}&gt; x
+\end{CD}\]</span></p>
+<p>implies that “<span class="math inline">\(\only(a)\)</span> is an <span class="math inline">\(F\)</span>-algebra homomorphism” should be stated like so:</p>
+<pre class="mycelium"><code>rule only-unit
+* \only(a)(\unit) == a</code></pre>
+<p>And for uniqueness, any map satisfying this property is equal to <span class="math inline">\(\only\)</span>.</p>
+<pre class="mycelium"><code>rule only-unit-unique
 if
   * t(a)(\unit) == a
 then
   * t == \only</code></pre>
-<pre class="mycelium"><code>rule id-swap
-* a == \id(a)
-
-theorem flip-only
+<p>Last but not least, every inductive type comes with an <em>induction principle</em>. For <span class="math inline">\(\Unit\)</span> this is not very interesting, but we’ll include it as a template for later types. Essentially, the induction principle for an inductive type allows us to prove arbitrary statements by case analysis on the constructors of the type.</p>
+<pre class="mycelium"><code>rule unit-induction
+if
+  * (x == \unit) =&gt; P
+then
+  * P</code></pre>
+<p>Again- <span class="math inline">\(\Unit\)</span> is an inauspicious place to start working with inductive types because there’s not much to say about it. But it is a nice example of all the basic ingredients of an inductive type: constructors, the algebra map, the homomorphism property, the uniqueness property, and the induction principle. Unit will also be useful later.</p>
+<p>Here’s a theorem just for fun. This is fun, right?</p>
+<pre class="mycelium"><code>theorem flip-only
 * \flip(\only)(\unit) == \id
 
 proof
 1. \flip(\only)(\unit)(a) : chain
     == \only(a)(\unit) : use def-flip;
     == a : use only-unit;
-    == \id(a) : use id-swap;
+    == \id(a) : flop use def-id;
 2. ∀x. \flip(\only)(\unit)(x) == \id(x) : forall-intro a -&gt; x; 1
 3. \flip(\only)(\unit) == \id : use fun-eq; 2</code></pre>
+
     </main>
 
     <footer>
-      Site proudly generated by
+      Site generated by
       <a href="http://jaspervdj.be/hakyll">Hakyll</a>
     </footer>
   </body>

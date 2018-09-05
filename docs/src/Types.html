@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Arithmetic Made Difficult - Types</title>
+    <link rel="stylesheet" href="../css/default.css" />
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  </head>
+
+  <body>
+    <header>
+      <div class="logo">
+        <a href="../">Arithmetic Made Difficult</a>
+      </div>
+      <nav>
+        <a href="../">Contents</a>
+        <a href="../about.html">About</a>
+      </nav>
+    </header>
+
+    <main role="main">
+      <h1>Types</h1>
+      <!-- LaTeX Macros -->
+<div style="display:none;">
+<!-- Functions -->
+\(\newcommand{\id}{\mathsf{id}}\)
+\(\newcommand{\comp}{\mathsf{comp}}\)
+\(\newcommand{\app}{\mathsf{app}}\)
+\(\newcommand{\const}{\mathsf{const}}\)
+\(\newcommand{\flip}{\mathsf{flip}}\)
+\(\newcommand{\clone}{\mathsf{clone}}\)
+
+<!-- Unit -->
+\(\newcommand{\Unit}{\mathsf{Unit}}\)
+\(\newcommand{\unit}{\mathsf{unit}}\)
+\(\newcommand{\only}{\mathsf{only}}\)
+
+<!-- Pair -->
+\(\newcommand{\Pair}{\mathsf{Pair}}\)
+\(\newcommand{\pair}{\mathsf{pair}}\)
+\(\newcommand{\fst}{\mathsf{fst}}\)
+\(\newcommand{\snd}{\mathsf{snd}}\)
+\(\newcommand{\tup}{\mathsf{tup}}\)
+
+<!-- Either -->
+\(\newcommand{\Either}{\mathsf{Either}}\)
+\(\newcommand{\either}{\mathsf{either}}\)
+\(\newcommand{\lft}{\mathsf{lft}}\)
+\(\newcommand{\rgt}{\mathsf{rgt}}\)
+
+<!-- Maybe -->
+\(\newcommand{\Maybe}{\mathsf{Maybe}}\)
+\(\newcommand{\nothing}{\mathsf{nothing}}\)
+\(\newcommand{\just}{\mathsf{just}}\)
+\(\newcommand{\opt}{\mathsf{opt}}\)
+
+<!-- Bool -->
+\(\newcommand{\Bool}{\mathsf{Bool}}\)
+\(\newcommand{\true}{\mathsf{true}}\)
+\(\newcommand{\false}{\mathsf{false}}\)
+\(\newcommand{\if}{\mathsf{if}}\)
+\(\newcommand{\and}{\mathsf{and}}\)
+\(\newcommand{\or}{\mathsf{or}}\)
+\(\newcommand{\not}{\mathsf{not}}\)
+\(\newcommand{\eq}{\mathsf{eq}}\)
+
+<!-- Nat -->
+\(\newcommand{\Nat}{\mathsf{Nat}}\)
+\(\newcommand{\zero}{\mathsf{zero}}\)
+\(\newcommand{\next}{\mathsf{next}}\)
+\(\newcommand{\natrec}{\mathsf{natrec}}\)
+\(\newcommand{\prev}{\mathsf{prev}}\)
+\(\newcommand{\plus}{\mathsf{plus}}\)
+\(\newcommand{\times}{\mathsf{times}}\)
+</div>
+<!-- End LaTeX Macros -->
+
+<p>We’ll be working with lots of concrete types, and for each one we’ll need to introduce some new inference rules. It’s important to make sure that introducing new inference rules doesn’t also introduce a contradiction or otherwise collapse the logic to trivialness, and one of the best ways to do this is to be systematic about it.</p>
+<p>Much like we systematically defined introduction and elimination rules for each judgement constructor, the rules we introduce for working with each new type will follow some specific patterns.</p>
+<p>Before we get to the details, we need to say a few words about functors.</p>
+<p>Our type grammar defines a category: the objects are types, and the arrows are values with arrow type. <span class="math inline">\(\id\)</span> and <span class="math inline">\(\comp\)</span> are the identity arrows and composites, respectively. So, for instance, if <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> are types, then a value <span class="math inline">\(f\)</span> with signature <span class="math inline">\(a \rightarrow b\)</span> is a morphism in the type category.</p>
+<p>Suppose we have a functor <span class="math inline">\(F\)</span> on the type category. An <span class="math inline">\(F\)</span>-algebra is an object (e.g. <em>type</em>) <span class="math inline">\(x\)</span> together with a distinguished arrow <span class="math inline">\(\alpha : F(x) \rightarrow x\)</span>. Given two <span class="math inline">\(F\)</span>-algebras <span class="math inline">\((x,\alpha)\)</span> and <span class="math inline">\((y,\beta)\)</span>, an <span class="math inline">\(F\)</span>-algebra morphism is a morphism <span class="math inline">\(\theta : x \rightarrow y\)</span> that makes the following square commute:</p>
+<p><span class="math display">\[\require{AMScd}
+\begin{CD}
+F(x) @&gt;{\alpha}&gt;&gt; x \\
+@V{F(\theta)}VV @VV{\theta}V \\
+F(y) @&gt;&gt;{\beta}&gt; y
+\end{CD}\]</span></p>
+<p>To give a concrete example, <span class="math inline">\(\Bool\)</span> fits this pattern. We can think of <span class="math inline">\(\Bool\)</span> as representing a type with exactly two distinct values. It is the initial algebra of the constant functor <span class="math inline">\(F(x) = \Bool\)</span>, and the universal arrow is given by <span class="math inline">\(\if\)</span>.</p>
+<p><span class="math display">\[\require{AMScd}
+\begin{CD}
+\Bool @&gt;{\alpha(\true)(\false)}&gt;&gt; \Bool \\
+@V{\id}VV @VV{\if(u)(v)}V \\
+\Bool @&gt;&gt;{\beta(u)(v)}&gt; x
+\end{CD}\]</span></p>
+<p>It turns out that the <span class="math inline">\(F\)</span>-algebras again form a category, using this notion of morphism. And this category may have an initial object, which (if it exists) is unique up to a unique isomorphism.</p>
+<p>We will call these initial <span class="math inline">\(F\)</span>-algebras <em>inductive types</em>, and it turns out they can do some really cool stuff. Like, <em>really</em> cool stuff.</p>
+<p>And this is how we will systematically add new inference rules for reasoning about inductive types. The details will differ slightly in each case, but we’ll always have:</p>
+<ol type="1">
+<li>A <em>type</em>, representing the initial <span class="math inline">\(F\)</span>-algebra <span class="math inline">\(\mathcal{A}\)</span>;</li>
+<li>One or more <em>constructors</em>, representing the algebra map <span class="math inline">\(F(\mathcal{A}) \rightarrow \mathcal{A}\)</span>;</li>
+<li>A <em>deconstruction operator</em>, representing the unique algebra morphism <span class="math inline">\(\mathcal{A} \rightarrow x\)</span>;</li>
+<li>One or more <em>inference rules</em> stating that the analysis operator is a unique <span class="math inline">\(F\)</span>-algebra morphism;</li>
+<li>An inference rule stating an <em>analysis principle</em> for <span class="math inline">\(\mathcal{A}\)</span>.</li>
+</ol>
+<p>Taken together, these ingredients make it possible to define recursive types and carry out proofs by induction on them. The deconstruction operator is especially interesting; it will turn out to be “fold” on lists, “countdown” on natural numbers, and “if” on booleans.</p>
+<p>Hopefully this will make more sense when we see some examples.</p>
+
+    </main>
+
+    <footer>
+      Site generated by
+      <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+    </footer>
+  </body>
+</html>

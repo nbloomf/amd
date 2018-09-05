@@ -15,17 +15,86 @@
         <a href="../../">Arithmetic Made Difficult</a>
       </div>
       <nav>
-        <a href="../../">Home</a>
+        <a href="../../">Contents</a>
         <a href="../../about.html">About</a>
       </nav>
     </header>
 
     <main role="main">
       <h1>Const</h1>
-      <pre class="mycelium"><code>type \const :: a -&gt; b -&gt; a
+      <!-- LaTeX Macros -->
+<div style="display:none;">
+<!-- Functions -->
+\(\newcommand{\id}{\mathsf{id}}\)
+\(\newcommand{\comp}{\mathsf{comp}}\)
+\(\newcommand{\app}{\mathsf{app}}\)
+\(\newcommand{\const}{\mathsf{const}}\)
+\(\newcommand{\flip}{\mathsf{flip}}\)
+\(\newcommand{\clone}{\mathsf{clone}}\)
+
+<!-- Unit -->
+\(\newcommand{\Unit}{\mathsf{Unit}}\)
+\(\newcommand{\unit}{\mathsf{unit}}\)
+\(\newcommand{\only}{\mathsf{only}}\)
+
+<!-- Pair -->
+\(\newcommand{\Pair}{\mathsf{Pair}}\)
+\(\newcommand{\pair}{\mathsf{pair}}\)
+\(\newcommand{\fst}{\mathsf{fst}}\)
+\(\newcommand{\snd}{\mathsf{snd}}\)
+\(\newcommand{\tup}{\mathsf{tup}}\)
+
+<!-- Either -->
+\(\newcommand{\Either}{\mathsf{Either}}\)
+\(\newcommand{\either}{\mathsf{either}}\)
+\(\newcommand{\lft}{\mathsf{lft}}\)
+\(\newcommand{\rgt}{\mathsf{rgt}}\)
+
+<!-- Maybe -->
+\(\newcommand{\Maybe}{\mathsf{Maybe}}\)
+\(\newcommand{\nothing}{\mathsf{nothing}}\)
+\(\newcommand{\just}{\mathsf{just}}\)
+\(\newcommand{\opt}{\mathsf{opt}}\)
+
+<!-- Bool -->
+\(\newcommand{\Bool}{\mathsf{Bool}}\)
+\(\newcommand{\true}{\mathsf{true}}\)
+\(\newcommand{\false}{\mathsf{false}}\)
+\(\newcommand{\if}{\mathsf{if}}\)
+\(\newcommand{\and}{\mathsf{and}}\)
+\(\newcommand{\or}{\mathsf{or}}\)
+\(\newcommand{\not}{\mathsf{not}}\)
+\(\newcommand{\eq}{\mathsf{eq}}\)
+
+<!-- Nat -->
+\(\newcommand{\Nat}{\mathsf{Nat}}\)
+\(\newcommand{\zero}{\mathsf{zero}}\)
+\(\newcommand{\next}{\mathsf{next}}\)
+\(\newcommand{\natrec}{\mathsf{natrec}}\)
+\(\newcommand{\prev}{\mathsf{prev}}\)
+\(\newcommand{\plus}{\mathsf{plus}}\)
+\(\newcommand{\times}{\mathsf{times}}\)
+</div>
+<!-- End LaTeX Macros -->
+
+<p>Here’s a fun activity. Take a logical theorem involving only judgement variables and <span class="math inline">\(\Rightarrow\)</span>, and try to turn it into a function signature. For example, the signature of <span class="math inline">\(\id\)</span> is <span class="math display">\[a \rightarrow a\]</span> which is suspiciously similar to the <code>impl-idemp</code> theorem <span class="math display">\[P \Rightarrow P.\]</span> Likewise the signature of <span class="math inline">\(\comp\)</span>, <span class="math display">\[(b \rightarrow c) \rightarrow (a \rightarrow b) \rightarrow a \rightarrow c\]</span> is similar to <code>impl-elim-2</code>, which can be restated as: <span class="math display">\[(Q \Rightarrow R) \Rightarrow (P \Rightarrow Q) \Rightarrow P \Rightarrow R,\]</span> and <span class="math inline">\(\app\)</span>, with signature <span class="math inline">\((a \rightarrow b) \rightarrow a \rightarrow b\)</span>, looks like the <code>impl-elim</code> rule.</p>
+<p>This suggests that one way to come up with interesting functions is to start with a known theorem, turn it into a function signature, and do the most obvious thing. Another handy function we can construct this way is the constant function; this takes two inputs but ignores the second, returning the first unchanged.</p>
+<pre class="mycelium"><code>type \const :: a -&gt; b -&gt; a
 
 rule def-const
 * \const(a)(b) == a</code></pre>
+<p>Now <span class="math inline">\(\const\)</span> absorbs under composition from the left.</p>
+<pre class="mycelium"><code>theorem comp-const-l
+* \comp(\const(a))(f) == \const(a)
+
+proof
+1. \comp(\const(a))(f)(x) : chain
+    == \const(a)(f(x)) : use def-comp;
+    == a : use def-const;
+    == \const(a)(x) : flop use def-const;
+2. ∀u. \comp(\const(a))(f)(u) == \const(a)(u) : forall-intro x -&gt; u; 1
+3. \comp(\const(a))(f) == \const(a) : use fun-eq; 2</code></pre>
+
     </main>
 
     <footer>

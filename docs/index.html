@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Arithmetic Made Difficult - Home</title>
+    <title>Arithmetic Made Difficult - Arithmetic Made Difficult</title>
     <link rel="stylesheet" href="./css/default.css" />
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
   </head>
@@ -15,14 +15,69 @@
         <a href="./">Arithmetic Made Difficult</a>
       </div>
       <nav>
-        <a href="./">Home</a>
+        <a href="./">Contents</a>
         <a href="./about.html">About</a>
       </nav>
     </header>
 
     <main role="main">
-      <h1>Home</h1>
-      <p>I’m not sure what this is yet.</p>
+      <h1>Arithmetic Made Difficult</h1>
+      <!-- LaTeX Macros -->
+<div style="display:none;">
+<!-- Functions -->
+\(\newcommand{\id}{\mathsf{id}}\)
+\(\newcommand{\comp}{\mathsf{comp}}\)
+\(\newcommand{\app}{\mathsf{app}}\)
+\(\newcommand{\const}{\mathsf{const}}\)
+\(\newcommand{\flip}{\mathsf{flip}}\)
+\(\newcommand{\clone}{\mathsf{clone}}\)
+
+<!-- Unit -->
+\(\newcommand{\Unit}{\mathsf{Unit}}\)
+\(\newcommand{\unit}{\mathsf{unit}}\)
+\(\newcommand{\only}{\mathsf{only}}\)
+
+<!-- Pair -->
+\(\newcommand{\Pair}{\mathsf{Pair}}\)
+\(\newcommand{\pair}{\mathsf{pair}}\)
+\(\newcommand{\fst}{\mathsf{fst}}\)
+\(\newcommand{\snd}{\mathsf{snd}}\)
+\(\newcommand{\tup}{\mathsf{tup}}\)
+
+<!-- Either -->
+\(\newcommand{\Either}{\mathsf{Either}}\)
+\(\newcommand{\either}{\mathsf{either}}\)
+\(\newcommand{\lft}{\mathsf{lft}}\)
+\(\newcommand{\rgt}{\mathsf{rgt}}\)
+
+<!-- Maybe -->
+\(\newcommand{\Maybe}{\mathsf{Maybe}}\)
+\(\newcommand{\nothing}{\mathsf{nothing}}\)
+\(\newcommand{\just}{\mathsf{just}}\)
+\(\newcommand{\opt}{\mathsf{opt}}\)
+
+<!-- Bool -->
+\(\newcommand{\Bool}{\mathsf{Bool}}\)
+\(\newcommand{\true}{\mathsf{true}}\)
+\(\newcommand{\false}{\mathsf{false}}\)
+\(\newcommand{\if}{\mathsf{if}}\)
+\(\newcommand{\and}{\mathsf{and}}\)
+\(\newcommand{\or}{\mathsf{or}}\)
+\(\newcommand{\not}{\mathsf{not}}\)
+\(\newcommand{\eq}{\mathsf{eq}}\)
+
+<!-- Nat -->
+\(\newcommand{\Nat}{\mathsf{Nat}}\)
+\(\newcommand{\zero}{\mathsf{zero}}\)
+\(\newcommand{\next}{\mathsf{next}}\)
+\(\newcommand{\natrec}{\mathsf{natrec}}\)
+\(\newcommand{\prev}{\mathsf{prev}}\)
+\(\newcommand{\plus}{\mathsf{plus}}\)
+\(\newcommand{\times}{\mathsf{times}}\)
+</div>
+<!-- End LaTeX Macros -->
+
+<p>An experiment in mechanically verified constructive mathematics.</p>
 <h2 id="contents">Contents</h2>
 <ul>
 <li>Natural Deduction
@@ -41,21 +96,32 @@
 <li><a href="./src/Functions/Flip.html">Flip</a></li>
 <li><a href="./src/Functions/Clone.html">Clone</a></li>
 </ul></li>
-<li>Types
-<ul>
-<li><a href="./src/Types/Unit.html">Unit</a></li>
-<li><a href="./src/Types/Maybe.html">Maybe</a></li>
-<li><a href="./src/Types/Tuples.html">Tuples</a></li>
-<li><a href="./src/Types/Either.html">Either</a></li>
-</ul></li>
 <li><a href="./src/Booleans.html">Booleans</a>
 <ul>
 <li><a href="./src/Booleans/And.html">And</a></li>
 <li><a href="./src/Booleans/Or.html">Or</a></li>
+<li><a href="./src/Booleans/Not.html">Not</a></li>
+<li><a href="./src/Booleans/Eq.html">Eq</a></li>
 </ul></li>
-<li>Natural Numbers</li>
+<li><a href="./src/Types.html">Types</a>
+<ul>
+<li><a href="./src/Types/Unit.html">Unit</a></li>
+<li><a href="./src/Types/Pair.html">Pair</a></li>
+<li><a href="./src/Types/Either.html">Either</a></li>
+<li><a href="./src/Types/Maybe.html">Maybe</a></li>
+</ul></li>
+<li><a href="./src/Naturals.html">Natural Numbers</a>
+<ul>
+<li>Recursion Operators</li>
+<li>Arithmetic
+<ul>
+<li><a href="src/Naturals/Previous.html">Previous</a></li>
+<li><a href="src/Naturals/Plus.html">Plus</a></li>
+</ul></li>
+</ul></li>
 <li>Lists</li>
 </ul>
+
     </main>
 
     <footer>

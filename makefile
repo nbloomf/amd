@@ -33,7 +33,6 @@ check:
 
 deploy:
 	rm -rf ./docs
-	stack exec site build
-	mv ./_site ./docs
 	stack exec site clean
 	stack exec site build
+	cp -r ./_site ./docs

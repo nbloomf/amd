@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Arithmetic Made Difficult - Not</title>
+    <link rel="stylesheet" href="../../css/default.css" />
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  </head>
+
+  <body>
+    <header>
+      <div class="logo">
+        <a href="../../">Arithmetic Made Difficult</a>
+      </div>
+      <nav>
+        <a href="../../">Contents</a>
+        <a href="../../about.html">About</a>
+      </nav>
+    </header>
+
+    <main role="main">
+      <h1>Not</h1>
+      <!-- LaTeX Macros -->
+<div style="display:none;">
+<!-- Functions -->
+\(\newcommand{\id}{\mathsf{id}}\)
+\(\newcommand{\comp}{\mathsf{comp}}\)
+\(\newcommand{\app}{\mathsf{app}}\)
+\(\newcommand{\const}{\mathsf{const}}\)
+\(\newcommand{\flip}{\mathsf{flip}}\)
+\(\newcommand{\clone}{\mathsf{clone}}\)
+
+<!-- Unit -->
+\(\newcommand{\Unit}{\mathsf{Unit}}\)
+\(\newcommand{\unit}{\mathsf{unit}}\)
+\(\newcommand{\only}{\mathsf{only}}\)
+
+<!-- Pair -->
+\(\newcommand{\Pair}{\mathsf{Pair}}\)
+\(\newcommand{\pair}{\mathsf{pair}}\)
+\(\newcommand{\fst}{\mathsf{fst}}\)
+\(\newcommand{\snd}{\mathsf{snd}}\)
+\(\newcommand{\tup}{\mathsf{tup}}\)
+
+<!-- Either -->
+\(\newcommand{\Either}{\mathsf{Either}}\)
+\(\newcommand{\either}{\mathsf{either}}\)
+\(\newcommand{\lft}{\mathsf{lft}}\)
+\(\newcommand{\rgt}{\mathsf{rgt}}\)
+
+<!-- Maybe -->
+\(\newcommand{\Maybe}{\mathsf{Maybe}}\)
+\(\newcommand{\nothing}{\mathsf{nothing}}\)
+\(\newcommand{\just}{\mathsf{just}}\)
+\(\newcommand{\opt}{\mathsf{opt}}\)
+
+<!-- Bool -->
+\(\newcommand{\Bool}{\mathsf{Bool}}\)
+\(\newcommand{\true}{\mathsf{true}}\)
+\(\newcommand{\false}{\mathsf{false}}\)
+\(\newcommand{\if}{\mathsf{if}}\)
+\(\newcommand{\and}{\mathsf{and}}\)
+\(\newcommand{\or}{\mathsf{or}}\)
+\(\newcommand{\not}{\mathsf{not}}\)
+\(\newcommand{\eq}{\mathsf{eq}}\)
+
+<!-- Nat -->
+\(\newcommand{\Nat}{\mathsf{Nat}}\)
+\(\newcommand{\zero}{\mathsf{zero}}\)
+\(\newcommand{\next}{\mathsf{next}}\)
+\(\newcommand{\natrec}{\mathsf{natrec}}\)
+\(\newcommand{\prev}{\mathsf{prev}}\)
+\(\newcommand{\plus}{\mathsf{plus}}\)
+\(\newcommand{\times}{\mathsf{times}}\)
+</div>
+<!-- End LaTeX Macros -->
+
+<p>Next we define boolean <span class="math inline">\(\not\)</span>.</p>
+<pre class="mycelium"><code>type \not :: Bool -&gt; Bool
+
+rule def-not
+* \not(q) == \if(\false)(\true)(q)</code></pre>
+<p>We can explicitly compute <span class="math inline">\(\not\)</span>:</p>
+<pre class="mycelium"><code>theorem not-true
+* \not(\true) == \false
+
+proof
+1. \not(\true) : chain
+    == \if(\false)(\true)(\true) : use def-not;
+    == \false : use if-true;
+
+
+theorem not-false
+* \not(\false) == \true
+
+proof
+1. \not(\false) : chain
+    == \if(\false)(\true)(\false) : use def-not;
+    == \true : use if-false;</code></pre>
+<p>Now <span class="math inline">\(\not\)</span> is an involution.</p>
+<pre class="mycelium"><code>theorem not-invol
+* \comp(\not)(\not) == \id
+
+proof
+1.   p == \true : hypothesis p-T
+2.   \comp(\not)(\not)(p) : chain
+      == \comp(\not)(\not)(\true)
+          : hypothesis p-T at z in \comp(\not)(\not)(z)
+      == \not(\not(\true)) : use def-comp;
+      == \not(\false) : use not-true; at z in \not(z)
+      == \true : use not-false;
+      == p : flop hypothesis p-T
+      == \id(p) : flop use def-id;
+3. (p == \true) =&gt; (\comp(\not)(\not)(p) == \id(p))
+    : discharge p-T; 2
+4.   p == \false : hypothesis p-F
+5.   \comp(\not)(\not)(p) : chain
+      == \comp(\not)(\not)(\false)
+          : hypothesis p-F at z in \comp(\not)(\not)(z)
+      == \not(\not(\false)) : use def-comp;
+      == \not(\true) : use not-false; at z in \not(z)
+      == \false : use not-true;
+      == p : flop hypothesis p-F
+      == \id(p) : flop use def-id;
+6. (p == \false) =&gt; (\comp(\not)(\not)(p) == \id(p))
+    : discharge p-F; 5
+7. \comp(\not)(\not)(p) == \id(p) : use bool-induction; 3, 6
+8. ∀x. \comp(\not)(\not)(x) == \id(x) : forall-intro p -&gt; x; 7
+9. \comp(\not)(\not) == \id : use fun-eq; 8</code></pre>
+<p>And we have DeMorgan’s laws: <span class="math inline">\(\not\)</span> distributes over <span class="math inline">\(\or\)</span>:</p>
+<pre class="mycelium"><code>theorem not-or
+* \not(\or(p)(q)) == \and(\not(p))(\not(q))
+
+proof
+1.   p == \true : hypothesis p-T
+2.   \not(\or(p)(q)) : chain
+      == \not(\or(\true)(q))
+          : hypothesis p-T at z in \not(\or(z)(q))
+      == \not(\true)
+          : use or-true-l; at z in \not(z)
+      == \false : use not-true;
+      == \and(\false)(\not(q)) : flop use and-false-l;
+      == \and(\not(\true))(\not(q))
+          : flop use not-true; at z in \and(z)(\not(q))
+      == \and(\not(p))(\not(q))
+          : flop hypothesis p-T at z in \and(\not(z))(\not(q))
+3. (p == \true) =&gt; (\not(\or(p)(q)) == \and(\not(p))(\not(q)))
+    : discharge p-T; 2
+4.   p == \false : hypothesis p-F
+5.   \not(\or(p)(q)) : chain
+      == \not(\or(\false)(q))
+          : hypothesis p-F at z in \not(\or(z)(q))
+      == \not(q)
+          : use or-false-l; at z in \not(z)
+      == \and(\true)(\not(q)) : flop use and-true-l;
+      == \and(\not(\false))(\not(q))
+          : flop use not-false; at z in \and(z)(\not(q))
+      == \and(\not(p))(\not(q))
+          : flop hypothesis p-F at z in \and(\not(z))(\not(q))
+6. (p == \false) =&gt; (\not(\or(p)(q)) == \and(\not(p))(\not(q)))
+    : discharge p-F; 5
+7. \not(\or(p)(q)) == \and(\not(p))(\not(q))
+    : use bool-induction; 3, 6</code></pre>
+<p>And <span class="math inline">\(\not\)</span> distributes over <span class="math inline">\(\and\)</span>.</p>
+<pre class="mycelium"><code>theorem not-and
+* \not(\and(p)(q)) == \or(\not(p))(\not(q))
+
+proof
+1.   p == \true : hypothesis p-T
+2.   \not(\and(p)(q)) : chain
+      == \not(\and(\true)(q))
+          : hypothesis p-T at z in \not(\and(z)(q))
+      == \not(q) : use and-true-l; at z in \not(z)
+      == \or(\false)(\not(q)) : flop use or-false-l;
+      == \or(\not(\true))(\not(q))
+          : flop use not-true; at z in \or(z)(\not(q))
+      == \or(\not(p))(\not(q))
+          : flop hypothesis p-T at z in \or(\not(z))(\not(q))
+3. (p == \true) =&gt; (\not(\and(p)(q)) == \or(\not(p))(\not(q)))
+    : discharge p-T; 2
+4.   p == \false : hypothesis p-F
+5.   \not(\and(p)(q)) : chain
+      == \not(\and(\false)(q))
+          : hypothesis p-F at z in \not(\and(z)(q))
+      == \not(\false) : use and-false-l; at z in \not(z)
+      == \true : use not-false;
+      == \or(\true)(\not(q))
+          : flop use or-true-l;
+      == \or(\not(\false))(\not(q))
+          : flop use not-false; at z in \or(z)(\not(q))
+      == \or(\not(p))(\not(q))
+          : flop hypothesis p-F at z in \or(\not(z))(\not(q))
+6. (p == \false) =&gt; (\not(\and(p)(q)) == \or(\not(p))(\not(q)))
+    : discharge p-F; 5
+7. \not(\and(p)(q)) == \or(\not(p))(\not(q))
+    : use bool-induction; 3, 6</code></pre>
+
+    </main>
+
+    <footer>
+      Site generated by
+      <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+    </footer>
+  </body>
+</html>

@@ -4,24 +4,24 @@
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Arithmetic Made Difficult - About</title>
-    <link rel="stylesheet" href="./css/default.css" />
+    <title>Arithmetic Made Difficult - Eq</title>
+    <link rel="stylesheet" href="../../css/default.css" />
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
   </head>
 
   <body>
     <header>
       <div class="logo">
-        <a href="./">Arithmetic Made Difficult</a>
+        <a href="../../">Arithmetic Made Difficult</a>
       </div>
       <nav>
-        <a href="./">Contents</a>
-        <a href="./about.html">About</a>
+        <a href="../../">Contents</a>
+        <a href="../../about.html">About</a>
       </nav>
     </header>
 
     <main role="main">
-      <h1>About</h1>
+      <h1>Eq</h1>
       <!-- LaTeX Macros -->
 <div style="display:none;">
 <!-- Functions -->
@@ -77,11 +77,70 @@
 </div>
 <!-- End LaTeX Macros -->
 
-<p>This is an experiment.</p>
-<p>An astonishingly beautiful constellation of ideas, developed by many people over the last 80 years or so, make it possible to think of programming as an algebraic activity. Or mathematics as a mechanical activity. Or logic as a computational activity.</p>
-<p>The main ingredients are natural deduction (1920s), lambda calculus (1930s), type inference (1970s), and a little bit of category theory (1940s). The basic idea is that simply typed lambda calculus is a really great model of computation, being both simple and powerful. It fits nicely into the framework of natural deduction over first order logic with equality. Extended with some categorical ideas, this framework includes the so-called <em>inductive</em> objects like natural numbers and lists as well.</p>
-<p>Taken together, these ideas make it possible to develop a nice chunk of mathematics where (1) all proofs are mechanically checked, (2) all theorems are constructive, and (3) algorithms can be <em>calculated</em> and thought of as <em>solutions to systems of equations</em>. And none of this in an ad-hoc, language dependent way, but very naturally.</p>
-<p>On these pages we’re going to take these simple and old ideas and try to see where they can go.</p>
+<p>We’ll also need a function that can convert judgement-level equality to value-level boolean.</p>
+<pre class="mycelium"><code>type \eq :: a -&gt; a -&gt; Bool
+
+rule def-eq
+* (\eq(a)(b) == \true) &lt;=&gt; (a == b)</code></pre>
+<p>I like to think of <span class="math inline">\(\eq\)</span> as performing a sort of <em>reification</em> of equality.</p>
+<pre class="mycelium"><code>theorem eq-reify
+if
+  * a == b
+then
+  * \eq(a)(b) == \true
+
+proof
+1. a == b : assumption 1
+2. (\eq(a)(b) == \true) &lt;=&gt; (a == b) : use def-eq;
+3. (a == b) =&gt; (\eq(a)(b) == \true) : use equiv-elim-l; 2
+4. \eq(a)(b) == \true : use impl-elim; 1, 3
+
+
+theorem eq-dereify
+if
+  * \eq(a)(b) == \true
+then
+  * a == b
+
+proof
+1. \eq(a)(b) == \true : assumption 1
+2. (\eq(a)(b) == \true) &lt;=&gt; (a == b) : use def-eq;
+3. (\eq(a)(b) == \true) =&gt; (a == b) : use equiv-elim-r; 2
+4. a == b : use impl-elim; 1, 3</code></pre>
+<p>The usual properties of equality hold for <span class="math inline">\(\eq\)</span>. It’s reflexive:</p>
+<pre class="mycelium"><code>theorem eq-refl
+* \eq(a)(a) == \true
+
+proof
+1. a == a : eq-intro
+2. \eq(a)(a) == \true : use eq-reify; 1</code></pre>
+<p><span class="math inline">\(\eq\)</span> is symmetric:</p>
+<pre class="mycelium"><code>theorem eq-reify-sym
+if
+  * \eq(a)(b) == \true
+then
+  * \eq(b)(a) == \true
+
+proof
+1. \eq(a)(b) == \true : assumption 1
+2. a == b : use eq-dereify; 1
+3. b == a : use eq-sym; 2
+4. \eq(b)(a) == \true : use eq-reify; 3</code></pre>
+<p>And <span class="math inline">\(\eq\)</span> is transitive.</p>
+<pre class="mycelium"><code>theorem eq-reify-trans
+if
+  * \eq(a)(b) == \true
+  * \eq(b)(c) == \true
+then
+  * \eq(a)(c) == \true
+
+proof
+1. \eq(a)(b) == \true : assumption 1
+2. \eq(b)(c) == \true : assumption 2
+3. a == b : use eq-dereify; 1
+4. b == c : use eq-dereify; 2
+5. a == c : use eq-trans; 3, 4
+6. \eq(a)(c) == \true : use eq-reify; 5</code></pre>
 
     </main>
 

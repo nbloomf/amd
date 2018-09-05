@@ -15,17 +15,90 @@
         <a href="../../">Arithmetic Made Difficult</a>
       </div>
       <nav>
-        <a href="../../">Home</a>
+        <a href="../../">Contents</a>
         <a href="../../about.html">About</a>
       </nav>
     </header>
 
     <main role="main">
       <h1>Clone</h1>
-      <pre class="mycelium"><code>type \clone :: (a -&gt; a -&gt; b) -&gt; a -&gt; b
+      <!-- LaTeX Macros -->
+<div style="display:none;">
+<!-- Functions -->
+\(\newcommand{\id}{\mathsf{id}}\)
+\(\newcommand{\comp}{\mathsf{comp}}\)
+\(\newcommand{\app}{\mathsf{app}}\)
+\(\newcommand{\const}{\mathsf{const}}\)
+\(\newcommand{\flip}{\mathsf{flip}}\)
+\(\newcommand{\clone}{\mathsf{clone}}\)
+
+<!-- Unit -->
+\(\newcommand{\Unit}{\mathsf{Unit}}\)
+\(\newcommand{\unit}{\mathsf{unit}}\)
+\(\newcommand{\only}{\mathsf{only}}\)
+
+<!-- Pair -->
+\(\newcommand{\Pair}{\mathsf{Pair}}\)
+\(\newcommand{\pair}{\mathsf{pair}}\)
+\(\newcommand{\fst}{\mathsf{fst}}\)
+\(\newcommand{\snd}{\mathsf{snd}}\)
+\(\newcommand{\tup}{\mathsf{tup}}\)
+
+<!-- Either -->
+\(\newcommand{\Either}{\mathsf{Either}}\)
+\(\newcommand{\either}{\mathsf{either}}\)
+\(\newcommand{\lft}{\mathsf{lft}}\)
+\(\newcommand{\rgt}{\mathsf{rgt}}\)
+
+<!-- Maybe -->
+\(\newcommand{\Maybe}{\mathsf{Maybe}}\)
+\(\newcommand{\nothing}{\mathsf{nothing}}\)
+\(\newcommand{\just}{\mathsf{just}}\)
+\(\newcommand{\opt}{\mathsf{opt}}\)
+
+<!-- Bool -->
+\(\newcommand{\Bool}{\mathsf{Bool}}\)
+\(\newcommand{\true}{\mathsf{true}}\)
+\(\newcommand{\false}{\mathsf{false}}\)
+\(\newcommand{\if}{\mathsf{if}}\)
+\(\newcommand{\and}{\mathsf{and}}\)
+\(\newcommand{\or}{\mathsf{or}}\)
+\(\newcommand{\not}{\mathsf{not}}\)
+\(\newcommand{\eq}{\mathsf{eq}}\)
+
+<!-- Nat -->
+\(\newcommand{\Nat}{\mathsf{Nat}}\)
+\(\newcommand{\zero}{\mathsf{zero}}\)
+\(\newcommand{\next}{\mathsf{next}}\)
+\(\newcommand{\natrec}{\mathsf{natrec}}\)
+\(\newcommand{\prev}{\mathsf{prev}}\)
+\(\newcommand{\plus}{\mathsf{plus}}\)
+\(\newcommand{\times}{\mathsf{times}}\)
+</div>
+<!-- End LaTeX Macros -->
+
+<p><span class="math inline">\(\clone\)</span> is a helper function that duplicates function arguments.</p>
+<pre class="mycelium"><code>type \clone :: (a -&gt; a -&gt; b) -&gt; a -&gt; b
 
 rule def-clone
 * \clone(f)(a) == f(a)(a)</code></pre>
+<p><span class="math inline">\(\clone\)</span> absorbs <span class="math inline">\(\flip\)</span> from the left.</p>
+<pre class="mycelium"><code>theorem clone-flip
+* \comp(\clone)(\flip) == \clone
+
+proof
+1. \comp(\clone)(\flip)(f)(x) : chain
+    == \clone(\flip(f))(x) : use def-comp; at h in h(x)
+    == \flip(f)(x)(x) : use def-clone;
+    == f(x)(x) : use def-flip;
+    == \clone(f)(x) : flop use def-clone;
+2. ∀u. \comp(\clone)(\flip)(f)(u) == \clone(f)(u)
+    : forall-intro x -&gt; u; 1
+3. \comp(\clone)(\flip)(f) == \clone(f) : use fun-eq; 2
+4. ∀v. \comp(\clone)(\flip)(v) == \clone(v)
+    : forall-intro f -&gt; v; 3
+5. \comp(\clone)(\flip) == \clone : use fun-eq; 4</code></pre>
+
     </main>
 
     <footer>

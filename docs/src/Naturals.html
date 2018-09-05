@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Arithmetic Made Difficult - Natural Numbers</title>
+    <link rel="stylesheet" href="../css/default.css" />
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  </head>
+
+  <body>
+    <header>
+      <div class="logo">
+        <a href="../">Arithmetic Made Difficult</a>
+      </div>
+      <nav>
+        <a href="../">Contents</a>
+        <a href="../about.html">About</a>
+      </nav>
+    </header>
+
+    <main role="main">
+      <h1>Natural Numbers</h1>
+      <!-- LaTeX Macros -->
+<div style="display:none;">
+<!-- Functions -->
+\(\newcommand{\id}{\mathsf{id}}\)
+\(\newcommand{\comp}{\mathsf{comp}}\)
+\(\newcommand{\app}{\mathsf{app}}\)
+\(\newcommand{\const}{\mathsf{const}}\)
+\(\newcommand{\flip}{\mathsf{flip}}\)
+\(\newcommand{\clone}{\mathsf{clone}}\)
+
+<!-- Unit -->
+\(\newcommand{\Unit}{\mathsf{Unit}}\)
+\(\newcommand{\unit}{\mathsf{unit}}\)
+\(\newcommand{\only}{\mathsf{only}}\)
+
+<!-- Pair -->
+\(\newcommand{\Pair}{\mathsf{Pair}}\)
+\(\newcommand{\pair}{\mathsf{pair}}\)
+\(\newcommand{\fst}{\mathsf{fst}}\)
+\(\newcommand{\snd}{\mathsf{snd}}\)
+\(\newcommand{\tup}{\mathsf{tup}}\)
+
+<!-- Either -->
+\(\newcommand{\Either}{\mathsf{Either}}\)
+\(\newcommand{\either}{\mathsf{either}}\)
+\(\newcommand{\lft}{\mathsf{lft}}\)
+\(\newcommand{\rgt}{\mathsf{rgt}}\)
+
+<!-- Maybe -->
+\(\newcommand{\Maybe}{\mathsf{Maybe}}\)
+\(\newcommand{\nothing}{\mathsf{nothing}}\)
+\(\newcommand{\just}{\mathsf{just}}\)
+\(\newcommand{\opt}{\mathsf{opt}}\)
+
+<!-- Bool -->
+\(\newcommand{\Bool}{\mathsf{Bool}}\)
+\(\newcommand{\true}{\mathsf{true}}\)
+\(\newcommand{\false}{\mathsf{false}}\)
+\(\newcommand{\if}{\mathsf{if}}\)
+\(\newcommand{\and}{\mathsf{and}}\)
+\(\newcommand{\or}{\mathsf{or}}\)
+\(\newcommand{\not}{\mathsf{not}}\)
+\(\newcommand{\eq}{\mathsf{eq}}\)
+
+<!-- Nat -->
+\(\newcommand{\Nat}{\mathsf{Nat}}\)
+\(\newcommand{\zero}{\mathsf{zero}}\)
+\(\newcommand{\next}{\mathsf{next}}\)
+\(\newcommand{\natrec}{\mathsf{natrec}}\)
+\(\newcommand{\prev}{\mathsf{prev}}\)
+\(\newcommand{\plus}{\mathsf{plus}}\)
+\(\newcommand{\times}{\mathsf{times}}\)
+</div>
+<!-- End LaTeX Macros -->
+
+<p>We can define the natural numbers <span class="math inline">\(\Nat\)</span> as the initial <span class="math inline">\(F\)</span>-algebra for the functor <span class="math inline">\(F(x) = \Either\ \Unit\ x\)</span>. The algebra map <span class="math inline">\(m : \Either\ \Unit\ \Nat \rightarrow \Nat\)</span> has two components, <span class="math inline">\(\zero\)</span> and <span class="math inline">\(\next\)</span>.</p>
+<pre class="mycelium"><code>type \zero :: Nat
+
+type \next :: Nat -&gt; Nat</code></pre>
+<p>The unique homomorphism from <span class="math inline">\(\Nat\)</span> to some other <span class="math inline">\(F\)</span>-algebra is denoted <span class="math inline">\(\natrec\)</span>, and is the unique map making the following diagram commute.</p>
+<p><span class="math display">\[\require{AMScd}
+\begin{CD}
+\Either\ \Unit\ \Nat @&gt;{\either(\only(\zero))(\next)}&gt;&gt; \Nat \\
+@V{\id}VV @VV{\natrec(e)(f)}V \\
+\Either\ \Unit\ a @&gt;&gt;{\either(\only(e))(f)}&gt; a
+\end{CD}\]</span></p>
+<p>The signature of <span class="math inline">\(\natrec\)</span> looks like this.</p>
+<pre class="mycelium"><code>type \natrec :: a -&gt; (a -&gt; a) -&gt; Nat -&gt; a</code></pre>
+<p>We need rules to say that <span class="math inline">\(\natrec\)</span> is an <span class="math inline">\(F\)</span>-algebra homomorphism:</p>
+<pre class="mycelium"><code>rule natrec-zero
+* \natrec(e)(f)(\zero) == e
+
+rule natrec-next
+* \natrec(e)(f)(\next(n)) == f(\natrec(e)(f)(n))</code></pre>
+<p>And a rule to say that <span class="math inline">\(\natrec\)</span> is unique.</p>
+<pre class="mycelium"><code>rule natrec-unique
+if
+  * t(\zero) == e
+  * \comp(t)(\next) == \comp(f)(t)
+then
+  * t == \natrec(e)(f)</code></pre>
+<p>Finally, we need an induction principle for <span class="math inline">\(\Nat\)</span>.</p>
+<pre class="mycelium"><code>rule nat-induction
+if
+  * (k == \zero) =&gt; P
+  * ∀n. ((k == n) =&gt; P) =&gt; ((k == \next(n)) =&gt; P)
+then
+  * P</code></pre>
+<p>Using the uniqueness of <span class="math inline">\(\natrec\)</span>, we can characterize <span class="math inline">\(\id\)</span> as an <span class="math inline">\(F\)</span>-algebra homomorphism.</p>
+<pre class="mycelium"><code>theorem natrec-zero-next
+* \id == \natrec(\zero)(\next)
+
+proof
+1. \id(\zero) == \zero : use def-id;
+2. \comp(\id)(\next) : chain
+    == \next : use comp-id-l;
+    == \comp(\next)(\id) : flop use comp-id-r;
+3. \id == \natrec(\zero)(\next) : use natrec-unique; 1, 2</code></pre>
+
+    </main>
+
+    <footer>
+      Site generated by
+      <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+    </footer>
+  </body>
+</html>

@@ -15,37 +15,102 @@
         <a href="../../">Arithmetic Made Difficult</a>
       </div>
       <nav>
-        <a href="../../">Home</a>
+        <a href="../../">Contents</a>
         <a href="../../about.html">About</a>
       </nav>
     </header>
 
     <main role="main">
       <h1>Maybe</h1>
-      <pre class="mycelium"><code>type \nothing :: Maybe a
+      <!-- LaTeX Macros -->
+<div style="display:none;">
+<!-- Functions -->
+\(\newcommand{\id}{\mathsf{id}}\)
+\(\newcommand{\comp}{\mathsf{comp}}\)
+\(\newcommand{\app}{\mathsf{app}}\)
+\(\newcommand{\const}{\mathsf{const}}\)
+\(\newcommand{\flip}{\mathsf{flip}}\)
+\(\newcommand{\clone}{\mathsf{clone}}\)
 
-type \just :: a -&gt; Maybe a
+<!-- Unit -->
+\(\newcommand{\Unit}{\mathsf{Unit}}\)
+\(\newcommand{\unit}{\mathsf{unit}}\)
+\(\newcommand{\only}{\mathsf{only}}\)
 
-type \opt :: b -&gt; (a -&gt; b) -&gt; Maybe a -&gt; b
+<!-- Pair -->
+\(\newcommand{\Pair}{\mathsf{Pair}}\)
+\(\newcommand{\pair}{\mathsf{pair}}\)
+\(\newcommand{\fst}{\mathsf{fst}}\)
+\(\newcommand{\snd}{\mathsf{snd}}\)
+\(\newcommand{\tup}{\mathsf{tup}}\)
 
-rule opt-nothing
+<!-- Either -->
+\(\newcommand{\Either}{\mathsf{Either}}\)
+\(\newcommand{\either}{\mathsf{either}}\)
+\(\newcommand{\lft}{\mathsf{lft}}\)
+\(\newcommand{\rgt}{\mathsf{rgt}}\)
+
+<!-- Maybe -->
+\(\newcommand{\Maybe}{\mathsf{Maybe}}\)
+\(\newcommand{\nothing}{\mathsf{nothing}}\)
+\(\newcommand{\just}{\mathsf{just}}\)
+\(\newcommand{\opt}{\mathsf{opt}}\)
+
+<!-- Bool -->
+\(\newcommand{\Bool}{\mathsf{Bool}}\)
+\(\newcommand{\true}{\mathsf{true}}\)
+\(\newcommand{\false}{\mathsf{false}}\)
+\(\newcommand{\if}{\mathsf{if}}\)
+\(\newcommand{\and}{\mathsf{and}}\)
+\(\newcommand{\or}{\mathsf{or}}\)
+\(\newcommand{\not}{\mathsf{not}}\)
+\(\newcommand{\eq}{\mathsf{eq}}\)
+
+<!-- Nat -->
+\(\newcommand{\Nat}{\mathsf{Nat}}\)
+\(\newcommand{\zero}{\mathsf{zero}}\)
+\(\newcommand{\next}{\mathsf{next}}\)
+\(\newcommand{\natrec}{\mathsf{natrec}}\)
+\(\newcommand{\prev}{\mathsf{prev}}\)
+\(\newcommand{\plus}{\mathsf{plus}}\)
+\(\newcommand{\times}{\mathsf{times}}\)
+</div>
+<!-- End LaTeX Macros -->
+
+<p>Our next inductive type is <span class="math inline">\(\Maybe\)</span>, which behaves just like <span class="math inline">\(a\)</span> with an extra value tacked on. Regular <span class="math inline">\(a\)</span>s are constructed with <span class="math inline">\(\just\)</span>, and the extra value is called <span class="math inline">\(\nothing\)</span>.</p>
+<pre class="mycelium"><code>type \just :: a -&gt; Maybe a
+
+type \nothing :: Maybe a</code></pre>
+<p>We can think about <span class="math inline">\(\Maybe\)</span> as the initial algebra of the constant functor to <span class="math inline">\(\Either\ \Unit\ a\)</span>, where <span class="math inline">\(a\)</span> is fixed, and we think of this functor as the pointwise sum of the constant functors to <span class="math inline">\(\Unit\)</span> and <span class="math inline">\(a\)</span>.</p>
+<p><span class="math display">\[\require{AMScd}
+\begin{CD}
+\Either\ \Unit\ a @&gt;{\either(\only(\nothing))(\just)}&gt;&gt; \Maybe\ a \\
+@V{\id}VV @VV{\opt(b)(f)}V \\
+\Either\ \Unit\ a @&gt;&gt;{\either(\only(b))(f)}&gt; x
+\end{CD}\]</span></p>
+<p>We’ll call the universal arrow for <span class="math inline">\(\Maybe\ a\)</span> <em>opt</em>.</p>
+<pre class="mycelium"><code>type \opt :: b -&gt; (a -&gt; b) -&gt; Maybe a -&gt; b</code></pre>
+<p>There are a few concrete ways to think about <span class="math inline">\(\Maybe\ a\)</span>; it effectively adds a “default” or “missing” value to <span class="math inline">\(a\)</span>. We need rules to express that <span class="math inline">\(\opt\)</span> is a homomorphism:</p>
+<pre class="mycelium"><code>rule opt-nothing
 * \opt(b)(f)(\nothing) == u
 
 rule opt-just
-* \opt(b)(f)(\just(a)) == f(a)
-
-rule opt-unique
+* \opt(b)(f)(\just(a)) == f(a)</code></pre>
+<p>And a rule to express that <span class="math inline">\(\opt\)</span> is unique.</p>
+<pre class="mycelium"><code>rule opt-unique
 if
   * t(b)(f)(\nothing) == b
-  * t(b)(f)(\just(a)) == f(a)
+  * \comp(t(b)(f))(\just) == f
 then
   * t == \opt</code></pre>
+<p>Finally, we have an induction principle.</p>
 <pre class="mycelium"><code>rule maybe-induction
 if
   * (m == \nothing) =&gt; P
   * ∀a. ((m == \just(a)) =&gt; P)
 then
   * P</code></pre>
+
     </main>
 
     <footer>

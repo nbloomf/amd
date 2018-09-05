@@ -15,14 +15,69 @@
         <a href="../../">Arithmetic Made Difficult</a>
       </div>
       <nav>
-        <a href="../../">Home</a>
+        <a href="../../">Contents</a>
         <a href="../../about.html">About</a>
       </nav>
     </header>
 
     <main role="main">
       <h1>Conjunction and Disjunction</h1>
-      <p>The two most basic judgement constructors are <em>conjunction</em> and <em>disjunction</em>. The conjunction of judgements <span class="math inline">\(P\)</span> and <span class="math inline">\(Q\)</span> is denoted <span class="math inline">\(P \wedge Q\)</span>, and models <em>both and</em>: if we have evidence for <em>both</em> <span class="math inline">\(P\)</span> <em>and</em> <span class="math inline">\(Q\)</span>, this is valid evidence for the conjunction <span class="math inline">\(P \wedge Q\)</span>.</p>
+      <!-- LaTeX Macros -->
+<div style="display:none;">
+<!-- Functions -->
+\(\newcommand{\id}{\mathsf{id}}\)
+\(\newcommand{\comp}{\mathsf{comp}}\)
+\(\newcommand{\app}{\mathsf{app}}\)
+\(\newcommand{\const}{\mathsf{const}}\)
+\(\newcommand{\flip}{\mathsf{flip}}\)
+\(\newcommand{\clone}{\mathsf{clone}}\)
+
+<!-- Unit -->
+\(\newcommand{\Unit}{\mathsf{Unit}}\)
+\(\newcommand{\unit}{\mathsf{unit}}\)
+\(\newcommand{\only}{\mathsf{only}}\)
+
+<!-- Pair -->
+\(\newcommand{\Pair}{\mathsf{Pair}}\)
+\(\newcommand{\pair}{\mathsf{pair}}\)
+\(\newcommand{\fst}{\mathsf{fst}}\)
+\(\newcommand{\snd}{\mathsf{snd}}\)
+\(\newcommand{\tup}{\mathsf{tup}}\)
+
+<!-- Either -->
+\(\newcommand{\Either}{\mathsf{Either}}\)
+\(\newcommand{\either}{\mathsf{either}}\)
+\(\newcommand{\lft}{\mathsf{lft}}\)
+\(\newcommand{\rgt}{\mathsf{rgt}}\)
+
+<!-- Maybe -->
+\(\newcommand{\Maybe}{\mathsf{Maybe}}\)
+\(\newcommand{\nothing}{\mathsf{nothing}}\)
+\(\newcommand{\just}{\mathsf{just}}\)
+\(\newcommand{\opt}{\mathsf{opt}}\)
+
+<!-- Bool -->
+\(\newcommand{\Bool}{\mathsf{Bool}}\)
+\(\newcommand{\true}{\mathsf{true}}\)
+\(\newcommand{\false}{\mathsf{false}}\)
+\(\newcommand{\if}{\mathsf{if}}\)
+\(\newcommand{\and}{\mathsf{and}}\)
+\(\newcommand{\or}{\mathsf{or}}\)
+\(\newcommand{\not}{\mathsf{not}}\)
+\(\newcommand{\eq}{\mathsf{eq}}\)
+
+<!-- Nat -->
+\(\newcommand{\Nat}{\mathsf{Nat}}\)
+\(\newcommand{\zero}{\mathsf{zero}}\)
+\(\newcommand{\next}{\mathsf{next}}\)
+\(\newcommand{\natrec}{\mathsf{natrec}}\)
+\(\newcommand{\prev}{\mathsf{prev}}\)
+\(\newcommand{\plus}{\mathsf{plus}}\)
+\(\newcommand{\times}{\mathsf{times}}\)
+</div>
+<!-- End LaTeX Macros -->
+
+<p>The two most basic judgement constructors are <em>conjunction</em> and <em>disjunction</em>. The conjunction of judgements <span class="math inline">\(P\)</span> and <span class="math inline">\(Q\)</span> is denoted <span class="math inline">\(P \wedge Q\)</span>, and models <em>both and</em>: if we have evidence for <em>both</em> <span class="math inline">\(P\)</span> <em>and</em> <span class="math inline">\(Q\)</span>, this is valid evidence for the conjunction <span class="math inline">\(P \wedge Q\)</span>.</p>
 <pre class="mycelium"><code>rule conj-intro
 if
   * P
@@ -266,6 +321,7 @@ proof
 6. R \/ Q : use conj-elim-r; 3
 7. Q \/ R : use disj-comm; 6
 8. (P \/ R) /\ (Q \/ R) : use conj-intro; 5, 7</code></pre>
+
     </main>
 
     <footer>
