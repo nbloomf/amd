@@ -12,6 +12,7 @@ Contents
   * [Conjunction and Disjunction](/src/Proof/ConjDisj.html)
   * [Equality](/src/Proof/Equality.html)
   * [Universal Quantification](/src/Proof/ForAll.html)
+  * [Existential Quantification](/src/Proof/Exists.html)
   * [Negation](/src/Proof/Neg.html)
   * [Equivalence](/src/Proof/Equiv.html)
 * Functions
@@ -32,7 +33,8 @@ Contents
 * [Natural Numbers](/src/Naturals.html)
   * Recursion Operators
   * Arithmetic
-    * [Previous](src/Naturals/Previous.html)
-    * [Plus](src/Naturals/Plus.html)
-    * [Times](src/Naturals/Times.html)
+    * [Previous](/src/Naturals/Previous.html)
+    * [Plus](/src/Naturals/Plus.html)
+    * [Times](/src/Naturals/Times.html)
+    * [Simple Equations](/src/Naturals/SimpleEquations.html)
 * Lists

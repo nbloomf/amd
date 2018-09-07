@@ -8,6 +8,9 @@ Our next inductive type is $\Maybe$, which behaves just like $a$ with an extra v
 type \just :: a -> Maybe a
 
 type \nothing :: Maybe a
+
+rule maybe-disc
+* ~(∃a. \nothing == \just(a))
 ~~~
 
 We can think about $\Maybe$ as the initial algebra of the constant functor to $\Either\ \Unit\ a$, where $a$ is fixed, and we think of this functor as the pointwise sum of the constant functors to $\Unit$ and $a$.

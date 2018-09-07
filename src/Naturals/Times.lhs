@@ -222,3 +222,70 @@ proof
 1. \times(a)(\times(b)(c)) == \times(\times(a)(b))(c) : use times-assoc-l;
 2. \times(\times(a)(b))(c) == \times(a)(\times(b)(c)) : use eq-sym; 1
 ~~~
+
+$\next(\zero)$ is neutral for $\times.
+
+~~~ {.mycelium}
+theorem times-one-r
+* \times(a)(\next(\zero)) == a
+
+proof
+1. \times(a)(\next(\zero)) : chain
+    == \plus(a)(\times(a)(\zero)) : use times-next-r;
+    == \plus(a)(\zero) : use times-zero-r; at z in \plus(a)(z)
+    == a : use plus-zero-r;
+
+
+theorem times-one-l
+* \times(\next(\zero))(a) == a
+
+proof
+1. \times(\next(\zero))(a) : chain
+    == \times(a)(\next(\zero)) : use times-comm;
+    == a : use times-one-r;
+~~~
+
+And $\times$ is _almost_ cancellative.
+
+~~~ {.mycelium}
+theorem times-cancel-r
+if
+  * \times(a)(\next(c)) == \times(b)(\next(c))
+then
+  * a == b
+
+proof
+1.    c == \zero : hypothesis c-zero
+2.    a : chain
+       == \times(a)(\next(\zero)) : flop use times-one-r;
+       == \times(a)(\next(c)) : flop hypothesis c-zero at z in \times(a)(\next(z))
+       == \times(b)(\next(c)) : assumption 1
+       == \times(b)(\next(\zero)) : hypothesis c-zero at z in \times(b)(\next(z))
+       == b : use times-one-r;
+3.  (c == \zero) => (a == b) : discharge c-zero; 2
+4.    (c == n) => (a == b) : hypothesis c-n
+5.    (n == n) => (a == b) : sub [c :-> n]; 4
+6.    n == n : eq-intro
+7.      c == \next(n) : hypothesis c-next
+8.      a == b : use impl-elim; 6, 5
+9.      (c == \next(n)) /\ (a == b) : use conj-intro; 7, 8
+10.     a == b : use conj-elim-r; 9
+11.   (c == \next(n)) => (a == b) : discharge c-next; 10
+12. ((c == n) => (a == b)) => ((c == \next(n)) => (a == b)) : discharge c-n; 11
+13. ∀k. ((c == k) => (a == b)) => ((c == \next(k)) => (a == b)) : forall-intro n -> k; 12
+14. a == b : use nat-induction; 3, 13
+
+
+theorem times-cancel-l
+if
+  * \times(\next(c))(a) == \times(\next(c))(b)
+then
+  * a == b
+
+proof
+1. \times(a)(\next(c)) : chain
+    == \times(\next(c))(a) : use times-comm;
+    == \times(\next(c))(b) : assumption 1
+    == \times(b)(\next(c)) : use times-comm;
+2. a == b : use times-cancel-r; 1
+~~~

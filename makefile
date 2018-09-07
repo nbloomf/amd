@@ -3,6 +3,7 @@ modules = \
   src/Proof/ConjDisj.lhs \
   src/Proof/Equality.lhs \
   src/Proof/ForAll.lhs \
+  src/Proof/Exists.lhs \
   src/Proof/Neg.lhs \
   src/Proof/Equiv.lhs \
   src/Functions/IdComp.lhs \
@@ -21,7 +22,8 @@ modules = \
   src/Naturals.lhs \
   src/Naturals/Previous.lhs \
   src/Naturals/Plus.lhs \
-  src/Naturals/Times.lhs
+  src/Naturals/Times.lhs \
+  src/Naturals/SimpleEquations.lhs
 
 build:
 	stack exec site build

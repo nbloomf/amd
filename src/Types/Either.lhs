@@ -19,7 +19,7 @@ type \lft :: a -> Either a b
 type \rgt :: b -> Either a b
 
 rule either-disc
-* ~(\lft(a) == \rgt(b))
+* ~(∃a. (∃b. \lft(a) == \rgt(b)))
 
 type \either :: (a -> t) -> (b -> t) -> Either a b -> t
 ~~~
