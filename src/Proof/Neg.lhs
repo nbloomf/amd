@@ -74,10 +74,10 @@ proof
 4. ~P : use neg-intro; 1, 3
 ~~~
 
-Another handy tool is the _disjunctive syllogism_.
+Another handy tool is the _disjunctive syllogism_, which we'll give in two forms for convenience.
 
 ~~~ {.mycelium}
-theorem disj-syllogism
+theorem disj-syllogism-l
 if
   * P \/ Q
   * ~P
@@ -90,4 +90,18 @@ proof
 3. P => Q : use neg-elim; 2
 4. Q => Q : use impl-idemp;
 5. Q : use disj-elim; 1, 3, 4
+
+
+theorem disj-syllogism-r
+if
+  * P \/ Q
+  * ~Q
+then
+  * P
+
+proof
+1. P \/ Q : assumption 1
+2. Q \/ P : use disj-comm; 1
+3. ~Q : assumption 2
+4. P : use disj-syllogism-l; 2, 3
 ~~~

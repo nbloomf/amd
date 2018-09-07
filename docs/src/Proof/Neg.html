@@ -116,6 +116,47 @@ proof
 3.   P =&gt; Q : assumption 1
 4.   ~P : use neg-intro; 3, 2
 5. (~Q) =&gt; (~P) : discharge hyp-Q; 4</code></pre>
+<p>A slightly more useful version of contraposition is called <em>modus tollens</em>.</p>
+<pre class="mycelium"><code>theorem modus-tollens
+if
+  * P =&gt; Q
+  * ~Q
+then
+  * ~P
+
+proof
+1. P =&gt; Q : assumption 1
+2. ~Q : assumption 2
+3. P =&gt; ~Q : use simp; 2
+4. ~P : use neg-intro; 1, 3</code></pre>
+<p>Another handy tool is the <em>disjunctive syllogism</em>, which we’ll give in two forms for convenience.</p>
+<pre class="mycelium"><code>theorem disj-syllogism-l
+if
+  * P \/ Q
+  * ~P
+then
+  * Q
+
+proof
+1. P \/ Q : assumption 1
+2. ~P : assumption 2
+3. P =&gt; Q : use neg-elim; 2
+4. Q =&gt; Q : use impl-idemp;
+5. Q : use disj-elim; 1, 3, 4
+
+
+theorem disj-syllogism-r
+if
+  * P \/ Q
+  * ~Q
+then
+  * P
+
+proof
+1. P \/ Q : assumption 1
+2. Q \/ P : use disj-comm; 1
+3. ~Q : assumption 2
+4. P : use disj-syllogism-l; 2, 3</code></pre>
 
     </main>
 

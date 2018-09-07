@@ -2,7 +2,7 @@
 title: Simple Equations
 ---
 
-We have enough technology now to solve some very simple equations over the natural numbers. First: the equation $$0 = 1 + n$$ has no solutions.
+We have enough technology now to solve some very simple equations over the natural numbers. First: the equation $$0 = 1 + n$$ has no solutions $n$.
 
 ~~~ {.mycelium}
 theorem zero-not-one-plus
@@ -27,7 +27,9 @@ proof
 10. ~(∃n. \zero == \plus(\next(\zero))(n)) : use neg-intro; 7, 9
 ~~~
 
- ~~~ {.mycelium}
+We can show that $$0 = a + b$$ has only one solution, namely $a = 0$ and $b = 0$.
+
+~~~ {.mycelium}
 theorem plus-eq-zero
 if
   * \plus(a)(b) == \zero
@@ -35,13 +37,25 @@ then
   * (a == \zero) /\ (b == \zero)
 
 proof
-1.    b == \zero : hypothesis b-zero
-2.    a : chain
-       == \plus(a)(\zero) : flop use plus-zero-r;
-       == \plus(a)(b) : flop hypothesis b-zero at z in \plus(a)(z)
-       == \zero : assumption 1
-3.    (a == \zero) /\ (b == \zero) : use conj-intro; 2, 1
-4.  (b == \zero) => ((a == \zero) /\ (b == \zero)) : discharge b-zero; 3
-5.    (b == n) => ((a == \zero) /\ (b == \zero)) : hypothesis b-n
-6.    
- ~~~
+1.    ∃k. a == \next(k) : hypothesis a-next
+2.      a == \next(u) : hypothesis u
+3.      \zero : chain
+         == \plus(a)(b) : flop assumption 1
+         == \plus(\next(u))(b) : hypothesis u at z in \plus(z)(b)
+         == \next(\plus(u)(b)) : use plus-next-l;
+4.      ∃k. \zero == \next(k) : exists-intro k <- \plus(u)(b); 3
+5.    (a == \next(u)) => (∃k. \zero == \next(k)) : discharge u; 4
+6.    ∃k. \zero == \next(k) : exists-elim u <- k; 1, 5
+7.  (∃k. a == \next(k)) => (∃k. \zero == \next(k))
+     : discharge a-next; 6
+8.  ~(∃k. \zero == \next(k)) : use nat-disc;
+9.  (∃k. a == \next(k)) => (~(∃k. \zero == \next(k))) : use simp; 8
+10. ~(∃k. a == \next(k)) : use neg-intro; 7, 9
+11. (a == \zero) \/ (∃k. a == \next(k)) : use nat-disj-cases-1;
+13. a == \zero : use disj-syllogism-r; 11, 10
+14. b : chain
+     == \plus(\zero)(b) : flop use plus-zero-l;
+     == \plus(a)(b) : flop use reiterate; 13 at z in \plus(z)(b)
+     == \zero : assumption 1
+15. (a == \zero) /\ (b == \zero) : use conj-intro; 13, 14
+~~~

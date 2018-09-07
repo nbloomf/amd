@@ -81,6 +81,9 @@
 <pre class="mycelium"><code>type \zero :: Nat
 
 type \next :: Nat -&gt; Nat</code></pre>
+<p>And <span class="math inline">\(\zero\)</span> is not of the form <span class="math inline">\(\next(n)\)</span>.</p>
+<pre class="mycelium"><code>rule nat-disc
+* ~(∃n. \zero == \next(n))</code></pre>
 <p>The unique homomorphism from <span class="math inline">\(\Nat\)</span> to some other <span class="math inline">\(F\)</span>-algebra is denoted <span class="math inline">\(\natrec\)</span>, and is the unique map making the following diagram commute.</p>
 <p><span class="math display">\[\require{AMScd}
 \begin{CD}
@@ -110,7 +113,7 @@ if
   * ∀n. ((k == n) =&gt; P) =&gt; ((k == \next(n)) =&gt; P)
 then
   * P</code></pre>
-<p>Using the uniqueness of <span class="math inline">\(\natrec\)</span>, we can characterize <span class="math inline">\(\id\)</span> as an <span class="math inline">\(F\)</span>-algebra homomorphism.</p>
+<p>Using the uniqueness of <span class="math inline">\(\natrec\)</span>, we can characterize <span class="math inline">\(\id\)</span> as an <span class="math inline">\(F\)</span>-algebra homomorphism. This theorem essentially states that <span class="math display">\[n = \underbrace{1 + 1 + \cdots + 1}_{n\ \mathrm{times}}\]</span></p>
 <pre class="mycelium"><code>theorem natrec-zero-next
 * \id == \natrec(\zero)(\next)
 
@@ -120,6 +123,92 @@ proof
     == \next : use comp-id-l;
     == \comp(\next)(\id) : flop use comp-id-r;
 3. \id == \natrec(\zero)(\next) : use natrec-unique; 1, 2</code></pre>
+<p>We can think of the induction principle on <span class="math inline">\(\Nat\)</span> as facilitating <em>proof by case analysis</em>; we can construct evidence for an arbitrary judgement <span class="math inline">\(P\)</span> by splitting the universe into two pieces and finding evidence for <span class="math inline">\(P\)</span> in each piece. This isn’t the only useful kind of case analysis. For instance, we can show that every natural number is either <span class="math inline">\(\zero\)</span> or of the form <span class="math inline">\(\next(k)\)</span>; this facilitates case analysis of a different sort.</p>
+<pre class="mycelium"><code>theorem nat-disj-cases-1
+* (a == \zero) \/ (∃k. a == \next(k))
+
+proof
+1.    a == \zero : hypothesis a-zero
+2.    (a == \zero) \/ (∃k. a == \next(k)) : use disj-intro-l; 1
+3.  (a == \zero) =&gt; ((a == \zero) \/ (∃k. a == \next(k)))
+     : discharge a-zero; 2
+4.      a == \next(n) : hypothesis a-next
+5.      ∃k. a == \next(k) : exists-intro k &lt;- n; 4
+6.      (a == \zero) \/ (∃k. a == \next(k)) : use disj-intro-r; 5
+7.  (a == \next(n)) =&gt; ((a == \zero) \/ (∃k. a == \next(k)))
+     : discharge a-next; 6
+8.  ((a == n) =&gt; ((a == \zero) \/ (∃k. a == \next(k)))) =&gt;
+      ((a == \next(n)) =&gt; ((a == \zero) \/ (∃k. a == \next(k))))
+     : use simp; 7
+9.  ∀t. ((a == t) =&gt; ((a == \zero) \/ (∃k. a == \next(k)))) =&gt;
+      ((a == \next(t)) =&gt; ((a == \zero) \/ (∃k. a == \next(k))))
+     : forall-intro n -&gt; t; 8
+10. (a == \zero) \/ (∃k. a == \next(k)) : use nat-induction; 3, 9</code></pre>
+<p>It’s also handy to state this result in a more general form.</p>
+<pre class="mycelium"><code>theorem nat-cases-1
+if
+  * (a == \zero) =&gt; P
+  * (∃k. a == \next(k)) =&gt; P
+then
+  * P
+
+proof
+1. (a == \zero) \/ (∃k. a == \next(k)) : use nat-disj-cases-1;
+2. (a == \zero) =&gt; P : assumption 1
+3. (∃k. a == \next(k)) =&gt; P : assumption 2
+4. P : use disj-elim; 1, 2, 3</code></pre>
+<p>Similarly, every natural number is either <span class="math inline">\(\zero\)</span>, <span class="math inline">\(\next(\zero)\)</span>, or <span class="math inline">\(\next(\next(k))\)</span> for some <span class="math inline">\(k\)</span>. This allows a three-way case analysis.</p>
+<pre class="mycelium"><code>theorem nat-disj-cases-2
+* (a == \zero) \/ ((a == \next(\zero)) \/ (∃k. a == \next(\next(k))))
+
+proof
+1.  (a == \zero) \/ (∃k. a == \next(k)) : use nat-disj-cases-1;
+2.    a == \zero : hypothesis a-zero
+3.    (a == \zero) \/ ((a == \next(\zero)) \/ (∃k. a == \next(\next(k)))) : use disj-intro-l; 2
+4.  (a == \zero) =&gt; ((a == \zero) \/ ((a == \next(\zero)) \/ (∃k. a == \next(\next(k))))) : discharge a-zero; 3
+5.    ∃k. a == \next(k) : hypothesis a-next
+6.      a == \next(b) : hypothesis b
+7.      (b == \zero) \/ (∃k. b == \next(k)) : use nat-disj-cases-1;
+8.        b == \zero : hypothesis b-zero
+9.        a : chain
+           == \next(b) : hypothesis b
+           == \next(\zero) : hypothesis b-zero at z in \next(z)
+10.       (a == \next(\zero)) \/ (∃k. a == \next(\next(k))) : use disj-intro-l; 9
+11.     (b == \zero) =&gt; ((a == \next(\zero)) \/ (∃k. a == \next(\next(k)))) : discharge b-zero; 10
+12.       ∃k. b == \next(k) : hypothesis b-next
+13.         b == \next(c) : hypothesis c
+14.         a : chain
+             == \next(b) : hypothesis b
+             == \next(\next(c)) : hypothesis c at z in \next(z)
+15.         ∃k. a == \next(\next(k)) : exists-intro k &lt;- c; 14
+16.       (b == \next(c)) =&gt; (∃k. a == \next(\next(k))) : discharge c; 15
+17.       ∃k. a == \next(\next(k)) : exists-elim c &lt;- k; 12, 16
+18.       (a == \next(\zero)) \/ (∃k. a == \next(\next(k))) : use disj-intro-r; 17
+19.     (∃k. b == \next(k)) =&gt; ((a == \next(\zero)) \/ (∃k. a == \next(\next(k)))) : discharge b-next; 18
+20.     (a == \next(\zero)) \/ (∃k. a == \next(\next(k))) : use disj-elim; 7, 11, 19
+21.     (a == \zero) \/ ((a == \next(\zero)) \/ (∃k. a == \next(\next(k)))) : use disj-intro-r; 20
+22.   (a == \next(b)) =&gt; ((a == \zero) \/ ((a == \next(\zero)) \/ (∃k. a == \next(\next(k))))) : discharge b; 21
+23.   (a == \zero) \/ ((a == \next(\zero)) \/ (∃k. a == \next(\next(k)))) : exists-elim b &lt;- k; 5, 22
+24. (∃k. a == \next(k)) =&gt; ((a == \zero) \/ ((a == \next(\zero)) \/ (∃k. a == \next(\next(k))))) : discharge a-next; 23
+25. (a == \zero) \/ ((a == \next(\zero)) \/ (∃k. a == \next(\next(k)))) : use disj-elim; 1, 4, 24</code></pre>
+<p>We’ll also state this in a more general form.</p>
+<pre class="mycelium"><code>theorem nat-cases-2
+if
+  * (a == \zero) =&gt; P
+  * (a == \next(\zero)) =&gt; P
+  * (∃k. a == \next(\next(k))) =&gt; P
+then
+  * P
+
+proof
+1. (a == \zero) \/ ((a == \next(\zero)) \/ (∃k. a == \next(\next(k)))) : use nat-disj-cases-2;
+2. (a == \zero) =&gt; P : assumption 1
+3.   (a == \next(\zero)) \/ (∃k. a == \next(\next(k))) : hypothesis t
+4.   (a == \next(\zero)) =&gt; P : assumption 2
+5.   (∃k. a == \next(\next(k))) =&gt; P : assumption 3
+6.   P : use disj-elim; 3, 4, 5
+7. ((a == \next(\zero)) \/ (∃k. a == \next(\next(k)))) =&gt; P : discharge t; 6
+8. P : use disj-elim; 1, 2, 7</code></pre>
 
     </main>
 

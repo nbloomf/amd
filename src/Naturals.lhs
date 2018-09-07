@@ -64,7 +64,7 @@ then
   * P
 ~~~
 
-Using the uniqueness of $\natrec$, we can characterize $\id$ as an $F$-algebra homomorphism.
+Using the uniqueness of $\natrec$, we can characterize $\id$ as an $F$-algebra homomorphism. This theorem essentially states that $$n = \underbrace{1 + 1 + \cdots + 1}_{n\ \mathrm{times}}$$
 
 ~~~ {.mycelium}
 theorem natrec-zero-next

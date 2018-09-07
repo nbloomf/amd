@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Arithmetic Made Difficult - Simple Equations</title>
+    <link rel="stylesheet" href="../../css/default.css" />
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  </head>
+
+  <body>
+    <header>
+      <div class="logo">
+        <a href="../../">Arithmetic Made Difficult</a>
+      </div>
+      <nav>
+        <a href="../../">Contents</a>
+        <a href="../../about.html">About</a>
+      </nav>
+    </header>
+
+    <main role="main">
+      <h1>Simple Equations</h1>
+      <!-- LaTeX Macros -->
+<div style="display:none;">
+<!-- Functions -->
+\(\newcommand{\id}{\mathsf{id}}\)
+\(\newcommand{\comp}{\mathsf{comp}}\)
+\(\newcommand{\app}{\mathsf{app}}\)
+\(\newcommand{\const}{\mathsf{const}}\)
+\(\newcommand{\flip}{\mathsf{flip}}\)
+\(\newcommand{\clone}{\mathsf{clone}}\)
+
+<!-- Unit -->
+\(\newcommand{\Unit}{\mathsf{Unit}}\)
+\(\newcommand{\unit}{\mathsf{unit}}\)
+\(\newcommand{\only}{\mathsf{only}}\)
+
+<!-- Pair -->
+\(\newcommand{\Pair}{\mathsf{Pair}}\)
+\(\newcommand{\pair}{\mathsf{pair}}\)
+\(\newcommand{\fst}{\mathsf{fst}}\)
+\(\newcommand{\snd}{\mathsf{snd}}\)
+\(\newcommand{\tup}{\mathsf{tup}}\)
+
+<!-- Either -->
+\(\newcommand{\Either}{\mathsf{Either}}\)
+\(\newcommand{\either}{\mathsf{either}}\)
+\(\newcommand{\lft}{\mathsf{lft}}\)
+\(\newcommand{\rgt}{\mathsf{rgt}}\)
+
+<!-- Maybe -->
+\(\newcommand{\Maybe}{\mathsf{Maybe}}\)
+\(\newcommand{\nothing}{\mathsf{nothing}}\)
+\(\newcommand{\just}{\mathsf{just}}\)
+\(\newcommand{\opt}{\mathsf{opt}}\)
+
+<!-- Bool -->
+\(\newcommand{\Bool}{\mathsf{Bool}}\)
+\(\newcommand{\true}{\mathsf{true}}\)
+\(\newcommand{\false}{\mathsf{false}}\)
+\(\newcommand{\if}{\mathsf{if}}\)
+\(\newcommand{\and}{\mathsf{and}}\)
+\(\newcommand{\or}{\mathsf{or}}\)
+\(\newcommand{\not}{\mathsf{not}}\)
+\(\newcommand{\eq}{\mathsf{eq}}\)
+
+<!-- Nat -->
+\(\newcommand{\Nat}{\mathsf{Nat}}\)
+\(\newcommand{\zero}{\mathsf{zero}}\)
+\(\newcommand{\next}{\mathsf{next}}\)
+\(\newcommand{\natrec}{\mathsf{natrec}}\)
+\(\newcommand{\prev}{\mathsf{prev}}\)
+\(\newcommand{\plus}{\mathsf{plus}}\)
+\(\newcommand{\times}{\mathsf{times}}\)
+</div>
+<!-- End LaTeX Macros -->
+
+<p>We have enough technology now to solve some very simple equations over the natural numbers. First: the equation <span class="math display">\[0 = 1 + n\]</span> has no solutions <span class="math inline">\(n\)</span>.</p>
+<pre class="mycelium"><code>theorem zero-not-one-plus
+* ~(∃n. \zero == \plus(\next(\zero))(n))
+
+proof
+1.    ∃n. \zero == \plus(\next(\zero))(n) : hypothesis t
+2.      \zero == \plus(\next(\zero))(u) : hypothesis u
+3.      \zero : chain
+         == \plus(\next(\zero))(u) : hypothesis u
+         == \next(\plus(\zero)(u)) : use plus-next-l;
+         == \next(u) : use plus-zero-l; at z in \next(z)
+4.      ∃n. \zero == \next(n) : exists-intro n &lt;- u; 3
+5.    (\zero == \plus(\next(\zero))(u)) =&gt;
+        (∃n. \zero == \next(n)) : discharge u; 4
+6.    ∃n. \zero == \next(n) : exists-elim u &lt;- n; 1, 5
+7.  (∃n. \zero == \plus(\next(\zero))(n)) =&gt;
+      (∃n. \zero == \next(n)) : discharge t; 6
+8.  ~(∃n. \zero == \next(n)) : use nat-disc;
+9.  (∃n. \zero == \plus(\next(\zero))(n)) =&gt;
+      (~(∃n. \zero == \next(n))) : use simp; 8
+10. ~(∃n. \zero == \plus(\next(\zero))(n)) : use neg-intro; 7, 9</code></pre>
+<p>We can show that <span class="math display">\[0 = a + b\]</span> has only one solution, namely <span class="math inline">\(a = 0\)</span> and <span class="math inline">\(b = 0\)</span>.</p>
+<pre class="mycelium"><code>theorem plus-eq-zero
+if
+  * \plus(a)(b) == \zero
+then
+  * (a == \zero) /\ (b == \zero)
+
+proof
+1.    ∃k. a == \next(k) : hypothesis a-next
+2.      a == \next(u) : hypothesis u
+3.      \zero : chain
+         == \plus(a)(b) : flop assumption 1
+         == \plus(\next(u))(b) : hypothesis u at z in \plus(z)(b)
+         == \next(\plus(u)(b)) : use plus-next-l;
+4.      ∃k. \zero == \next(k) : exists-intro k &lt;- \plus(u)(b); 3
+5.    (a == \next(u)) =&gt; (∃k. \zero == \next(k)) : discharge u; 4
+6.    ∃k. \zero == \next(k) : exists-elim u &lt;- k; 1, 5
+7.  (∃k. a == \next(k)) =&gt; (∃k. \zero == \next(k))
+     : discharge a-next; 6
+8.  ~(∃k. \zero == \next(k)) : use nat-disc;
+9.  (∃k. a == \next(k)) =&gt; (~(∃k. \zero == \next(k))) : use simp; 8
+10. ~(∃k. a == \next(k)) : use neg-intro; 7, 9
+11. (a == \zero) \/ (∃k. a == \next(k)) : use nat-disj-cases-1;
+13. a == \zero : use disj-syllogism-r; 11, 10
+14. b : chain
+     == \plus(\zero)(b) : flop use plus-zero-l;
+     == \plus(a)(b) : flop use reiterate; 13 at z in \plus(z)(b)
+     == \zero : assumption 1
+15. (a == \zero) /\ (b == \zero) : use conj-intro; 13, 14</code></pre>
+
+    </main>
+
+    <footer>
+      Site generated by
+      <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+    </footer>
+  </body>
+</html>

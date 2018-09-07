@@ -66,7 +66,7 @@ proof
 9. \comp(\not)(\not) == \id : use fun-eq; 8
 ~~~
 
-And we have DeMorgan's laws: $\not$ distributes over $\or$:
+And we have DeMorgan's laws: $\not$ distributes over $\or$ (kind of):
 
 ~~~ {.mycelium}
 theorem not-or
@@ -104,7 +104,7 @@ proof
     : use bool-induction; 3, 6
 ~~~
 
-And $\not$ distributes over $\and$.
+And $\not$ distributes over $\and$ (kind of).
 
 ~~~ {.mycelium}
 theorem not-and

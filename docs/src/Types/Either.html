@@ -89,6 +89,9 @@ x @= x @= x
 
 type \rgt :: b -&gt; Either a b
 
+rule either-disc
+* ~(∃a. (∃b. \lft(a) == \rgt(b)))
+
 type \either :: (a -&gt; t) -&gt; (b -&gt; t) -&gt; Either a b -&gt; t</code></pre>
 <p>Next, the commutativity of the diagram.</p>
 <pre class="mycelium"><code>rule either-lft

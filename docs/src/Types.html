@@ -101,11 +101,11 @@ F(y) @&gt;&gt;{\beta}&gt; y
 <ol type="1">
 <li>A <em>type</em>, representing the initial <span class="math inline">\(F\)</span>-algebra <span class="math inline">\(\mathcal{A}\)</span>;</li>
 <li>One or more <em>constructors</em>, representing the algebra map <span class="math inline">\(F(\mathcal{A}) \rightarrow \mathcal{A}\)</span>;</li>
-<li>A <em>deconstruction operator</em>, representing the unique algebra morphism <span class="math inline">\(\mathcal{A} \rightarrow x\)</span>;</li>
-<li>One or more <em>inference rules</em> stating that the analysis operator is a unique <span class="math inline">\(F\)</span>-algebra morphism;</li>
-<li>An inference rule stating an <em>analysis principle</em> for <span class="math inline">\(\mathcal{A}\)</span>.</li>
+<li>One or more <em>discriminators</em>, showing that the constructors are distinct from each other;</li>
+<li>A <em>destructor</em>, representing the unique algebra morphism <span class="math inline">\(\mathcal{A} \rightarrow x\)</span>;</li>
+<li>An <em>analysis principle</em> for <span class="math inline">\(\mathcal{A}\)</span>.</li>
 </ol>
-<p>Taken together, these ingredients make it possible to define recursive types and carry out proofs by induction on them. The deconstruction operator is especially interesting; it will turn out to be “fold” on lists, “countdown” on natural numbers, and “if” on booleans.</p>
+<p>Taken together, these ingredients make it possible to define recursive types and carry out proofs by induction on them. The destructor is especially interesting; it will turn out to be “fold” on lists, “countdown” on natural numbers, and “if” on booleans.</p>
 <p>Hopefully this will make more sense when we see some examples.</p>
 
     </main>

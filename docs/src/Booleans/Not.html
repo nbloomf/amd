@@ -129,7 +129,7 @@ proof
 7. \comp(\not)(\not)(p) == \id(p) : use bool-induction; 3, 6
 8. ∀x. \comp(\not)(\not)(x) == \id(x) : forall-intro p -&gt; x; 7
 9. \comp(\not)(\not) == \id : use fun-eq; 8</code></pre>
-<p>And we have DeMorgan’s laws: <span class="math inline">\(\not\)</span> distributes over <span class="math inline">\(\or\)</span>:</p>
+<p>And we have DeMorgan’s laws: <span class="math inline">\(\not\)</span> distributes over <span class="math inline">\(\or\)</span> (kind of):</p>
 <pre class="mycelium"><code>theorem not-or
 * \not(\or(p)(q)) == \and(\not(p))(\not(q))
 
@@ -163,7 +163,7 @@ proof
     : discharge p-F; 5
 7. \not(\or(p)(q)) == \and(\not(p))(\not(q))
     : use bool-induction; 3, 6</code></pre>
-<p>And <span class="math inline">\(\not\)</span> distributes over <span class="math inline">\(\and\)</span>.</p>
+<p>And <span class="math inline">\(\not\)</span> distributes over <span class="math inline">\(\and\)</span> (kind of).</p>
 <pre class="mycelium"><code>theorem not-and
 * \not(\and(p)(q)) == \or(\not(p))(\not(q))
 

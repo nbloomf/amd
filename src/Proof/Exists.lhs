@@ -2,13 +2,14 @@
 title: Existential Quantification
 ---
 
+We also have built in introduction and elimination rules for the existential quantifier. The introduction rule looks like
 
 $$\begin{array}{c}
 \Phi[u \mapsto e] \\ \hline
 \exists u . \Phi
 \end{array}$$
 
-while `ElimE` is
+with no side conditions, while the elimination rule is
 
 $$\begin{array}{c}
 \exists x. \Phi & & \Phi[x \mapsto u] \Rightarrow \Psi \\ \hline

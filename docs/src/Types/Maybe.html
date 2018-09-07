@@ -80,7 +80,10 @@
 <p>Our next inductive type is <span class="math inline">\(\Maybe\)</span>, which behaves just like <span class="math inline">\(a\)</span> with an extra value tacked on. Regular <span class="math inline">\(a\)</span>s are constructed with <span class="math inline">\(\just\)</span>, and the extra value is called <span class="math inline">\(\nothing\)</span>.</p>
 <pre class="mycelium"><code>type \just :: a -&gt; Maybe a
 
-type \nothing :: Maybe a</code></pre>
+type \nothing :: Maybe a
+
+rule maybe-disc
+* ~(∃a. \nothing == \just(a))</code></pre>
 <p>We can think about <span class="math inline">\(\Maybe\)</span> as the initial algebra of the constant functor to <span class="math inline">\(\Either\ \Unit\ a\)</span>, where <span class="math inline">\(a\)</span> is fixed, and we think of this functor as the pointwise sum of the constant functors to <span class="math inline">\(\Unit\)</span> and <span class="math inline">\(a\)</span>.</p>
 <p><span class="math display">\[\require{AMScd}
 \begin{CD}

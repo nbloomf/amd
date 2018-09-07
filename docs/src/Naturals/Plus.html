@@ -166,6 +166,14 @@ proof
       ((b == \next(k)) =&gt; (\plus(\next(a))(b) == \next(\plus(a)(b))))
      : forall-intro n -&gt; k; 11
 13. \plus(\next(a))(b) == \next(\plus(a)(b)) : use nat-induction; 3, 12</code></pre>
+<p>We can move <span class="math inline">\(\next\)</span> from one argument to the other inside <span class="math inline">\(\plus\)</span>.</p>
+<pre class="mycelium"><code>theorem plus-next
+* \plus(\next(a))(b) == \plus(a)(\next(b))
+
+proof
+1. \plus(\next(a))(b) : chain
+    == \next(\plus(a)(b)) : use plus-next-l;
+    == \plus(a)(\next(b)) : flop use plus-next-r;</code></pre>
 <p><span class="math inline">\(\plus\)</span> is commutative.</p>
 <pre class="mycelium"><code>theorem plus-comm
 * \plus(a)(b) == \plus(b)(a)
