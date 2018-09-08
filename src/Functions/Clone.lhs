@@ -7,7 +7,7 @@ $\clone$ is a helper function that duplicates function arguments.
 ~~~ {.mycelium}
 type \clone :: (a -> a -> b) -> a -> b
 
-rule def-clone
+definition def-clone
 * \clone(f)(a) == f(a)(a)
 ~~~
 

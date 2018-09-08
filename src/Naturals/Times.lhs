@@ -7,7 +7,7 @@ We can define $\times$ as iterated addition.
 ~~~ {.mycelium}
 type \times :: Nat -> Nat -> Nat
 
-rule def-times
+definition def-times
 * \times(a) == \natrec(\zero)(\plus(a))
 ~~~
 

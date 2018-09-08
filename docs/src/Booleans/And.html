@@ -71,6 +71,7 @@
 \(\newcommand{\zero}{\mathsf{zero}}\)
 \(\newcommand{\next}{\mathsf{next}}\)
 \(\newcommand{\natrec}{\mathsf{natrec}}\)
+\(\newcommand{\simprec}{\mathsf{simprec}}\)
 \(\newcommand{\prev}{\mathsf{prev}}\)
 \(\newcommand{\plus}{\mathsf{plus}}\)
 \(\newcommand{\times}{\mathsf{times}}\)
@@ -80,7 +81,7 @@
 <p>The first boolean operator we’ll define is <span class="math inline">\(\and\)</span>.</p>
 <pre class="mycelium"><code>type \and :: Bool -&gt; Bool -&gt; Bool
 
-rule def-and
+definition def-and
 * \and(p)(q) == \if(\if(\true)(\false)(q))(\false)(p)</code></pre>
 <p>We’ll start by computing <span class="math inline">\(\and\)</span> explicitly.</p>
 <pre class="mycelium"><code>theorem and-true-true

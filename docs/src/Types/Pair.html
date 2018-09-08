@@ -71,6 +71,7 @@
 \(\newcommand{\zero}{\mathsf{zero}}\)
 \(\newcommand{\next}{\mathsf{next}}\)
 \(\newcommand{\natrec}{\mathsf{natrec}}\)
+\(\newcommand{\simprec}{\mathsf{simprec}}\)
 \(\newcommand{\prev}{\mathsf{prev}}\)
 \(\newcommand{\plus}{\mathsf{plus}}\)
 \(\newcommand{\times}{\mathsf{times}}\)
@@ -278,13 +279,34 @@ proof
     : eq-elim z (\tup(a2)(z) == \tup(a2)(b2)); 6, 7
 9. \tup(a1)(b1) == \tup(a2)(b2) : use eq-trans; 5, 8</code></pre>
 <p>One more helper: we can explicitly decompose values of type <span class="math inline">\(\Pair\ a\ b\)</span> as tuples.</p>
-<pre class="mycelium"><code>theorem pair-tup
+<pre class="mycelium"><code>theorem tup-id
 * \tup(\fst(x))(\snd(x)) == x
 
 proof
 1. \fst(x) == \fst(x) : eq-intro
 2. \snd(x) == \snd(x) : eq-intro
 3. \tup(\fst(x))(\snd(x)) == x : use tup-fst-snd; 1, 2</code></pre>
+<pre class="mycelium"><code>theorem pair-tup
+* \tup(f(x))(g(x)) == \pair(f)(g)(x)
+
+proof
+1. f(x) : chain
+    == \fst(\pair(f)(g)(x)) : flop use fst-pair;
+2. g(x) : chain
+    == \snd(\pair(f)(g)(x)) : flop use snd-pair;
+3. \tup(f(x))(g(x)) == \pair(f)(g)(x) : use tup-fst-snd; 1, 2</code></pre>
+<pre class="mycelium"><code>type \uncurry :: (a -&gt; b -&gt; c) -&gt; Pair a b -&gt; c
+
+definition def-uncurry
+* \uncurry(f)(x) == f(\fst(x))(\snd(x))</code></pre>
+<pre class="mycelium"><code>theorem uncurry-tup
+* \uncurry(f)(\tup(a)(b)) == f(a)(b)
+
+proof
+1. \uncurry(f)(\tup(a)(b)) : chain
+    == f(\fst(\tup(a)(b)))(\snd(\tup(a)(b))) : use def-uncurry;
+    == f(a)(\snd(\tup(a)(b))) : use fst-tup; at z in f(z)(\snd(\tup(a)(b)))
+    == f(a)(b) : use snd-tup; at z in f(a)(z)</code></pre>
 
     </main>
 

@@ -71,6 +71,7 @@
 \(\newcommand{\zero}{\mathsf{zero}}\)
 \(\newcommand{\next}{\mathsf{next}}\)
 \(\newcommand{\natrec}{\mathsf{natrec}}\)
+\(\newcommand{\simprec}{\mathsf{simprec}}\)
 \(\newcommand{\prev}{\mathsf{prev}}\)
 \(\newcommand{\plus}{\mathsf{plus}}\)
 \(\newcommand{\times}{\mathsf{times}}\)
@@ -81,7 +82,7 @@
 <p>This suggests that one way to come up with interesting functions is to start with a known theorem, turn it into a function signature, and do the most obvious thing. Another handy function we can construct this way is the constant function; this takes two inputs but ignores the second, returning the first unchanged.</p>
 <pre class="mycelium"><code>type \const :: a -&gt; b -&gt; a
 
-rule def-const
+definition def-const
 * \const(a)(b) == a</code></pre>
 <p>Now <span class="math inline">\(\const\)</span> absorbs under composition from the left.</p>
 <pre class="mycelium"><code>theorem comp-const-l

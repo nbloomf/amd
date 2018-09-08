@@ -9,7 +9,7 @@ This suggests that one way to come up with interesting functions is to start wit
 ~~~ {.mycelium}
 type \const :: a -> b -> a
 
-rule def-const
+definition def-const
 * \const(a)(b) == a
 ~~~
 

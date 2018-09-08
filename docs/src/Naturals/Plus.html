@@ -71,6 +71,7 @@
 \(\newcommand{\zero}{\mathsf{zero}}\)
 \(\newcommand{\next}{\mathsf{next}}\)
 \(\newcommand{\natrec}{\mathsf{natrec}}\)
+\(\newcommand{\simprec}{\mathsf{simprec}}\)
 \(\newcommand{\prev}{\mathsf{prev}}\)
 \(\newcommand{\plus}{\mathsf{plus}}\)
 \(\newcommand{\times}{\mathsf{times}}\)
@@ -80,7 +81,7 @@
 <p>We can define <span class="math inline">\(\plus\)</span> on natural numbers in terms of <span class="math inline">\(\natrec\)</span>.</p>
 <pre class="mycelium"><code>type \plus :: Nat -&gt; Nat -&gt; Nat
 
-rule def-plus
+definition def-plus
 * \plus(a)(b) == \natrec(a)(\next)(b)</code></pre>
 <p>And we can characterize <span class="math inline">\(\plus\)</span> as the unique solution to a system of defining equations.</p>
 <pre class="mycelium"><code>theorem plus-unique

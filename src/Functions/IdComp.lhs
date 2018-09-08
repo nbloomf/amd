@@ -62,7 +62,7 @@ The simplest function is the _identity_, which takes an input and returns it unc
 ~~~ {.mycelium}
 type \id :: a -> a
 
-rule def-id
+definition def-id
 * \id(x) == x
 ~~~
 
@@ -71,7 +71,7 @@ There's not a whole lot we can do with the identity function by itself, but thin
 ~~~ {.mycelium}
 type \comp :: (b -> c) -> (a -> b) -> a -> c
 
-rule def-comp
+definition def-comp
 * \comp(g)(f)(a) == g(f(a))
 ~~~
 

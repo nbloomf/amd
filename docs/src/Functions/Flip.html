@@ -71,6 +71,7 @@
 \(\newcommand{\zero}{\mathsf{zero}}\)
 \(\newcommand{\next}{\mathsf{next}}\)
 \(\newcommand{\natrec}{\mathsf{natrec}}\)
+\(\newcommand{\simprec}{\mathsf{simprec}}\)
 \(\newcommand{\prev}{\mathsf{prev}}\)
 \(\newcommand{\plus}{\mathsf{plus}}\)
 \(\newcommand{\times}{\mathsf{times}}\)
@@ -80,7 +81,7 @@
 <p>All functions in the simply typed lambda calculus take only one argument; we can simulate functions of multiple arguments by making the <em>output</em> another function. This imposes a strict order on the arguments. <span class="math inline">\(\flip\)</span> is a handy function that can rearrange another function’s arguments.</p>
 <pre class="mycelium"><code>type \flip :: (a -&gt; b -&gt; c) -&gt; b -&gt; a -&gt; c
 
-rule def-flip
+definition def-flip
 * \flip(f)(b)(a) == f(a)(b)</code></pre>
 <p><span class="math inline">\(\flip\)</span> is an involution:</p>
 <pre class="mycelium"><code>theorem flip-invol

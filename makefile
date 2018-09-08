@@ -20,6 +20,7 @@ modules = \
   src/Types/Either.lhs \
   src/Types/Maybe.lhs \
   src/Naturals.lhs \
+  src/Naturals/SimpleRecursion.lhs \
   src/Naturals/Previous.lhs \
   src/Naturals/Plus.lhs \
   src/Naturals/Times.lhs \
@@ -33,6 +34,8 @@ watch:
 
 check:
 	@mycelium $(modules)
+	@dot graph.dot -Tpng -o images/dependency-graph.png
+	@rm graph.dot
 
 deploy:
 	rm -rf ./docs

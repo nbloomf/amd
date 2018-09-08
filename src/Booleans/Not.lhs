@@ -7,7 +7,7 @@ Next we define boolean $\not$.
 ~~~ {.mycelium}
 type \not :: Bool -> Bool
 
-rule def-not
+definition def-not
 * \not(q) == \if(\false)(\true)(q)
 ~~~
 

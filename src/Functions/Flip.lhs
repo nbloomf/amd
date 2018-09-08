@@ -7,7 +7,7 @@ All functions in the simply typed lambda calculus take only one argument; we can
 ~~~ {.mycelium}
 type \flip :: (a -> b -> c) -> b -> a -> c
 
-rule def-flip
+definition def-flip
 * \flip(f)(b)(a) == f(a)(b)
 ~~~
 

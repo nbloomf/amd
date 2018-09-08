@@ -7,7 +7,7 @@ Next we define $\or$.
 ~~~ {.mycelium}
 type \or :: Bool -> Bool -> Bool
 
-rule def-or
+definition def-or
 * \or(p)(q) == \if(\true)(\if(\true)(\false)(q))(p)
 ~~~
 

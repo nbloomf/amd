@@ -4,6 +4,8 @@ title: Arithmetic Made Difficult
 
 An experiment in mechanically verified constructive mathematics.
 
+You can see a theorem [dependency graph](/images/dependency-graph.png) (warning: ridiculous).
+
 Contents
 --------
 
@@ -32,6 +34,7 @@ Contents
   * [Maybe](/src/Types/Maybe.html)
 * [Natural Numbers](/src/Naturals.html)
   * Recursion Operators
+    * [Simple Recursion](/src/Naturals/SimpleRecursion.html)
   * Arithmetic
     * [Previous](/src/Naturals/Previous.html)
     * [Plus](/src/Naturals/Plus.html)

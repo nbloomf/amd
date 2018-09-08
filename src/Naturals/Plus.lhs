@@ -7,7 +7,7 @@ We can define $\plus$ on natural numbers in terms of $\natrec$.
 ~~~ {.mycelium}
 type \plus :: Nat -> Nat -> Nat
 
-rule def-plus
+definition def-plus
 * \plus(a)(b) == \natrec(a)(\next)(b)
 ~~~
 

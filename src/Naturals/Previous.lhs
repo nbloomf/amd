@@ -7,7 +7,7 @@ The algebra map $$\either(\only(\zero))(\next) : \Nat \rightarrow \Either\ \Unit
 ~~~ {.mycelium}
 type \prev :: Nat -> Either Unit Nat
 
-rule def-prev
+definition def-prev
 * \prev == \natrec(\lft(\unit))(\either(\only(\rgt(\zero)))(\comp(\rgt)(\next)))
 ~~~
 

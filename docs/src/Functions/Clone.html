@@ -71,6 +71,7 @@
 \(\newcommand{\zero}{\mathsf{zero}}\)
 \(\newcommand{\next}{\mathsf{next}}\)
 \(\newcommand{\natrec}{\mathsf{natrec}}\)
+\(\newcommand{\simprec}{\mathsf{simprec}}\)
 \(\newcommand{\prev}{\mathsf{prev}}\)
 \(\newcommand{\plus}{\mathsf{plus}}\)
 \(\newcommand{\times}{\mathsf{times}}\)
@@ -80,7 +81,7 @@
 <p><span class="math inline">\(\clone\)</span> is a helper function that duplicates function arguments.</p>
 <pre class="mycelium"><code>type \clone :: (a -&gt; a -&gt; b) -&gt; a -&gt; b
 
-rule def-clone
+definition def-clone
 * \clone(f)(a) == f(a)(a)</code></pre>
 <p><span class="math inline">\(\clone\)</span> absorbs <span class="math inline">\(\flip\)</span> from the left.</p>
 <pre class="mycelium"><code>theorem clone-flip

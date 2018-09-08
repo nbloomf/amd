@@ -251,11 +251,41 @@ proof
 One more helper: we can explicitly decompose values of type $\Pair\ a\ b$ as tuples.
 
 ~~~ {.mycelium}
-theorem pair-tup
+theorem tup-id
 * \tup(\fst(x))(\snd(x)) == x
 
 proof
 1. \fst(x) == \fst(x) : eq-intro
 2. \snd(x) == \snd(x) : eq-intro
 3. \tup(\fst(x))(\snd(x)) == x : use tup-fst-snd; 1, 2
+~~~
+
+~~~ {.mycelium}
+theorem pair-tup
+* \tup(f(x))(g(x)) == \pair(f)(g)(x)
+
+proof
+1. f(x) : chain
+    == \fst(\pair(f)(g)(x)) : flop use fst-pair;
+2. g(x) : chain
+    == \snd(\pair(f)(g)(x)) : flop use snd-pair;
+3. \tup(f(x))(g(x)) == \pair(f)(g)(x) : use tup-fst-snd; 1, 2
+~~~
+
+~~~ {.mycelium}
+type \uncurry :: (a -> b -> c) -> Pair a b -> c
+
+definition def-uncurry
+* \uncurry(f)(x) == f(\fst(x))(\snd(x))
+~~~
+
+~~~ {.mycelium}
+theorem uncurry-tup
+* \uncurry(f)(\tup(a)(b)) == f(a)(b)
+
+proof
+1. \uncurry(f)(\tup(a)(b)) : chain
+    == f(\fst(\tup(a)(b)))(\snd(\tup(a)(b))) : use def-uncurry;
+    == f(a)(\snd(\tup(a)(b))) : use fst-tup; at z in f(z)(\snd(\tup(a)(b)))
+    == f(a)(b) : use snd-tup; at z in f(a)(z)
 ~~~

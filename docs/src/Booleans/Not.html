@@ -71,6 +71,7 @@
 \(\newcommand{\zero}{\mathsf{zero}}\)
 \(\newcommand{\next}{\mathsf{next}}\)
 \(\newcommand{\natrec}{\mathsf{natrec}}\)
+\(\newcommand{\simprec}{\mathsf{simprec}}\)
 \(\newcommand{\prev}{\mathsf{prev}}\)
 \(\newcommand{\plus}{\mathsf{plus}}\)
 \(\newcommand{\times}{\mathsf{times}}\)
@@ -80,7 +81,7 @@
 <p>Next we define boolean <span class="math inline">\(\not\)</span>.</p>
 <pre class="mycelium"><code>type \not :: Bool -&gt; Bool
 
-rule def-not
+definition def-not
 * \not(q) == \if(\false)(\true)(q)</code></pre>
 <p>We can explicitly compute <span class="math inline">\(\not\)</span>:</p>
 <pre class="mycelium"><code>theorem not-true

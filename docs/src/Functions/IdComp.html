@@ -71,6 +71,7 @@
 \(\newcommand{\zero}{\mathsf{zero}}\)
 \(\newcommand{\next}{\mathsf{next}}\)
 \(\newcommand{\natrec}{\mathsf{natrec}}\)
+\(\newcommand{\simprec}{\mathsf{simprec}}\)
 \(\newcommand{\prev}{\mathsf{prev}}\)
 \(\newcommand{\plus}{\mathsf{plus}}\)
 \(\newcommand{\times}{\mathsf{times}}\)
@@ -119,12 +120,12 @@ proof
 <p>The simplest function is the <em>identity</em>, which takes an input and returns it unchanged.</p>
 <pre class="mycelium"><code>type \id :: a -&gt; a
 
-rule def-id
+definition def-id
 * \id(x) == x</code></pre>
 <p>There’s not a whole lot we can do with the identity function by itself, but things get a little more interesting when we can <em>compose</em> functions. If <span class="math inline">\(f : a \rightarrow b\)</span> and <span class="math inline">\(g : b \rightarrow c\)</span> are functions, then their composite <span class="math inline">\(g \circ f\)</span> is the function <span class="math inline">\(a \rightarrow c\)</span> that applies <span class="math inline">\(g\)</span> to the output of <span class="math inline">\(f\)</span>.</p>
 <pre class="mycelium"><code>type \comp :: (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 
-rule def-comp
+definition def-comp
 * \comp(g)(f)(a) == g(f(a))</code></pre>
 <p>Composition is a partial multiplication on functions, and the identity function is its neutral element. Functions are unchanged when we compose with identity from the left:</p>
 <pre class="mycelium"><code>theorem comp-id-l

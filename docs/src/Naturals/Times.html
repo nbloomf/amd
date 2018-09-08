@@ -71,6 +71,7 @@
 \(\newcommand{\zero}{\mathsf{zero}}\)
 \(\newcommand{\next}{\mathsf{next}}\)
 \(\newcommand{\natrec}{\mathsf{natrec}}\)
+\(\newcommand{\simprec}{\mathsf{simprec}}\)
 \(\newcommand{\prev}{\mathsf{prev}}\)
 \(\newcommand{\plus}{\mathsf{plus}}\)
 \(\newcommand{\times}{\mathsf{times}}\)
@@ -80,7 +81,7 @@
 <p>We can define <span class="math inline">\(\times\)</span> as iterated addition.</p>
 <pre class="mycelium"><code>type \times :: Nat -&gt; Nat -&gt; Nat
 
-rule def-times
+definition def-times
 * \times(a) == \natrec(\zero)(\plus(a))</code></pre>
 <p>We can characterize <span class="math inline">\(\times\)</span> as the unique solution to a system of equations.</p>
 <pre class="mycelium"><code>theorem times-zero-r

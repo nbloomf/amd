@@ -71,6 +71,7 @@
 \(\newcommand{\zero}{\mathsf{zero}}\)
 \(\newcommand{\next}{\mathsf{next}}\)
 \(\newcommand{\natrec}{\mathsf{natrec}}\)
+\(\newcommand{\simprec}{\mathsf{simprec}}\)
 \(\newcommand{\prev}{\mathsf{prev}}\)
 \(\newcommand{\plus}{\mathsf{plus}}\)
 \(\newcommand{\times}{\mathsf{times}}\)
@@ -80,7 +81,7 @@
 <p>The algebra map <span class="math display">\[\either(\only(\zero))(\next) : \Nat \rightarrow \Either\ \Unit\ \Nat\]</span> is an isomorphism, and in fact we can define its inverse: we’ll call this inverse <span class="math inline">\(\prev\)</span>.</p>
 <pre class="mycelium"><code>type \prev :: Nat -&gt; Either Unit Nat
 
-rule def-prev
+definition def-prev
 * \prev == \natrec(\lft(\unit))(\either(\only(\rgt(\zero)))(\comp(\rgt)(\next)))</code></pre>
 <p>We can compute <span class="math inline">\(\prev\)</span> explicitly on <span class="math inline">\(\zero\)</span>:</p>
 <pre class="mycelium"><code>theorem prev-zero

@@ -7,7 +7,7 @@ The first boolean operator we'll define is $\and$.
 ~~~ {.mycelium}
 type \and :: Bool -> Bool -> Bool
 
-rule def-and
+definition def-and
 * \and(p)(q) == \if(\if(\true)(\false)(q))(\false)(p)
 ~~~
 
