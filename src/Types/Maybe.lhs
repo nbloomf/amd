@@ -43,10 +43,10 @@ And a rule to express that $\opt$ is unique.
 ~~~ {.mycelium}
 rule opt-unique
 if
-  * t(b)(f)(\nothing) == b
-  * \comp(t(b)(f))(\just) == f
+  * t(\nothing) == b
+  * \comp(t)(\just) == f
 then
-  * t == \opt
+  * t == \opt(b)(f)
 ~~~
 
 Finally, we have an induction principle.
@@ -58,4 +58,24 @@ if
   * ∀a. ((m == \just(a)) => P)
 then
   * P
+~~~
+
+$\just$ is injective.
+
+~~~ {.mycelium}
+theorem just-inj
+if
+  * \just(a) == \just(b)
+then
+  * a == b
+
+proof
+1. \true : chain
+    == \eq(a)(a) : flop use eq-refl;
+    == \opt(\true)(\eq(a))(\just(a)) : flop use opt-just;
+    == \opt(\true)(\eq(a))(\just(b))
+        : assumption 1 at z in \opt(\true)(\eq(a))(z)
+    == \eq(a)(b) : use opt-just;
+2. \eq(a)(b) == \true : use eq-sym; 1
+3. a == b : use eq-dereify; 2
 ~~~

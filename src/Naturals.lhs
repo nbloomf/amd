@@ -179,3 +179,18 @@ proof
 7. ((a == \next(\zero)) \/ (∃k. a == \next(\next(k)))) => P : discharge t; 6
 8. P : use disj-elim; 1, 2, 7
 ~~~
+
+~~~ {.mycelium}
+theorem eq-zero-next
+* \eq(\zero)(\next(n)) == \false
+
+proof
+1.   \eq(\zero)(\next(n)) == \true : hypothesis t
+2.   \zero == \next(n) : use eq-dereify; 1
+3.   ∃k. \zero == \next(k) : exists-intro k <- n; 2
+4. (\eq(\zero)(\next(n)) == \true) => (∃k. \zero == \next(k)) : discharge t; 3
+5. ~(∃k. \zero == \next(k)) : use nat-disc;
+6. ~(\eq(\zero)(\next(n)) == \true) : use modus-tollens; 4, 5
+7. (\eq(\zero)(\next(n)) == \true) \/ (\eq(\zero)(\next(n)) == \false) : use bool-cases;
+8. \eq(\zero)(\next(n)) == \false : use disj-syllogism-l; 7, 6
+~~~

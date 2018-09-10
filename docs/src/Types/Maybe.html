@@ -104,10 +104,10 @@ rule opt-just
 <p>And a rule to express that <span class="math inline">\(\opt\)</span> is unique.</p>
 <pre class="mycelium"><code>rule opt-unique
 if
-  * t(b)(f)(\nothing) == b
-  * \comp(t(b)(f))(\just) == f
+  * t(\nothing) == b
+  * \comp(t)(\just) == f
 then
-  * t == \opt</code></pre>
+  * t == \opt(b)(f)</code></pre>
 <p>Finally, we have an induction principle.</p>
 <pre class="mycelium"><code>rule maybe-induction
 if
@@ -115,6 +115,22 @@ if
   * ∀a. ((m == \just(a)) =&gt; P)
 then
   * P</code></pre>
+<p><span class="math inline">\(\just\)</span> is injective.</p>
+<pre class="mycelium"><code>theorem just-inj
+if
+  * \just(a) == \just(b)
+then
+  * a == b
+
+proof
+1. \true : chain
+    == \eq(a)(a) : flop use eq-refl;
+    == \opt(\true)(\eq(a))(\just(a)) : flop use opt-just;
+    == \opt(\true)(\eq(a))(\just(b))
+        : assumption 1 at z in \opt(\true)(\eq(a))(z)
+    == \eq(a)(b) : use opt-just;
+2. \eq(a)(b) == \true : use eq-sym; 1
+3. a == b : use eq-dereify; 2</code></pre>
 
     </main>
 

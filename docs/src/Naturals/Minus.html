@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Arithmetic Made Difficult - Minus</title>
+    <link rel="stylesheet" href="../../css/default.css" />
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  </head>
+
+  <body>
+    <header>
+      <div class="logo">
+        <a href="../../">Arithmetic Made Difficult</a>
+      </div>
+      <nav>
+        <a href="../../">Contents</a>
+        <a href="../../about.html">About</a>
+      </nav>
+    </header>
+
+    <main role="main">
+      <h1>Minus</h1>
+      <!-- LaTeX Macros -->
+<div style="display:none;">
+<!-- Functions -->
+\(\newcommand{\id}{\mathsf{id}}\)
+\(\newcommand{\comp}{\mathsf{comp}}\)
+\(\newcommand{\app}{\mathsf{app}}\)
+\(\newcommand{\const}{\mathsf{const}}\)
+\(\newcommand{\flip}{\mathsf{flip}}\)
+\(\newcommand{\clone}{\mathsf{clone}}\)
+
+<!-- Unit -->
+\(\newcommand{\Unit}{\mathsf{Unit}}\)
+\(\newcommand{\unit}{\mathsf{unit}}\)
+\(\newcommand{\only}{\mathsf{only}}\)
+
+<!-- Pair -->
+\(\newcommand{\Pair}{\mathsf{Pair}}\)
+\(\newcommand{\pair}{\mathsf{pair}}\)
+\(\newcommand{\fst}{\mathsf{fst}}\)
+\(\newcommand{\snd}{\mathsf{snd}}\)
+\(\newcommand{\tup}{\mathsf{tup}}\)
+
+<!-- Either -->
+\(\newcommand{\Either}{\mathsf{Either}}\)
+\(\newcommand{\either}{\mathsf{either}}\)
+\(\newcommand{\lft}{\mathsf{lft}}\)
+\(\newcommand{\rgt}{\mathsf{rgt}}\)
+
+<!-- Maybe -->
+\(\newcommand{\Maybe}{\mathsf{Maybe}}\)
+\(\newcommand{\nothing}{\mathsf{nothing}}\)
+\(\newcommand{\just}{\mathsf{just}}\)
+\(\newcommand{\opt}{\mathsf{opt}}\)
+
+<!-- Bool -->
+\(\newcommand{\Bool}{\mathsf{Bool}}\)
+\(\newcommand{\true}{\mathsf{true}}\)
+\(\newcommand{\false}{\mathsf{false}}\)
+\(\newcommand{\if}{\mathsf{if}}\)
+\(\newcommand{\and}{\mathsf{and}}\)
+\(\newcommand{\or}{\mathsf{or}}\)
+\(\newcommand{\not}{\mathsf{not}}\)
+\(\newcommand{\eq}{\mathsf{eq}}\)
+
+<!-- Nat -->
+\(\newcommand{\Nat}{\mathsf{Nat}}\)
+\(\newcommand{\zero}{\mathsf{zero}}\)
+\(\newcommand{\next}{\mathsf{next}}\)
+\(\newcommand{\natrec}{\mathsf{natrec}}\)
+\(\newcommand{\simprec}{\mathsf{simprec}}\)
+\(\newcommand{\mutrec}{\mathsf{mutrec}}\)
+\(\newcommand{\prev}{\mathsf{prev}}\)
+\(\newcommand{\plus}{\mathsf{plus}}\)
+\(\newcommand{\times}{\mathsf{times}}\)
+</div>
+<!-- End LaTeX Macros -->
+
+<pre class="mycelium"><code>type \minusH :: Nat -&gt; Nat -&gt; Maybe Nat -&gt; Maybe Nat
+
+definition def-minus-helper
+* \minusH(a)(b)(u) == \if(\just(\next(a)))(u)(\eq(\zero)(b))
+
+type \minus :: Nat -&gt; Nat -&gt; Maybe Nat
+
+definition def-minus
+* \minus == \mutrec(\comp(\if(\just(\zero))(\nothing))(\eq(\zero)))(\const(\comp(\opt(\zero)(\id))(\prev)))(\minusH)</code></pre>
+<pre class="mycelium"><code>theorem minus-zero-l
+* \minus(\zero)(a) == \if(\just(\zero))(\nothing)(\eq(\zero)(a))
+
+proof
+1. \minus(\zero)(a) : chain
+    == \mutrec(\comp(\if(\just(\zero))(\nothing))(\eq(\zero)))(\const(\comp(\opt(\zero)(\id))(\prev)))(\minusH)(\zero)(a) : use def-minus; at z in z(\zero)(a)
+    == \comp(\if(\just(\zero))(\nothing))(\eq(\zero))(a) : use mutrec-zero;
+    == \if(\just(\zero))(\nothing)(\eq(\zero)(a)) : use def-comp;</code></pre>
+<pre class="mycelium"><code>theorem minus-zero-r
+* \minus(m)(\zero) == \just(m)
+
+proof
+1.    m == \zero : hypothesis zero
+2.    \minus(m)(\zero) : chain
+       == \minus(\zero)(\zero) : hypothesis zero at z in \minus(z)(\zero)
+       == \if(\just(\zero))(\nothing)(\eq(\zero)(\zero)) : use minus-zero-l;
+       == \if(\just(\zero))(\nothing)(\true) : use eq-refl; at z in \if(\just(\zero))(\nothing)(z)
+       == \just(\zero) : use if-true;
+       == \just(m) : flop hypothesis zero at z in \just(z)
+3.  (m == \zero) =&gt; (\minus(m)(\zero) == \just(m)) : discharge zero; 2
+4.    (m == n) =&gt; (\minus(m)(\zero) == \just(m)) : hypothesis n
+5.    (n == n) =&gt; (\minus(n)(\zero) == \just(n)) : sub [m :-&gt; n]; 4
+6.    n == n : eq-intro
+7.    \minus(n)(\zero) == \just(n) : use impl-elim; 6, 5
+8.      m == \next(n) : hypothesis next
+9.      \minus(m)(\zero) : chain
+         == \minus(\next(n))(\zero) : hypothesis next at z in \minus(z)(\zero)
+         == \mutrec(\comp(\if(\just(\zero))(\nothing))(\eq(\zero)))(\const(\comp(\opt(\zero)(\id))(\prev)))(\minusH)(\next(n))(\zero) : use def-minus; at z in z(\next(n))(\zero)
+         == \minusH(n)(\zero)(\mutrec(\comp(\if(\just(\zero))(\nothing))(\eq(\zero)))(\const(\comp(\opt(\zero)(\id))(\prev)))(\minusH)(n)(\const(\comp(\opt(\zero)(\id))(\prev))(n)(\zero))) : use mutrec-next;
+         == \minusH(n)(\zero)(\minus(n)(\const(\comp(\opt(\zero)(\id))(\prev))(n)(\zero))) : flop use def-minus; at z in \minusH(n)(\zero)(z(n)(\const(\comp(\opt(\zero)(\id))(\prev))(n)(\zero)))
+         == \minusH(n)(\zero)(\minus(n)(\comp(\opt(\zero)(\id))(\prev)(\zero))) : use def-const; at z in \minusH(n)(\zero)(\minus(n)(z(\zero)))
+         == \minusH(n)(\zero)(\minus(n)(\opt(\zero)(\id)(\prev(\zero)))) : use def-comp; at z in \minusH(n)(\zero)(\minus(n)(z))
+         == \minusH(n)(\zero)(\minus(n)(\opt(\zero)(\id)(\nothing))) : use prev-zero; at z in \minusH(n)(\zero)(\minus(n)(\opt(\zero)(\id)(z)))
+         == \minusH(n)(\zero)(\minus(n)(\zero)) : use opt-nothing; at z in \minusH(n)(\zero)(\minus(n)(z))
+         == \minusH(n)(\zero)(\just(n)) : use reiterate; 7 at z in \minusH(n)(\zero)(z)
+         == \if(\just(\next(n)))(\just(n))(\eq(\zero)(\zero)) : use def-minus-helper;
+         == \if(\just(\next(n)))(\just(n))(\true) : use eq-refl; at z in \if(\just(\next(n)))(\just(n))(z)
+         == \just(\next(n)) : use if-true;
+         == \just(m) : flop hypothesis next at z in \just(z)
+10.   (m == \next(n)) =&gt; (\minus(m)(\zero) == \just(m)) : discharge next; 9
+11. ((m == n) =&gt; (\minus(m)(\zero) == \just(m))) =&gt;
+      ((m == \next(n)) =&gt; (\minus(m)(\zero) == \just(m))) : discharge n; 10
+12. ∀k. ((m == k) =&gt; (\minus(m)(\zero) == \just(m))) =&gt;
+      ((m == \next(k)) =&gt; (\minus(m)(\zero) == \just(m))) : forall-intro n -&gt; k; 11
+13. \minus(m)(\zero) == \just(m) : use nat-induction; 3, 12</code></pre>
+<pre class="mycelium"><code>theorem minus-next-next
+* \minus(\next(a))(\next(b)) == \minus(a)(b)
+
+proof
+1. \minus(\next(a))(\next(b)) : chain
+    == \mutrec(\comp(\if(\just(\zero))(\nothing))(\eq(\zero)))(\const(\comp(\opt(\zero)(\id))(\prev)))(\minusH)(\next(a))(\next(b)) : use def-minus; at z in z(\next(a))(\next(b))
+    == \minusH(a)(\next(b))(\mutrec(\comp(\if(\just(\zero))(\nothing))(\eq(\zero)))(\const(\comp(\opt(\zero)(\id))(\prev)))(\minusH)(a)(\const(\comp(\opt(\zero)(\id))(\prev))(a)(\next(b)))) : use mutrec-next;
+    == \minusH(a)(\next(b))(\mutrec(\comp(\if(\just(\zero))(\nothing))(\eq(\zero)))(\const(\comp(\opt(\zero)(\id))(\prev)))(\minusH)(a)(\comp(\opt(\zero)(\id))(\prev)(\next(b)))) : use def-const; at z in \minusH(a)(\next(b))(\mutrec(\comp(\if(\just(\zero))(\nothing))(\eq(\zero)))(\const(\comp(\opt(\zero)(\id))(\prev)))(\minusH)(a)(z(\next(b))))
+    == \minusH(a)(\next(b))(\mutrec(\comp(\if(\just(\zero))(\nothing))(\eq(\zero)))(\const(\comp(\opt(\zero)(\id))(\prev)))(\minusH)(a)(\opt(\zero)(\id)(\prev(\next(b))))) : use def-comp; at z in \minusH(a)(\next(b))(\mutrec(\comp(\if(\just(\zero))(\nothing))(\eq(\zero)))(\const(\comp(\opt(\zero)(\id))(\prev)))(\minusH)(a)(z))
+== \minusH(a)(\next(b))(\mutrec(\comp(\if(\just(\zero))(\nothing))(\eq(\zero)))(\const(\comp(\opt(\zero)(\id))(\prev)))(\minusH)(a)(\opt(\zero)(\id)(\comp(\prev)(\next)(b)))) : flop use def-comp; at z in \minusH(a)(\next(b))(\mutrec(\comp(\if(\just(\zero))(\nothing))(\eq(\zero)))(\const(\comp(\opt(\zero)(\id))(\prev)))(\minusH)(a)(\opt(\zero)(\id)(z)))
+    == \minusH(a)(\next(b))(\mutrec(\comp(\if(\just(\zero))(\nothing))(\eq(\zero)))(\const(\comp(\opt(\zero)(\id))(\prev)))(\minusH)(a)(\opt(\zero)(\id)(\just(b)))) : use prev-next; at z in \minusH(a)(\next(b))(\mutrec(\comp(\if(\just(\zero))(\nothing))(\eq(\zero)))(\const(\comp(\opt(\zero)(\id))(\prev)))(\minusH)(a)(\opt(\zero)(\id)(z(b))))
+    == \minusH(a)(\next(b))(\mutrec(\comp(\if(\just(\zero))(\nothing))(\eq(\zero)))(\const(\comp(\opt(\zero)(\id))(\prev)))(\minusH)(a)(\id(b))) : use opt-just; at z in \minusH(a)(\next(b))(\mutrec(\comp(\if(\just(\zero))(\nothing))(\eq(\zero)))(\const(\comp(\opt(\zero)(\id))(\prev)))(\minusH)(a)(z))
+    == \minusH(a)(\next(b))(\mutrec(\comp(\if(\just(\zero))(\nothing))(\eq(\zero)))(\const(\comp(\opt(\zero)(\id))(\prev)))(\minusH)(a)(b)) : use def-id; at z in \minusH(a)(\next(b))(\mutrec(\comp(\if(\just(\zero))(\nothing))(\eq(\zero)))(\const(\comp(\opt(\zero)(\id))(\prev)))(\minusH)(a)(z))
+    == \minusH(a)(\next(b))(\minus(a)(b)) : flop use def-minus; at z in \minusH(a)(\next(b))(z(a)(b))
+    == \if(\just(\next(a)))(\minus(a)(b))(\eq(\zero)(\next(b))) : use def-minus-helper;
+    == \if(\just(\next(a)))(\minus(a)(b))(\false) : use eq-zero-next; at z in \if(\just(\next(a)))(\minus(a)(b))(z)
+    == \minus(a)(b) : use if-false;</code></pre>
+
+    </main>
+
+    <footer>
+      Site generated by
+      <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+    </footer>
+  </body>
+</html>

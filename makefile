@@ -26,7 +26,8 @@ modules = \
   src/Naturals/Previous.lhs \
   src/Naturals/Plus.lhs \
   src/Naturals/Times.lhs \
-  src/Naturals/SimpleEquations.lhs
+  src/Naturals/SimpleEquations.lhs \
+  src/Naturals/Minus.lhs
 
 build:
 	stack exec site build

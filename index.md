@@ -42,4 +42,5 @@ Contents
     * [Plus](/src/Naturals/Plus.html)
     * [Times](/src/Naturals/Times.html)
     * [Simple Equations](/src/Naturals/SimpleEquations.html)
+    * [Minus](/src/Naturals/Minus.html)
 * Lists
