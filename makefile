@@ -10,6 +10,7 @@ modules = \
   src/Functions/Const.lhs \
   src/Functions/Flip.lhs \
   src/Functions/Clone.lhs \
+  src/Functions/Helpers.lhs \
   src/Booleans.lhs \
   src/Booleans/And.lhs \
   src/Booleans/Or.lhs \
@@ -21,6 +22,7 @@ modules = \
   src/Types/Maybe.lhs \
   src/Naturals.lhs \
   src/Naturals/SimpleRecursion.lhs \
+  src/Naturals/MutatingRecursion.lhs \
   src/Naturals/Previous.lhs \
   src/Naturals/Plus.lhs \
   src/Naturals/Times.lhs \

@@ -22,6 +22,7 @@ Contents
   * [Const](/src/Functions/Const.html)
   * [Flip](/src/Functions/Flip.html)
   * [Clone](/src/Functions/Clone.html)
+  * [Helpers](/src/Functions/Helpers.html)
 * [Booleans](/src/Booleans.html)
   * [And](/src/Booleans/And.html)
   * [Or](/src/Booleans/Or.html)
@@ -35,6 +36,7 @@ Contents
 * [Natural Numbers](/src/Naturals.html)
   * Recursion Operators
     * [Simple Recursion](/src/Naturals/SimpleRecursion.html)
+    * [Mutating Recursion](/src/Naturals/MutatingRecursion.html)
   * Arithmetic
     * [Previous](/src/Naturals/Previous.html)
     * [Plus](/src/Naturals/Plus.html)
