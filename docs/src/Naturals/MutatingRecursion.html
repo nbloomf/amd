@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Arithmetic Made Difficult - Mutating Recursion</title>
+    <link rel="stylesheet" href="../../css/default.css" />
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  </head>
+
+  <body>
+    <header>
+      <div class="logo">
+        <a href="../../">Arithmetic Made Difficult</a>
+      </div>
+      <nav>
+        <a href="../../">Contents</a>
+        <a href="../../about.html">About</a>
+      </nav>
+    </header>
+
+    <main role="main">
+      <h1>Mutating Recursion</h1>
+      <!-- LaTeX Macros -->
+<div style="display:none;">
+<!-- Functions -->
+\(\newcommand{\id}{\mathsf{id}}\)
+\(\newcommand{\comp}{\mathsf{comp}}\)
+\(\newcommand{\app}{\mathsf{app}}\)
+\(\newcommand{\const}{\mathsf{const}}\)
+\(\newcommand{\flip}{\mathsf{flip}}\)
+\(\newcommand{\clone}{\mathsf{clone}}\)
+
+<!-- Unit -->
+\(\newcommand{\Unit}{\mathsf{Unit}}\)
+\(\newcommand{\unit}{\mathsf{unit}}\)
+\(\newcommand{\only}{\mathsf{only}}\)
+
+<!-- Pair -->
+\(\newcommand{\Pair}{\mathsf{Pair}}\)
+\(\newcommand{\pair}{\mathsf{pair}}\)
+\(\newcommand{\fst}{\mathsf{fst}}\)
+\(\newcommand{\snd}{\mathsf{snd}}\)
+\(\newcommand{\tup}{\mathsf{tup}}\)
+
+<!-- Either -->
+\(\newcommand{\Either}{\mathsf{Either}}\)
+\(\newcommand{\either}{\mathsf{either}}\)
+\(\newcommand{\lft}{\mathsf{lft}}\)
+\(\newcommand{\rgt}{\mathsf{rgt}}\)
+
+<!-- Maybe -->
+\(\newcommand{\Maybe}{\mathsf{Maybe}}\)
+\(\newcommand{\nothing}{\mathsf{nothing}}\)
+\(\newcommand{\just}{\mathsf{just}}\)
+\(\newcommand{\opt}{\mathsf{opt}}\)
+
+<!-- Bool -->
+\(\newcommand{\Bool}{\mathsf{Bool}}\)
+\(\newcommand{\true}{\mathsf{true}}\)
+\(\newcommand{\false}{\mathsf{false}}\)
+\(\newcommand{\if}{\mathsf{if}}\)
+\(\newcommand{\and}{\mathsf{and}}\)
+\(\newcommand{\or}{\mathsf{or}}\)
+\(\newcommand{\not}{\mathsf{not}}\)
+\(\newcommand{\eq}{\mathsf{eq}}\)
+
+<!-- Nat -->
+\(\newcommand{\Nat}{\mathsf{Nat}}\)
+\(\newcommand{\zero}{\mathsf{zero}}\)
+\(\newcommand{\next}{\mathsf{next}}\)
+\(\newcommand{\natrec}{\mathsf{natrec}}\)
+\(\newcommand{\simprec}{\mathsf{simprec}}\)
+\(\newcommand{\mutrec}{\mathsf{mutrec}}\)
+\(\newcommand{\prev}{\mathsf{prev}}\)
+\(\newcommand{\plus}{\mathsf{plus}}\)
+\(\newcommand{\times}{\mathsf{times}}\)
+</div>
+<!-- End LaTeX Macros -->
+
+<p>Simple recursion bundles a particular recursion scheme into a nicely general package. Let’s look at an expanded call tree for an invocation of <span class="math inline">\(\simprec\)</span>. Given <span class="math inline">\(\phi\)</span> and <span class="math inline">\(\mu\)</span>, and assuming we understand what “3” means, the expression <span class="math inline">\(\simprec(\phi)(\mu)(a)(3)\)</span> expands to</p>
+<p><span class="math display">\[\begin{array}{l}
+\simprec(\phi)(\mu)(a)(3) = \\
+\quad \mu(a,2, \\
+\quad\quad \mu(a,1, \\
+\quad\quad\quad \mu(a,0, \\
+\quad\quad\quad\quad \phi(a))))
+\end{array}\]</span></p>
+<p>Note that each time we call <span class="math inline">\(\mu\)</span> with the same <span class="math inline">\(a\)</span> parameter. One way to think about this is that <span class="math inline">\(a\)</span> is a read-only environment we pass to each <span class="math inline">\(\mu\)</span>. Together with the <span class="math inline">\(\Nat\)</span> parameter, <span class="math inline">\(\mu\)</span> can do interesting things with <span class="math inline">\(a\)</span>, but we can’t alter <span class="math inline">\(a\)</span> <em>inside</em> the recursive call – only outside. This is handier than raw <span class="math inline">\(\natrec\)</span>, and still has a nice tail recursive implementation, but there are times when we’d like to alter <span class="math inline">\(a\)</span> both inside and outside the recursive call. We’ll introduce such an operator here, called <em>mutating recursion</em>.</p>
+<p>Specifically, we will show that given constants</p>
+<p><span class="math display">\[\left\{\begin{array}{lcl}
+ \phi &amp; : &amp; a \rightarrow b \\
+ \omega &amp; : &amp; \Nat \rightarrow a \rightarrow a \\
+ \mu &amp; : &amp; \Nat \rightarrow a \rightarrow b \rightarrow b
+\end{array}\right.\]</span></p>
+<p>there is a unique arrow <span class="math inline">\(\Psi : \Nat \rightarrow a \rightarrow b\)</span> satisfying the following system of equations.</p>
+<p><span class="math display">\[\left\{\begin{array}{l}
+ \Psi(\zero)(a) = \phi(a) \\
+ \Psi(\next(m),a) = \mu(m,a,\Psi(m,\omega(m,a)))
+\end{array}\right.\]</span></p>
+<p>Note how <span class="math inline">\(\omega\)</span> and <span class="math inline">\(\mu\)</span> work together to let us do things with <span class="math inline">\(a\)</span> inside the recursive call to <span class="math inline">\(\Psi\)</span> as well as outside.</p>
+<p><span class="math display">\[\begin{array}{l}
+\mutrec(\phi)(\omega)(\mu)(3)(a) = \\
+\quad \mu(2,a, \\
+\quad\quad \mu(1,\omega(2,a), \\
+\quad\quad\quad \mu(0,\omega(1,\omega(2,a)), \\
+\quad\quad\quad\quad \phi(\omega(0,\omega(1,\omega(2,a)))))))
+\end{array}\]</span></p>
+<p>The benefit is that <span class="math inline">\(\mutrec\)</span> can succinctly express more interesting functions. One downside is that, as far as I can tell, <span class="math inline">\(\mutrec\)</span> cannot be made tail recursive. Though I’d love to be proven wrong!</p>
+<p>By the way, note that <span class="math inline">\(\simprec\)</span> is a special case of <span class="math inline">\(\mutrec\)</span>, where <span class="math inline">\(\omega(m) = \id\)</span>.</p>
+<p>We’ll define <span class="math inline">\(\mutrec\)</span> in terms of a helper function, <code>mutrecH</code>. Note that <span class="math inline">\(\mutrec\)</span> is defined using <span class="math inline">\(\natrec\)</span>, where the natural recursion constructs a function <span class="math inline">\(a \rightarrow \Pair\ \Nat\ b\)</span>.</p>
+<pre class="mycelium"><code>type \mutrecH :: (Nat -&gt; a -&gt; a) -&gt; (Nat -&gt; a -&gt; b -&gt; b) -&gt; (a -&gt; Pair Nat b) -&gt; a -&gt; Pair Nat b
+
+definition def-mutrec-helper
+* \mutrecH(omega)(mu)(zeta)(a) == \tup(\next(\fst(zeta(a))))(mu(\fst(zeta(a)))(a)(\snd(zeta(omega(\fst(zeta(a)))(a)))))
+
+type \mutrec :: (a -&gt; b) -&gt; (Nat -&gt; a -&gt; a) -&gt; (Nat -&gt; a -&gt; b -&gt; b) -&gt; Nat -&gt; a -&gt; b
+
+definition def-mutrec
+* \mutrec(phi)(omega)(mu)(n)(a) == \snd(\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(n)(a))</code></pre>
+<p>Now <span class="math inline">\(\mutrec(\phi)(\omega)(\mu)\)</span> satisfies the first equation:</p>
+<pre class="mycelium"><code>theorem mutrec-zero
+* \mutrec(phi)(omega)(mu)(\zero)(a) == phi(a)
+
+proof
+1. \mutrec(phi)(omega)(mu)(\zero)(a) : chain
+    == \snd(\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(\zero)(a)) : use def-mutrec;
+    == \snd(\comp(\tup(\zero))(phi)(a)) : use natrec-zero; at z in \snd(z(a))
+    == \snd(\tup(\zero)(phi(a))) : use def-comp; at z in \snd(z)
+    == phi(a) : use snd-tup;</code></pre>
+<p>As a special case we can calculate <span class="math inline">\(\mutrec\)</span> on 1.</p>
+<pre class="mycelium"><code>theorem mutrec-one
+* \mutrec(phi)(omega)(mu)(\next(\zero))(a) == mu(\zero)(a)(phi(omega(\zero)(a)))
+
+proof
+1. \mutrec(phi)(omega)(mu)(\next(\zero))(a) : chain
+    == \snd(\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(\next(\zero))(a)) : use def-mutrec;
+    == \snd(\mutrecH(omega)(mu)(\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(\zero))(a)) : use natrec-next; at z in \snd(z(a))
+    == \snd(\mutrecH(omega)(mu)(\comp(\tup(\zero))(phi))(a)) : use natrec-zero; at z in \snd(\mutrecH(omega)(mu)(z)(a))
+    == \snd(\tup(\next(\fst(\comp(\tup(\zero))(phi)(a))))(mu(\fst(\comp(\tup(\zero))(phi)(a)))(a)(\snd(\comp(\tup(\zero))(phi)(omega(\fst(\comp(\tup(\zero))(phi)(a)))(a)))))) : use def-mutrec-helper; at z in \snd(z)
+    == \snd(\tup(\next(\fst(\tup(\zero)(phi(a)))))(mu(\fst(\tup(\zero)(phi(a))))(a)(\snd(\comp(\tup(\zero))(phi)(omega(\fst(\tup(\zero)(phi(a))))(a)))))) : use def-comp; at z in \snd(\tup(\next(\fst(z)))(mu(\fst(z))(a)(\snd(\comp(\tup(\zero))(phi)(omega(\fst(z))(a))))))
+    == \snd(\tup(\next(\zero))(mu(\zero)(a)(\snd(\comp(\tup(\zero))(phi)(omega(\zero)(a)))))) : use fst-tup; at z in \snd(\tup(\next(z))(mu(z)(a)(\snd(\comp(\tup(\zero))(phi)(omega(z)(a))))))
+    == mu(\zero)(a)(\snd(\comp(\tup(\zero))(phi)(omega(\zero)(a)))) : use snd-tup;
+    == mu(\zero)(a)(\snd(\tup(\zero)(phi(omega(\zero)(a))))) : use def-comp; at z in mu(\zero)(a)(\snd(z))
+    == mu(\zero)(a)(phi(omega(\zero)(a))) : use snd-tup; at z in mu(\zero)(a)(z)</code></pre>
+<p>Now we can show that <span class="math inline">\(\mutrec\)</span> satisfies the second equation. The bulk of this proof is in a lemma on the inner <span class="math inline">\(\natrec\)</span>, on lines 1–13.</p>
+<pre class="mycelium"><code>theorem mutrec-next
+* \mutrec(phi)(omega)(mu)(\next(m))(a) == mu(m)(a)(\mutrec(phi)(omega)(mu)(m)(omega(m)(a)))
+
+proof
+1.    m == \zero : hypothesis zero
+2.    \natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(m)(a) : chain
+       == \natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(\zero)(a) : hypothesis zero at z in \natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(z)(a)
+       == \comp(\tup(\zero))(phi)(a) : use natrec-zero; at z in z(a)
+       == \tup(\zero)(phi(a)) : use def-comp;
+       == \tup(m)(phi(a)) : flop hypothesis zero at z in \tup(z)(phi(a))
+       == \tup(m)(\mutrec(phi)(omega)(mu)(\zero)(a)) : flop use mutrec-zero; at z in \tup(m)(z)
+       == \tup(m)(\mutrec(phi)(omega)(mu)(m)(a)) : flop hypothesis zero at z in \tup(m)(\mutrec(phi)(omega)(mu)(z)(a))
+3.  (m == \zero) =&gt; (\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(m)(a) == \tup(m)(\mutrec(phi)(omega)(mu)(m)(a))) : discharge zero; 2
+4.    (m == n) =&gt; (\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(m)(a) == \tup(m)(\mutrec(phi)(omega)(mu)(m)(a))) : hypothesis n
+5.    (n == n) =&gt; (\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(n)(a) == \tup(n)(\mutrec(phi)(omega)(mu)(n)(a))) : sub [m :-&gt; n]; 4
+6.    n == n : eq-intro
+7.    \natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(n)(a) == \tup(n)(\mutrec(phi)(omega)(mu)(n)(a)) : use impl-elim; 6, 5
+8.      m == \next(n) : hypothesis next
+9.      \natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(m)(a) : chain
+         == \natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(\next(n))(a) : hypothesis next at z in \natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(z)(a)
+         == \mutrecH(omega)(mu)(\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(n))(a) : use natrec-next; at f in f(a)
+         == \tup(\next(\fst(\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(n)(a))))(mu(\fst(\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(n)(a)))(a)(\snd(\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(n)(omega(\fst(\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(n)(a)))(a))))) : use def-mutrec-helper;
+         == \tup(\next(\fst(\tup(n)(\mutrec(phi)(omega)(mu)(n)(a)))))(mu(\fst(\tup(n)(\mutrec(phi)(omega)(mu)(n)(a))))(a)(\snd(\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(n)(omega(\fst(\tup(n)(\mutrec(phi)(omega)(mu)(n)(a))))(a))))) : use reiterate; 7 at z in \tup(\next(\fst(z)))(mu(\fst(z))(a)(\snd(\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(n)(omega(\fst(z))(a)))))
+         == \tup(\next(n))(mu(n)(a)(\snd(\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(n)(omega(n)(a))))) : use fst-tup; at z in \tup(\next(z))(mu(z)(a)(\snd(\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(n)(omega(z)(a)))))
+         == \tup(\next(n))(mu(\fst(\tup(n)(\mutrec(phi)(omega)(mu)(n)(a))))(a)(\snd(\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(n)(omega(\fst(\tup(n)(\mutrec(phi)(omega)(mu)(n)(a))))(a))))) : flop use fst-tup; at z in \tup(\next(n))(mu(z)(a)(\snd(\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(n)(omega(z)(a)))))
+         == \tup(\next(n))(\snd(\tup(\next(\fst(\tup(n)(\mutrec(phi)(omega)(mu)(n)(a)))))(mu(\fst(\tup(n)(\mutrec(phi)(omega)(mu)(n)(a))))(a)(\snd(\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(n)(omega(\fst(\tup(n)(\mutrec(phi)(omega)(mu)(n)(a))))(a))))))) : flop use snd-tup; at z in \tup(\next(n))(z)
+         == \tup(\next(n))(\snd(\tup(\next(\fst(\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(n)(a))))(mu(\fst(\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(n)(a)))(a)(\snd(\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(n)(omega(\fst(\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(n)(a)))(a))))))) : flop use reiterate; 7 at z in \tup(\next(n))(\snd(\tup(\next(\fst(z)))(mu(\fst(z))(a)(\snd(\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(n)(omega(\fst(z))(a)))))))
+         == \tup(\next(n))(\snd(\mutrecH(omega)(mu)(\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(n))(a))) : flop use def-mutrec-helper; at z in \tup(\next(n))(\snd(z))
+         == \tup(\next(n))(\snd(\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(\next(n))(a))) : flop use natrec-next; at z in \tup(\next(n))(\snd(z(a)))
+         == \tup(\next(n))(\mutrec(phi)(omega)(mu)(\next(n))(a)) : flop use def-mutrec; at z in \tup(\next(n))(z)
+         == \tup(m)(\mutrec(phi)(omega)(mu)(m)(a)) : flop hypothesis next at z in \tup(z)(\mutrec(phi)(omega)(mu)(z)(a))
+10.   (m == \next(n)) =&gt; (\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(m)(a) == \tup(m)(\mutrec(phi)(omega)(mu)(m)(a))) : discharge next; 9
+11. ((m == n) =&gt; (\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(m)(a) == \tup(m)(\mutrec(phi)(omega)(mu)(m)(a)))) =&gt;
+      ((m == \next(n)) =&gt; (\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(m)(a) == \tup(m)(\mutrec(phi)(omega)(mu)(m)(a)))) : discharge n; 10
+12. ∀k. ((m == k) =&gt; (\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(m)(a) == \tup(m)(\mutrec(phi)(omega)(mu)(m)(a)))) =&gt;
+      ((m == \next(k)) =&gt; (\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(m)(a) == \tup(m)(\mutrec(phi)(omega)(mu)(m)(a)))) : forall-intro n -&gt; k; 11
+13. \natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(m)(a) == \tup(m)(\mutrec(phi)(omega)(mu)(m)(a)) : use nat-induction; 3, 12
+14. \mutrec(phi)(omega)(mu)(\next(m))(a) : chain
+     == \snd(\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(\next(m))(a)) : use def-mutrec;
+     == \snd(\mutrecH(omega)(mu)(\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(m))(a)) : use natrec-next; at z in \snd(z(a))
+     == \snd(\tup(\next(\fst(\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(m)(a))))(mu(\fst(\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(m)(a)))(a)(\snd(\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(m)(omega(\fst(\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(m)(a)))(a)))))) : use def-mutrec-helper; at z in \snd(z)
+     == mu(\fst(\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(m)(a)))(a)(\snd(\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(m)(omega(\fst(\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(m)(a)))(a)))) : use snd-tup;
+     == mu(\fst(\tup(m)(\mutrec(phi)(omega)(mu)(m)(a))))(a)(\snd(\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(m)(omega(\fst(\tup(m)(\mutrec(phi)(omega)(mu)(m)(a))))(a)))) : use reiterate; 13 at z in mu(\fst(z))(a)(\snd(\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(m)(omega(\fst(z))(a))))
+     == mu(m)(a)(\snd(\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(m)(omega(m)(a)))) : use fst-tup; at z in mu(z)(a)(\snd(\natrec(\comp(\tup(\zero))(phi))(\mutrecH(omega)(mu))(m)(omega(z)(a))))
+     == mu(m)(a)(\mutrec(phi)(omega)(mu)(m)(omega(m)(a))) : flop use def-mutrec; at z in mu(m)(a)(z)</code></pre>
+<p>Finally, we can use induction to show that <span class="math inline">\(\mutrec(\phi)(\omega)(\mu)\)</span> is unique.</p>
+<pre class="mycelium"><code>theorem mutrec-unique
+if
+  * ∀a. t(\zero)(a) == phi(a)
+  * ∀a. (∀m. t(\next(m))(a) == mu(m)(a)(t(m)(omega(m)(a))))
+then
+  * t == \mutrec(phi)(omega)(mu)
+
+proof
+1.    m == \zero : hypothesis zero
+2.    ∀u. t(\zero)(u) == phi(u) : assumption 1
+3.    t(\zero)(a) == phi(a) : forall-elim u -&gt; a; 2
+4.    t(m)(a) : chain
+       == t(\zero)(a) : hypothesis zero at z in t(z)(a)
+       == phi(a) : use reiterate; 3
+       == \mutrec(phi)(omega)(mu)(\zero)(a) : flop use mutrec-zero;
+       == \mutrec(phi)(omega)(mu)(m)(a) : flop hypothesis zero at z in \mutrec(phi)(omega)(mu)(z)(a)
+5.  (m == \zero) =&gt; (t(m)(a) == \mutrec(phi)(omega)(mu)(m)(a)) : discharge zero; 4
+6.    (m == n) =&gt; (t(m)(a) == \mutrec(phi)(omega)(mu)(m)(a)) : hypothesis n
+7.    (n == n) =&gt; (t(n)(omega(n)(a)) == \mutrec(phi)(omega)(mu)(n)(omega(n)(a))) : sub [m :-&gt; n; a :-&gt; omega(n)(a)]; 6
+8.    n == n : eq-intro
+9.    t(n)(omega(n)(a)) == \mutrec(phi)(omega)(mu)(n)(omega(n)(a)) : use impl-elim; 8, 7
+10.   ∀u. (∀k. t(\next(k))(u) == mu(k)(u)(t(k)(omega(k)(u)))) : assumption 2
+11.   ∀k. t(\next(k))(a) == mu(k)(a)(t(k)(omega(k)(a))) : forall-elim u -&gt; a; 10
+12.   t(\next(n))(a) == mu(n)(a)(t(n)(omega(n)(a))) : forall-elim k -&gt; n; 11
+13.     m == \next(n) : hypothesis next
+14.     t(m)(a) : chain
+         == t(\next(n))(a) : hypothesis next at z in t(z)(a)
+         == mu(n)(a)(t(n)(omega(n)(a))) : use reiterate; 12
+         == mu(n)(a)(\mutrec(phi)(omega)(mu)(n)(omega(n)(a))) : use reiterate; 9 at z in mu(n)(a)(z)
+         == \mutrec(phi)(omega)(mu)(\next(n))(a) : flop use mutrec-next;
+         == \mutrec(phi)(omega)(mu)(m)(a) : flop hypothesis next at z in \mutrec(phi)(omega)(mu)(z)(a)
+15.   (m == \next(n)) =&gt; (t(m)(a) == \mutrec(phi)(omega)(mu)(m)(a)) : discharge next; 14
+16. ((m == n) =&gt; (t(m)(a) == \mutrec(phi)(omega)(mu)(m)(a))) =&gt;
+      ((m == \next(n)) =&gt; (t(m)(a) == \mutrec(phi)(omega)(mu)(m)(a))) : discharge n; 15
+17. ∀k. ((m == k) =&gt; (t(m)(a) == \mutrec(phi)(omega)(mu)(m)(a))) =&gt;
+      ((m == \next(k)) =&gt; (t(m)(a) == \mutrec(phi)(omega)(mu)(m)(a))) : forall-intro n -&gt; k; 16
+18. t(m)(a) == \mutrec(phi)(omega)(mu)(m)(a) : use nat-induction; 5, 17
+19. ∀u. t(m)(u) == \mutrec(phi)(omega)(mu)(m)(u) : forall-intro a -&gt; u; 18
+20. t(m) == \mutrec(phi)(omega)(mu)(m) : use fun-eq; 19
+21. ∀u. t(u) == \mutrec(phi)(omega)(mu)(u) : forall-intro m -&gt; u; 20
+22. t == \mutrec(phi)(omega)(mu) : use fun-eq; 21</code></pre>
+<p>We can also prove that <span class="math inline">\(\simprec\)</span> is a special case of <span class="math inline">\(\mutrec\)</span>.</p>
+<pre class="mycelium"><code>theorem mutrec-simprec
+* \flip(\mutrec(phi)(\const(\id))(\flip(mu))) == \simprec(phi)(mu)
+
+proof
+1. \flip(\mutrec(phi)(\const(\id))(\flip(mu)))(a)(\zero) : chain
+    == \mutrec(phi)(\const(\id))(\flip(mu))(\zero)(a) : use def-flip;
+    == phi(a) : use mutrec-zero;
+2. ∀u. \flip(\mutrec(phi)(\const(\id))(\flip(mu)))(u)(\zero) == phi(u) : forall-intro a -&gt; u; 1
+3. \flip(\mutrec(phi)(\const(\id))(\flip(mu)))(a)(\next(m)) : chain
+    == \mutrec(phi)(\const(\id))(\flip(mu))(\next(m))(a) : use def-flip;
+    == \flip(mu)(m)(a)(\mutrec(phi)(\const(\id))(\flip(mu))(m)(\const(\id)(m)(a))) : use mutrec-next;
+    == \flip(mu)(m)(a)(\mutrec(phi)(\const(\id))(\flip(mu))(m)(\id(a))) : use def-const; at z in \flip(mu)(m)(a)(\mutrec(phi)(\const(\id))(\flip(mu))(m)(z(a)))
+    == \flip(mu)(m)(a)(\mutrec(phi)(\const(\id))(\flip(mu))(m)(a)) : use def-id; at z in \flip(mu)(m)(a)(\mutrec(phi)(\const(\id))(\flip(mu))(m)(z))
+    == \flip(mu)(m)(a)(\flip(\mutrec(phi)(\const(\id))(\flip(mu)))(a)(m)) : flop use def-flip; at z in \flip(mu)(m)(a)(z)
+    == mu(a)(m)(\flip(\mutrec(phi)(\const(\id))(\flip(mu)))(a)(m)) : use def-flip; at z in z(\flip(\mutrec(phi)(\const(\id))(\flip(mu)))(a)(m))
+4. ∀k. \flip(\mutrec(phi)(\const(\id))(\flip(mu)))(a)(\next(k)) == mu(a)(k)(\flip(\mutrec(phi)(\const(\id))(\flip(mu)))(a)(k)) : forall-intro m -&gt; k; 3
+5. ∀u. (∀k. \flip(\mutrec(phi)(\const(\id))(\flip(mu)))(u)(\next(k)) == mu(u)(k)(\flip(\mutrec(phi)(\const(\id))(\flip(mu)))(u)(k))) : forall-intro a -&gt; u; 4
+6. \flip(\mutrec(phi)(\const(\id))(\flip(mu))) == \simprec(phi)(mu) : use simprec-unique; 2, 5</code></pre>
+
+    </main>
+
+    <footer>
+      Site generated by
+      <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+    </footer>
+  </body>
+</html>
