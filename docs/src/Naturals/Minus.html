@@ -96,6 +96,14 @@ proof
     == \mutrec(\comp(\if(\just(\zero))(\nothing))(\eq(\zero)))(\const(\comp(\opt(\zero)(\id))(\prev)))(\minusH)(\zero)(a) : use def-minus; at z in z(\zero)(a)
     == \comp(\if(\just(\zero))(\nothing))(\eq(\zero))(a) : use mutrec-zero;
     == \if(\just(\zero))(\nothing)(\eq(\zero)(a)) : use def-comp;</code></pre>
+<pre class="mycelium"><code>theorem minus-zero-next
+* \minus(\zero)(\next(n)) == \nothing
+
+proof
+1. \minus(\zero)(\next(n)) : chain
+    == \if(\just(\zero))(\nothing)(\eq(\zero)(\next(n))) : use minus-zero-l;
+    == \if(\just(\zero))(\nothing)(\false) : use eq-zero-next; at z in \if(\just(\zero))(\nothing)(z)
+    == \nothing : use if-false;</code></pre>
 <pre class="mycelium"><code>theorem minus-zero-r
 * \minus(m)(\zero) == \just(m)
 
@@ -150,6 +158,30 @@ proof
     == \if(\just(\next(a)))(\minus(a)(b))(\eq(\zero)(\next(b))) : use def-minus-helper;
     == \if(\just(\next(a)))(\minus(a)(b))(\false) : use eq-zero-next; at z in \if(\just(\next(a)))(\minus(a)(b))(z)
     == \minus(a)(b) : use if-false;</code></pre>
+<pre class="mycelium"><code>theorem minus-self-next
+* \minus(m)(\next(m)) == \nothing
+
+proof
+1.    m == \zero : hypothesis zero
+2.    \minus(m)(\next(m)) : chain
+       == \minus(\zero)(\next(\zero)) : hypothesis zero at z in \minus(z)(\next(z))
+       == \nothing : use minus-zero-next;
+3.  (m == \zero) =&gt; (\minus(m)(\next(m)) == \nothing) : discharge zero; 2
+4.    (m == n) =&gt; (\minus(m)(\next(m)) == \nothing) : hypothesis n
+5.    (n == n) =&gt; (\minus(n)(\next(n)) == \nothing) : sub [m :-&gt; n]; 4
+6.    n == n : eq-intro
+7.    \minus(n)(\next(n)) == \nothing : use impl-elim; 6, 5
+8.      m == \next(n) : hypothesis next
+9.      \minus(m)(\next(m)) : chain
+         == \minus(\next(n))(\next(\next(n))) : hypothesis next at z in \minus(z)(\next(z))
+         == \minus(n)(\next(n)) : use minus-next-next;
+         == \nothing : use reiterate; 7
+10.   (m == \next(n)) =&gt; (\minus(m)(\next(m)) == \nothing) : discharge next; 9
+11. ((m == n) =&gt; (\minus(m)(\next(m)) == \nothing)) =&gt;
+      ((m == \next(n)) =&gt; (\minus(m)(\next(m)) == \nothing)) : discharge n; 10
+12. ∀k. ((m == k) =&gt; (\minus(m)(\next(m)) == \nothing)) =&gt;
+      ((m == \next(k)) =&gt; (\minus(m)(\next(m)) == \nothing)) : forall-intro n -&gt; k; 11
+13. \minus(m)(\next(m)) == \nothing : use nat-induction; 3, 12</code></pre>
 
     </main>
 

@@ -26,6 +26,17 @@ proof
 ~~~
 
 ~~~ {.mycelium}
+theorem minus-zero-next
+* \minus(\zero)(\next(n)) == \nothing
+
+proof
+1. \minus(\zero)(\next(n)) : chain
+    == \if(\just(\zero))(\nothing)(\eq(\zero)(\next(n))) : use minus-zero-l;
+    == \if(\just(\zero))(\nothing)(\false) : use eq-zero-next; at z in \if(\just(\zero))(\nothing)(z)
+    == \nothing : use if-false;
+~~~
+
+~~~ {.mycelium}
 theorem minus-zero-r
 * \minus(m)(\zero) == \just(m)
 
@@ -83,4 +94,31 @@ proof
     == \if(\just(\next(a)))(\minus(a)(b))(\eq(\zero)(\next(b))) : use def-minus-helper;
     == \if(\just(\next(a)))(\minus(a)(b))(\false) : use eq-zero-next; at z in \if(\just(\next(a)))(\minus(a)(b))(z)
     == \minus(a)(b) : use if-false;
+~~~
+
+~~~ {.mycelium}
+theorem minus-self-next
+* \minus(m)(\next(m)) == \nothing
+
+proof
+1.    m == \zero : hypothesis zero
+2.    \minus(m)(\next(m)) : chain
+       == \minus(\zero)(\next(\zero)) : hypothesis zero at z in \minus(z)(\next(z))
+       == \nothing : use minus-zero-next;
+3.  (m == \zero) => (\minus(m)(\next(m)) == \nothing) : discharge zero; 2
+4.    (m == n) => (\minus(m)(\next(m)) == \nothing) : hypothesis n
+5.    (n == n) => (\minus(n)(\next(n)) == \nothing) : sub [m :-> n]; 4
+6.    n == n : eq-intro
+7.    \minus(n)(\next(n)) == \nothing : use impl-elim; 6, 5
+8.      m == \next(n) : hypothesis next
+9.      \minus(m)(\next(m)) : chain
+         == \minus(\next(n))(\next(\next(n))) : hypothesis next at z in \minus(z)(\next(z))
+         == \minus(n)(\next(n)) : use minus-next-next;
+         == \nothing : use reiterate; 7
+10.   (m == \next(n)) => (\minus(m)(\next(m)) == \nothing) : discharge next; 9
+11. ((m == n) => (\minus(m)(\next(m)) == \nothing)) =>
+      ((m == \next(n)) => (\minus(m)(\next(m)) == \nothing)) : discharge n; 10
+12. ∀k. ((m == k) => (\minus(m)(\next(m)) == \nothing)) =>
+      ((m == \next(k)) => (\minus(m)(\next(m)) == \nothing)) : forall-intro n -> k; 11
+13. \minus(m)(\next(m)) == \nothing : use nat-induction; 3, 12
 ~~~

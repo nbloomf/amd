@@ -37,7 +37,7 @@ watch:
 
 check:
 	@mycelium $(modules)
-	@dot graph.dot -Tpng -o images/dependency-graph.png
+	@unflatten -l 10 -f graph.dot | dot -Tpng -o images/dependency-graph.png
 	@rm graph.dot
 
 deploy:
