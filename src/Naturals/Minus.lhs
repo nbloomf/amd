@@ -660,10 +660,12 @@ proof
                 \minus(z)(\next(n))
              == \just(c) : hypothesis next
 
-19.         (\minus(t)(n) == \just(c)) => (\minus(\next(t))(n) == \just(\next(c)))
+19.         (\minus(t)(n) == \just(c)) =>
+              (\minus(\next(t))(n) == \just(\next(c)))
              : forall-elim k -> t; 7
 
-20.         \minus(\next(t))(n) == \just(\next(c)) : use impl-elim; 18, 19
+20.         \minus(\next(t))(n) == \just(\next(c))
+             : use impl-elim; 18, 19
 
 21.         \minus(\next(a))(\next(n)) : chain
              == \minus(a)(n)
