@@ -31,46 +31,85 @@ theorem prev-next
 * \comp(\prev)(\next) == \just
 
 proof
-1.    n == \zero : hypothesis n-zero
-2.    \comp(\prev)(\next)(n) : chain
-       == \prev(\next(n)) : use def-comp;
-       == \prev(\next(\zero)) : hypothesis n-zero at z in \prev(\next(z))
-       == \natrec(\nothing)(\opt(\just(\zero))(\comp(\just)(\next)))(\next(\zero))
-           : use def-prev; at f in f(\next(\zero))
-       == \opt(\just(\zero))(\comp(\just)(\next))(\natrec(\nothing)(\opt(\just(\zero))(\comp(\just)(\next)))(\zero)) : use natrec-next;
-       == \opt(\just(\zero))(\comp(\just)(\next))(\nothing) : use natrec-zero; at z in \opt(\just(\zero))(\comp(\just)(\next))(z)
-       == \just(\zero) : use opt-nothing;
-       == \just(n) : flop hypothesis n-zero at z in \just(z)
-3.  (n == \zero) => (\comp(\prev)(\next)(n) == \just(n)) : discharge n-zero; 2
-4.    (n == t) => (\comp(\prev)(\next)(n) == \just(n)) : hypothesis n-t
-5.    (t == t) => (\comp(\prev)(\next)(t) == \just(t)) : sub [n :-> t]; 4
-6.    t == t : eq-intro
-7.    \prev(\next(t)) : chain
-       == \comp(\prev)(\next)(t) : flop use def-comp;
-       == \just(t) : use impl-elim; 6, 5
-8.      n == \next(t) : hypothesis n-next
-9.      \comp(\prev)(\next)(n) : chain
-         == \comp(\prev)(\next)(\next(t)) : hypothesis n-next at z in \comp(\prev)(\next)(z)
-         == \prev(\next(\next(t))) : use def-comp;
-         == \natrec(\nothing)(\opt(\just(\zero))(\comp(\just)(\next)))(\next(\next(t)))
-             : use def-prev; at f in f(\next(\next(t)))
-         == \opt(\just(\zero))(\comp(\just)(\next))(\natrec(\nothing)(\opt(\just(\zero))(\comp(\just)(\next)))(\next(t)))
-             : use natrec-next;
-         == \opt(\just(\zero))(\comp(\just)(\next))(\prev(\next(t)))
-             : flop use def-prev; at f in \opt(\just(\zero))(\comp(\just)(\next))(f(\next(t)))
-         == \opt(\just(\zero))(\comp(\just)(\next))(\just(t))
-             : use reiterate; 7 at z in \opt(\just(\zero))(\comp(\just)(\next))(z)
-         == \comp(\just)(\next)(t) : use opt-just;
-         == \just(\next(t)) : use def-comp;
-         == \just(n) : flop hypothesis n-next at z in \just(z)
-10.   (n == \next(t)) => (\comp(\prev)(\next)(n) == \just(n)) : discharge n-next; 9
-11. ((n == t) => (\comp(\prev)(\next)(n) == \just(n))) =>
-      ((n == \next(t)) => (\comp(\prev)(\next)(n) == \just(n))) : discharge n-t; 10
-12. ∀k. ((n == k) => (\comp(\prev)(\next)(n) == \just(n))) =>
-      ((n == \next(k)) => (\comp(\prev)(\next)(n) == \just(n))) : forall-intro t -> k; 11
-13. \comp(\prev)(\next)(n) == \just(n) : use nat-induction; 3, 12
-14. ∀u. \comp(\prev)(\next)(u) == \just(u) : forall-intro n -> u; 13
-15. \comp(\prev)(\next) == \just : use fun-eq; 14
+1. \comp(\prev)(\next)(\zero) : chain
+
+    == \prev(\next(\zero))
+     : use def-comp;
+
+    == \natrec(
+         \nothing)(
+         \opt(\just(\zero))(\comp(\just)(\next)))(
+         \next(\zero))
+     : use def-prev; at f in
+       f(\next(\zero))
+
+    == \opt(
+         \just(\zero))(
+         \comp(\just)(\next))(
+           \natrec(
+             \nothing)(
+             \opt(\just(\zero))(\comp(\just)(\next)))(
+             \zero))
+     : use natrec-next;
+
+    == \opt(\just(\zero))(\comp(\just)(\next))(\nothing)
+     : use natrec-zero; at z in
+       \opt(\just(\zero))(\comp(\just)(\next))(z)
+
+    == \just(\zero) : use opt-nothing;
+
+2.   \comp(\prev)(\next)(n) == \just(n) : hypothesis n
+
+3.   \comp(\prev)(\next)(\next(n)) : chain
+
+      == \prev(\next(\next(n))) : use def-comp;
+
+      == \natrec(
+           \nothing)(
+           \opt(\just(\zero))(\comp(\just)(\next)))(
+           \next(\next(n)))
+       : use def-prev; at f in
+         f(\next(\next(n)))
+
+      == \opt(\just(\zero))(\comp(\just)(\next))(
+           \natrec(
+             \nothing)(
+             \opt(\just(\zero))(\comp(\just)(\next)))(
+             \next(n)))
+       : use natrec-next;
+
+      == \opt(\just(\zero))(\comp(\just)(\next))(\prev(\next(n)))
+       : flop use def-prev; at f in
+         \opt(\just(\zero))(\comp(\just)(\next))(f(\next(n)))
+
+      == \opt(\just(\zero))(\comp(\just)(\next))(\comp(\prev)(\next)(n))
+       : flop use def-comp; at z in
+         \opt(\just(\zero))(\comp(\just)(\next))(z)
+
+      == \opt(\just(\zero))(\comp(\just)(\next))(\just(n))
+       : hypothesis n at z in
+         \opt(\just(\zero))(\comp(\just)(\next))(z)
+
+      == \comp(\just)(\next)(n) : use opt-just;
+
+      == \just(\next(n)) : use def-comp;
+
+4. (\comp(\prev)(\next)(n) == \just(n)) =>
+     (\comp(\prev)(\next)(\next(n)) == \just(\next(n)))
+   : discharge n; 3
+
+5. ∀k. (\comp(\prev)(\next)(k)
+        == \just(k)) =>
+     (\comp(\prev)(\next)(\next(k))
+        == \just(\next(k)))
+   : forall-intro n -> k; 4
+
+6. ∀k. \comp(\prev)(\next)(k) == \just(k)
+   : invoke nat-induction
+     [P :-> \comp(\prev)(\next)(_) == \just(_)]; 1, 5
+
+7. \comp(\prev)(\next) == \just
+   : use fun-eq; 6
 ~~~
 
 Using $\prev$ we can show that $\next$ is injective.

@@ -43,6 +43,7 @@
 \(\newcommand{\fst}{\mathsf{fst}}\)
 \(\newcommand{\snd}{\mathsf{snd}}\)
 \(\newcommand{\tup}{\mathsf{tup}}\)
+\(\newcommand{\uncurry}{\mathsf{uncurry}}\)
 
 <!-- Either -->
 \(\newcommand{\Either}{\mathsf{Either}}\)
@@ -104,9 +105,9 @@ then
 <p>Last but not least, every inductive type comes with an <em>induction principle</em>. For <span class="math inline">\(\Unit\)</span> this is not very interesting, but we’ll include it as a template for later types. Essentially, the induction principle for an inductive type allows us to prove arbitrary statements by case analysis on the constructors of the type.</p>
 <pre class="mycelium"><code>rule unit-induction
 if
-  * (x == \unit) =&gt; P
+  * P[_ :-&gt; \unit]
 then
-  * P</code></pre>
+  * ∀u. P[_ :-&gt; u]</code></pre>
 <p>Again- <span class="math inline">\(\Unit\)</span> is an inauspicious place to start working with inductive types because there’s not much to say about it. But it is a nice example of all the basic ingredients of an inductive type: constructors, the algebra map, the homomorphism property, the uniqueness property, and the induction principle. Unit will also be useful later.</p>
 <p>Here’s a theorem just for fun. This is fun, right?</p>
 <pre class="mycelium"><code>theorem flip-only

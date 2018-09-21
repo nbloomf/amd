@@ -43,4 +43,5 @@ Contents
     * [Times](/src/Naturals/Times.html)
     * [Simple Equations](/src/Naturals/SimpleEquations.html)
     * [Minus](/src/Naturals/Minus.html)
+    * [Less Than or Equal To](/src/Naturals/LessThanOrEqualTo.html)
 * Lists

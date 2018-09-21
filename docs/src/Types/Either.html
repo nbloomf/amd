@@ -43,6 +43,7 @@
 \(\newcommand{\fst}{\mathsf{fst}}\)
 \(\newcommand{\snd}{\mathsf{snd}}\)
 \(\newcommand{\tup}{\mathsf{tup}}\)
+\(\newcommand{\uncurry}{\mathsf{uncurry}}\)
 
 <!-- Either -->
 \(\newcommand{\Either}{\mathsf{Either}}\)
@@ -111,10 +112,10 @@ then
 <p>And the induction principle for <span class="math inline">\(\Either\)</span>.</p>
 <pre class="mycelium"><code>rule either-induction
 if
-  * ∀a. ((m == \lft(a)) =&gt; P)
-  * ∀b. ((m == \rgt(b)) =&gt; P)
+  * ∀a. P[_ :-&gt; \lft(a)]
+  * ∀b. P[_ :-&gt; \rgt(b)]
 then
-  * P</code></pre>
+  * ∀u. P[_ :-&gt; u]</code></pre>
 <p>From uniqueness, we can characterize <span class="math inline">\(\id\)</span> in terms of <span class="math inline">\(\either\)</span>.</p>
 <pre class="mycelium"><code>theorem either-lft-rgt
 * \id == \either(\lft)(\rgt)

@@ -45,10 +45,10 @@ Finally, we have an induction principle for $\Bool$.
 ~~~ {.mycelium}
 rule bool-induction
 if
-  * (q == \true) => P
-  * (q == \false) => P
+  * P[_ :-> \true]
+  * P[_ :-> \false]
 then
-  * P
+  * ∀u. P[_ :-> u]
 ~~~
 
 ~~~ {.mycelium}
@@ -56,13 +56,16 @@ theorem bool-cases
 * (q == \true) \/ (q == \false)
 
 proof
-1.   q == \true : hypothesis T
-2.   (q == \true) \/ (q == \false) : use disj-intro-l; 1
-3. (q == \true) => ((q == \true) \/ (q == \false)) : discharge T; 2
-4.   q == \false : hypothesis F
-5.   (q == \true) \/ (q == \false) : use disj-intro-r; 4
-6. (q == \false) => ((q == \true) \/ (q == \false)) : discharge F; 5
-7. (q == \true) \/ (q == \false) : use bool-induction; 3, 6
+1. \true == \true : eq-intro
+2. (\true == \true) \/ (\true == \false)
+    : use disj-intro-l; 1
+3. \false == \false : eq-intro
+4. (\false == \true) \/ (\false == \false)
+    : use disj-intro-r; 3
+5. ∀u. (u == \true) \/ (u == \false)
+    : invoke bool-induction [P :-> (_ == \true) \/ (_ == \false)]; 2, 4
+6. (q == \true) \/ (q == \false)
+    : forall-elim u -> q; 5
 ~~~
 
 $\Bool$ is the first concrete type we've seen, and there's a lot to say about it, so we'll split it up over several sections. First, like the other inductive types, we can characterize $\id$ in terms of the universal arrow.

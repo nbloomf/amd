@@ -50,10 +50,10 @@ And the induction principle for $\Either$.
 ~~~ {.mycelium}
 rule either-induction
 if
-  * ∀a. ((m == \lft(a)) => P)
-  * ∀b. ((m == \rgt(b)) => P)
+  * ∀a. P[_ :-> \lft(a)]
+  * ∀b. P[_ :-> \rgt(b)]
 then
-  * P
+  * ∀u. P[_ :-> u]
 ~~~
 
 From uniqueness, we can characterize $\id$ in terms of $\either$.

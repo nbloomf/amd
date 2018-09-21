@@ -54,10 +54,26 @@ Finally, we have an induction principle.
 ~~~ {.mycelium}
 rule maybe-induction
 if
-  * (m == \nothing) => P
-  * ∀a. ((m == \just(a)) => P)
+  * P[_ :-> \nothing]
+  * ∀a. P[_ :-> \just(a)]
 then
-  * P
+  * ∀u. P[_ :-> u]
+~~~
+
+~~~ {.mycelium}
+theorem maybe-cases
+* (x == \nothing) \/ (∃u. x == \just(u))
+
+proof
+1. \nothing == \nothing : eq-intro
+2. (\nothing == \nothing) \/ (∃u. \nothing == \just(u)) : use disj-intro-l; 1
+3. \just(a) == \just(a) : eq-intro
+4. ∃u. \just(a) == \just(u) : exists-intro u <- a; 3
+5. (\just(a) == \nothing) \/ (∃u. \just(a) == \just(u)) : use disj-intro-r; 4
+6. ∀v. (\just(v) == \nothing) \/ (∃u. \just(v) == \just(u)) : forall-intro a -> v; 5
+7. ∀w. (w == \nothing) \/ (∃u. w == \just(u))
+    : invoke maybe-induction [P :-> (_ == \nothing) \/ (∃u. _ == \just(u))]; 2, 6
+8. (x == \nothing) \/ (∃u. x == \just(u)) : forall-elim w -> x; 7
 ~~~
 
 $\just$ is injective.

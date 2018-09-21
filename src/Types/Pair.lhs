@@ -47,9 +47,9 @@ And we have a sort of induction principle for pairs.
 ~~~ {.mycelium}
 rule pair-analysis
 if
-  * ∀u. (∀v. (u == \fst(t)) /\ (v == \snd(t)) => P)
+  * ∀t. P[_1 :-> \fst(t); _2 :-> \snd(t)]
 then
-  * P
+  * ∀u. (∀v. P[_1 :-> u; _2 :-> v])
 ~~~
 
 From uniqueness, we can characterize $\id$ in terms of $\pair$.
@@ -115,44 +115,26 @@ theorem pair-only
 * \comp(\pair(f)(g))(\only(t)) == \pair(\only(f(t)))(\only(g(t)))
 
 proof
-1.    w == \unit : hypothesis w-unit
-2.    \comp(\fst)(\comp(\pair(f)(g))(\only(t)))(w) : chain
-       == \comp(\fst)(\comp(\pair(f)(g))(\only(t)))(\unit)
-           : hypothesis w-unit at z in \comp(\fst)(\comp(\pair(f)(g))(\only(t)))(z)
-       == \fst(\comp(\pair(f)(g))(\only(t))(\unit)) : use def-comp;
-       == \fst(\pair(f)(g)(\only(t)(\unit))) : use def-comp; at z in \fst(z)
-       == f(\only(t)(\unit)) : use fst-pair;
-       == f(t) : use only-unit; at z in f(z)
-       == \only(f(t))(\unit) : flop use only-unit;
-       == \only(f(t))(w) : flop hypothesis w-unit at z in \only(f(t))(z)
-3.  (w == \unit) => (\comp(\fst)(\comp(\pair(f)(g))(\only(t)))(w) == \only(f(t))(w))
-     : discharge w-unit; 2
-4.  \comp(\fst)(\comp(\pair(f)(g))(\only(t)))(w) == \only(f(t))(w)
-     : use unit-induction; 3
-5.  ∀x. \comp(\fst)(\comp(\pair(f)(g))(\only(t)))(x) == \only(f(t))(x)
-     : forall-intro w -> x; 4
-6.  \comp(\fst)(\comp(\pair(f)(g))(\only(t))) == \only(f(t))
-     : use fun-eq; 5
-7.    w == \unit : hypothesis w-unit
-8.    \comp(\snd)(\comp(\pair(f)(g))(\only(t)))(w) : chain
-       == \comp(\snd)(\comp(\pair(f)(g))(\only(t)))(\unit)
-           : hypothesis w-unit at z in \comp(\snd)(\comp(\pair(f)(g))(\only(t)))(z)
-       == \snd(\comp(\pair(f)(g))(\only(t))(\unit)) : use def-comp;
-       == \snd(\pair(f)(g)(\only(t)(\unit))) : use def-comp; at z in \snd(z)
-       == g(\only(t)(\unit)) : use snd-pair;
-       == g(t) : use only-unit; at z in g(z)
-       == \only(g(t))(\unit) : flop use only-unit;
-       == \only(g(t))(w) : flop hypothesis w-unit at z in \only(g(t))(z)
-9.  (w == \unit) => (\comp(\snd)(\comp(\pair(f)(g))(\only(t)))(w) == \only(g(t))(w))
-     : discharge w-unit; 8
-10. \comp(\snd)(\comp(\pair(f)(g))(\only(t)))(w) == \only(g(t))(w)
-     : use unit-induction; 9
-11. ∀x. \comp(\snd)(\comp(\pair(f)(g))(\only(t)))(x) == \only(g(t))(x)
-     : forall-intro w -> x; 10
-12. \comp(\snd)(\comp(\pair(f)(g))(\only(t))) == \only(g(t))
-     : use fun-eq; 11
-13. \comp(\pair(f)(g))(\only(t)) == \pair(\only(f(t)))(\only(g(t)))
-     : use pair-unique; 6, 12
+1. \comp(\fst)(\comp(\pair(f)(g))(\only(t)))(\unit) : chain
+    == \fst(\comp(\pair(f)(g))(\only(t))(\unit)) : use def-comp;
+    == \fst(\pair(f)(g)(\only(t)(\unit))) : use def-comp; at z in \fst(z)
+    == f(\only(t)(\unit)) : use fst-pair;
+    == f(t) : use only-unit; at z in f(z)
+    == \only(f(t))(\unit) : flop use only-unit;
+2. ∀u. \comp(\fst)(\comp(\pair(f)(g))(\only(t)))(u) == \only(f(t))(u)
+    : invoke unit-induction [P :-> \comp(\fst)(\comp(\pair(f)(g))(\only(t)))(_) == \only(f(t))(_)]; 1
+3. \comp(\fst)(\comp(\pair(f)(g))(\only(t))) == \only(f(t)) : use fun-eq; 2
+4. \comp(\snd)(\comp(\pair(f)(g))(\only(t)))(\unit) : chain
+    == \snd(\comp(\pair(f)(g))(\only(t))(\unit)) : use def-comp;
+    == \snd(\pair(f)(g)(\only(t)(\unit))) : use def-comp; at z in \snd(z)
+    == g(\only(t)(\unit)) : use snd-pair;
+    == g(t) : use only-unit; at z in g(z)
+    == \only(g(t))(\unit) : flop use only-unit;
+5. ∀u. \comp(\snd)(\comp(\pair(f)(g))(\only(t)))(u) == \only(g(t))(u)
+    : invoke unit-induction [P :-> \comp(\snd)(\comp(\pair(f)(g))(\only(t)))(_) == \only(g(t))(_)]; 4
+6. \comp(\snd)(\comp(\pair(f)(g))(\only(t))) == \only(g(t)) : use fun-eq; 5
+7. \comp(\pair(f)(g))(\only(t)) == \pair(\only(f(t)))(\only(g(t)))
+    : use pair-unique; 3, 6
 ~~~
 
 With the lemma, we can show that every value of type $\Pair\ a\ b$ is of the form $\tup(u)(v)$.

@@ -49,9 +49,9 @@ Last but not least, every inductive type comes with an _induction principle_. Fo
 ~~~ {.mycelium}
 rule unit-induction
 if
-  * (x == \unit) => P
+  * P[_ :-> \unit]
 then
-  * P
+  * ∀u. P[_ :-> u]
 ~~~
 
 Again- $\Unit$ is an inauspicious place to start working with inductive types because there's not much to say about it. But it is a nice example of all the basic ingredients of an inductive type: constructors, the algebra map, the homomorphism property, the uniqueness property, and the induction principle. Unit will also be useful later.

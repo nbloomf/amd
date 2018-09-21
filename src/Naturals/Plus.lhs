@@ -77,42 +77,33 @@ theorem plus-next-l
 * \plus(\next(a))(b) == \next(\plus(a)(b))
 
 proof
-1.    b == \zero : hypothesis zero
-2.    \plus(\next(a))(b) : chain
-       == \plus(\next(a))(\zero)
-           : hypothesis zero at z in \plus(\next(a))(z)
-       == \next(a) : use plus-zero-r;
-       == \next(\plus(a)(\zero))
-           : flop use plus-zero-r; at z in \next(z)
-       == \next(\plus(a)(b))
-           : flop hypothesis zero at z in \next(\plus(a)(z))
-3.  (b == \zero) => (\plus(\next(a))(b) == \next(\plus(a)(b)))
-     : discharge zero; 2
-4.    (b == n) => (\plus(\next(a))(b) == \next(\plus(a)(b)))
-       : hypothesis n
-5.    (n == n) => (\plus(\next(a))(n) == \next(\plus(a)(n)))
-       : sub [b :-> n]; 4
-6.    n == n : eq-intro
-7.    \plus(\next(a))(n) == \next(\plus(a)(n)) : use impl-elim; 6, 5
-8.      b == \next(n) : hypothesis next
-9.      \plus(\next(a))(b) : chain
-         == \plus(\next(a))(\next(n))
-             : hypothesis next at z in \plus(\next(a))(z)
-         == \next(\plus(\next(a))(n)) : use plus-next-r;
-         == \next(\next(\plus(a)(n))) : use ap-eq; 7
-         == \next(\plus(a)(\next(n)))
-             : flop use plus-next-r; at z in \next(z)
-         == \next(\plus(a)(b))
-             : flop hypothesis next at z in \next(\plus(a)(z))
-10.   (b == \next(n)) => (\plus(\next(a))(b) == \next(\plus(a)(b)))
-       : discharge next; 9
-11. ((b == n) => (\plus(\next(a))(b) == \next(\plus(a)(b)))) =>
-      ((b == \next(n)) => (\plus(\next(a))(b) == \next(\plus(a)(b))))
-     : discharge n; 10
-12. ∀k. ((b == k) => (\plus(\next(a))(b) == \next(\plus(a)(b)))) =>
-      ((b == \next(k)) => (\plus(\next(a))(b) == \next(\plus(a)(b))))
-     : forall-intro n -> k; 11
-13. \plus(\next(a))(b) == \next(\plus(a)(b)) : use nat-induction; 3, 12
+1. \plus(\next(a))(\zero) : chain
+    == \next(a) : use plus-zero-r;
+    == \next(\plus(a)(\zero))
+     : flop use plus-zero-r; at z in \next(z)
+
+2.   \plus(\next(a))(n) == \next(\plus(a)(n)) : hypothesis n
+
+3.   \plus(\next(a))(\next(n)) : chain
+      == \next(\plus(\next(a))(n)) : use plus-next-r;
+      == \next(\next(\plus(a)(n))) : use ap-eq; 2
+      == \next(\plus(a)(\next(n)))
+       : flop use plus-next-r; at z in \next(z)
+
+4. (\plus(\next(a))(n) == \next(\plus(a)(n))) =>
+     (\plus(\next(a))(\next(n)) == \next(\plus(a)(\next(n))))
+   : discharge n; 3
+
+5. ∀k. (\plus(\next(a))(k) == \next(\plus(a)(k))) =>
+     (\plus(\next(a))(\next(k)) == \next(\plus(a)(\next(k))))
+   : forall-intro n -> k; 4
+
+6. ∀k. \plus(\next(a))(k) == \next(\plus(a)(k))
+   : invoke nat-induction
+     [P :-> \plus(\next(a))(_) == \next(\plus(a)(_))]; 1, 5
+
+7. \plus(\next(a))(b) == \next(\plus(a)(b))
+   : forall-elim k -> b; 6
 ~~~
 
 We can move $\next$ from one argument to the other inside $\plus$.
@@ -134,33 +125,31 @@ theorem plus-comm
 * \plus(a)(b) == \plus(b)(a)
 
 proof
-1.    a == \zero : hypothesis zero
-2.    \plus(a)(b) : chain
-       == \plus(\zero)(b) : hypothesis zero at z in \plus(z)(b)
-       == b : use plus-zero-l;
-       == \plus(b)(\zero) : flop use plus-zero-r;
-       == \plus(b)(a) : flop hypothesis zero at z in \plus(b)(z)
-3.  (a == \zero) => (\plus(a)(b) == \plus(b)(a)) : discharge zero; 2
-4.    (a == n) => (\plus(a)(b) == \plus(b)(a)) : hypothesis n
-5.    (n == n) => (\plus(n)(b) == \plus(b)(n)) : sub [a :-> n]; 4
-6.    n == n : eq-intro
-7.    \plus(n)(b) == \plus(b)(n) : use impl-elim; 6, 5
-8.      a == \next(n) : hypothesis next
-9.      \plus(a)(b) : chain
-         == \plus(\next(n))(b) : hypothesis next at z in \plus(z)(b)
-         == \next(\plus(n)(b)) : use plus-next-l;
-         == \next(\plus(b)(n)) : use ap-eq; 7
-         == \plus(b)(\next(n)) : flop use plus-next-r;
-         == \plus(b)(a) : flop hypothesis next at z in \plus(b)(z)
-10.   (a == \next(n)) => (\plus(a)(b) == \plus(b)(a))
-       : discharge next; 9
-11. ((a == n) => (\plus(a)(b) == \plus(b)(a))) =>
-      ((a == \next(n)) => (\plus(a)(b) == \plus(b)(a)))
-     : discharge n; 10
-12. ∀k. ((a == k) => (\plus(a)(b) == \plus(b)(a))) =>
-      ((a == \next(k)) => (\plus(a)(b) == \plus(b)(a)))
-     : forall-intro n -> k; 11
-13. \plus(a)(b) == \plus(b)(a) : use nat-induction; 3, 12
+1. \plus(\zero)(b) : chain
+    == b : use plus-zero-l;
+    == \plus(b)(\zero) : flop use plus-zero-r;
+
+2.   \plus(n)(b) == \plus(b)(n) : hypothesis n
+
+3.   \plus(\next(n))(b) : chain
+      == \next(\plus(n)(b)) : use plus-next-l;
+      == \next(\plus(b)(n)) : use ap-eq; 2
+      == \plus(b)(\next(n)) : flop use plus-next-r;
+
+4. (\plus(n)(b) == \plus(b)(n)) =>
+     (\plus(\next(n))(b) == \plus(b)(\next(n)))
+    : discharge n; 3
+
+5. ∀k. (\plus(k)(b) == \plus(b)(k)) =>
+     (\plus(\next(k))(b) == \plus(b)(\next(k)))
+    : forall-intro n -> k; 4
+
+6. ∀k. \plus(k)(b) == \plus(b)(k)
+    : invoke nat-induction
+      [P :-> \plus(_)(b) == \plus(b)(_)]; 1, 5
+
+7. \plus(a)(b) == \plus(b)(a)
+    : forall-elim k -> a; 6
 ~~~
 
 $\plus$ is associative.
@@ -170,45 +159,36 @@ theorem plus-assoc-l
 * \plus(a)(\plus(b)(c)) == \plus(\plus(a)(b))(c)
 
 proof
-1.    c == \zero : hypothesis c-zero
-2.    \plus(a)(\plus(b)(c)) : chain
-       == \plus(a)(\plus(b)(\zero))
-           : hypothesis c-zero at z in \plus(a)(\plus(b)(z))
-       == \plus(a)(b) : use plus-zero-r; at z in \plus(a)(z)
-       == \plus(\plus(a)(b))(\zero) : flop use plus-zero-r;
-       == \plus(\plus(a)(b))(c)
-           : flop hypothesis c-zero at z in \plus(\plus(a)(b))(z)
-3.  (c == \zero) => (\plus(a)(\plus(b)(c)) == \plus(\plus(a)(b))(c))
-     : discharge c-zero; 2
-4.    (c == n) => (\plus(a)(\plus(b)(c)) == \plus(\plus(a)(b))(c))
-       : hypothesis c-n
-5.    (n == n) => (\plus(a)(\plus(b)(n)) == \plus(\plus(a)(b))(n))
-       : sub [c :-> n]; 4
-6.    n == n : eq-intro
-7.    \plus(a)(\plus(b)(n)) == \plus(\plus(a)(b))(n)
-       : use impl-elim; 6, 5
-8.      c == \next(n) : hypothesis c-next
-9.      \plus(a)(\plus(b)(c)) : chain
-         == \plus(a)(\plus(b)(\next(n)))
-             : hypothesis c-next at z in \plus(a)(\plus(b)(z))
-         == \plus(a)(\next(\plus(b)(n)))
-             : use plus-next-r; at z in \plus(a)(z)
-         == \next(\plus(a)(\plus(b)(n)))
-             : use plus-next-r;
-         == \next(\plus(\plus(a)(b))(n)) : use ap-eq; 7
-         == \plus(\plus(a)(b))(\next(n)) : flop use plus-next-r;
-         == \plus(\plus(a)(b))(c)
-             : flop hypothesis c-next at z in \plus(\plus(a)(b))(z)
-10.   (c == \next(n)) => (\plus(a)(\plus(b)(c)) == \plus(\plus(a)(b))(c))
-       : discharge c-next; 9
-11. ((c == n) => (\plus(a)(\plus(b)(c)) == \plus(\plus(a)(b))(c))) =>
-      ((c == \next(n)) => (\plus(a)(\plus(b)(c)) == \plus(\plus(a)(b))(c)))
-     : discharge c-n; 10
-12. ∀k. ((c == k) => (\plus(a)(\plus(b)(c)) == \plus(\plus(a)(b))(c))) =>
-      ((c == \next(k)) => (\plus(a)(\plus(b)(c)) == \plus(\plus(a)(b))(c)))
-     : forall-intro n -> k; 11
-13. \plus(a)(\plus(b)(c)) == \plus(\plus(a)(b))(c)
-     : use nat-induction; 3, 12
+1. \plus(a)(\plus(b)(\zero)) : chain
+    == \plus(a)(b) : use plus-zero-r; at z in \plus(a)(z)
+    == \plus(\plus(a)(b))(\zero) : flop use plus-zero-r;
+
+2.   \plus(a)(\plus(b)(n)) == \plus(\plus(a)(b))(n) : hypothesis n
+
+3.   \plus(a)(\plus(b)(\next(n))) : chain
+      == \plus(a)(\next(\plus(b)(n)))
+       : use plus-next-r; at z in \plus(a)(z)
+      == \next(\plus(a)(\plus(b)(n)))
+       : use plus-next-r;
+      == \next(\plus(\plus(a)(b))(n))
+       : use ap-eq; 2
+      == \plus(\plus(a)(b))(\next(n))
+       : flop use plus-next-r;
+
+4. (\plus(a)(\plus(b)(n)) == \plus(\plus(a)(b))(n)) =>
+     (\plus(a)(\plus(b)(\next(n))) == \plus(\plus(a)(b))(\next(n)))
+    : discharge n; 3
+
+5. ∀k. (\plus(a)(\plus(b)(k)) == \plus(\plus(a)(b))(k)) =>
+     (\plus(a)(\plus(b)(\next(k))) == \plus(\plus(a)(b))(\next(k)))
+    : forall-intro n -> k; 4
+
+6. ∀k. \plus(a)(\plus(b)(k)) == \plus(\plus(a)(b))(k)
+    : invoke nat-induction
+      [P :-> \plus(a)(\plus(b)(_)) == \plus(\plus(a)(b))(_)]; 1, 5
+
+7. \plus(a)(\plus(b)(c)) == \plus(\plus(a)(b))(c)
+    : forall-elim k -> c; 6
 
 
 theorem plus-assoc-r
@@ -229,27 +209,54 @@ then
   * a == b
 
 proof
-1.    c == \zero : hypothesis c-zero
+1.    \plus(a)(\zero) == \plus(b)(\zero)
+       : hypothesis zero
+
 2.    a : chain
        == \plus(a)(\zero) : flop use plus-zero-r;
-       == \plus(a)(c) : flop hypothesis c-zero at z in \plus(a)(z)
-       == \plus(b)(c) : assumption 1
-       == \plus(b)(\zero) : hypothesis c-zero at z in \plus(b)(z)
+       == \plus(b)(\zero) : hypothesis zero
        == b : use plus-zero-r;
-3.  (c == \zero) => (a == b) : discharge c-zero; 2
-4.    (c == n) => (a == b) : hypothesis c-n
-5.    (n == n) => (a == b) : sub [c :-> n]; 4
-6.    n == n : eq-intro
-7.      c == \next(n) : hypothesis c-next
-8.      a == b : use impl-elim; 6, 5
-9.      (c == \next(n)) /\ (a == b) : use conj-intro; 7, 8
-10.     a == b : use conj-elim-r; 9
-11.   (c == \next(n)) => (a == b) : discharge c-next; 10
-12. ((c == n) => (a == b)) => ((c == \next(n)) => (a == b))
-     : discharge c-n; 11
-13. ∀k. ((c == k) => (a == b)) => ((c == \next(k)) => (a == b))
-     : forall-intro n -> k; 12
-14. a == b : use nat-induction; 3, 13
+
+3.  (\plus(a)(\zero) == \plus(b)(\zero)) =>
+      (a == b) : discharge zero; 2
+
+4.    (\plus(a)(n) == \plus(b)(n)) => (a == b)
+       : hypothesis n
+
+5.      \plus(a)(\next(n)) == \plus(b)(\next(n))
+         : hypothesis next
+
+6.      \next(\plus(a)(n)) : chain
+         == \plus(a)(\next(n)) : flop use plus-next-r;
+         == \plus(b)(\next(n)) : hypothesis next
+         == \next(\plus(b)(n)) : use plus-next-r;
+
+7.      \plus(a)(n) == \plus(b)(n) : use next-inj; 6
+
+8.      a == b : use impl-elim; 7, 4
+
+9.    (\plus(a)(\next(n)) == \plus(b)(\next(n))) => (a == b)
+       : discharge next; 8
+
+10. ((\plus(a)(n) == \plus(b)(n)) => (a == b)) =>
+      ((\plus(a)(\next(n)) == \plus(b)(\next(n))) => (a == b))
+     : discharge n; 9
+
+11. ∀k. ((\plus(a)(k) == \plus(b)(k)) => (a == b)) =>
+      ((\plus(a)(\next(k)) == \plus(b)(\next(k))) => (a == b))
+     : forall-intro n -> k; 10
+
+12. ∀k. (\plus(a)(k) == \plus(b)(k)) => (a == b)
+     : invoke nat-induction
+       [P :-> (\plus(a)(_) == \plus(b)(_)) => (a == b)]; 3, 11
+
+13. (\plus(a)(c) == \plus(b)(c)) => (a == b)
+     : forall-elim k -> c; 12
+
+14. \plus(a)(c) == \plus(b)(c)
+     : assumption 1
+
+15. a == b : use impl-elim; 14, 13
 
 
 theorem plus-cancel-l

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Arithmetic Made Difficult - Flip</title>
+    <title>Arithmetic Made Difficult - Less Than or Equal To</title>
     <link rel="stylesheet" href="../../css/default.css" />
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
   </head>
@@ -21,7 +21,7 @@
     </header>
 
     <main role="main">
-      <h1>Flip</h1>
+      <h1>Less Than or Equal To</h1>
       <!-- LaTeX Macros -->
 <div style="display:none;">
 <!-- Functions -->
@@ -80,43 +80,31 @@
 </div>
 <!-- End LaTeX Macros -->
 
-<p>All functions in the simply typed lambda calculus take only one argument; we can simulate functions of multiple arguments by making the <em>output</em> another function. This imposes a strict order on the arguments. <span class="math inline">\(\flip\)</span> is a handy function that can rearrange another function’s arguments.</p>
-<pre class="mycelium"><code>type \flip :: (a -&gt; b -&gt; c) -&gt; b -&gt; a -&gt; c
+<pre class="mycelium"><code>type \leq :: Nat -&gt; Nat -&gt; Bool
 
-definition def-flip
-* \flip(f)(b)(a) == f(a)(b)</code></pre>
-<p><span class="math inline">\(\flip\)</span> is an involution:</p>
-<pre class="mycelium"><code>theorem flip-invol
-* \comp(\flip)(\flip) == \id
+definition def-leq
+* \leq(a)(b) == \opt(\false)(\const(\true))(\minus(b)(a))</code></pre>
+<pre class="mycelium"><code>theorem leq-refl
+* \leq(a)(a) == \true
 
 proof
-1. \comp(\flip)(\flip)(f)(a)(b) : chain
-    == \flip(\flip(f))(a)(b) : use def-comp; at w in w(a)(b)
-    == \flip(f)(b)(a) : use def-flip;
-    == f(a)(b) : use def-flip;
-    == \id(f)(a)(b) : flop use def-id; at w in w(a)(b)
-2. ∀v. \comp(\flip)(\flip)(f)(a)(v) == \id(f)(a)(v)
-    : forall-intro b -&gt; v; 1
-3. \comp(\flip)(\flip)(f)(a) == \id(f)(a) : use fun-eq; 2
-4. ∀v. \comp(\flip)(\flip)(f)(v) == \id(f)(v) : forall-intro a -&gt; v; 3
-5. \comp(\flip)(\flip)(f) == \id(f) : use fun-eq; 4
-6. ∀v. \comp(\flip)(\flip)(v) == \id(v) : forall-intro f -&gt; v; 5
-7. \comp(\flip)(\flip) == \id : use fun-eq; 6</code></pre>
-<p><span class="math inline">\(\flip\)</span> interacts with <span class="math inline">\(\const\)</span>:</p>
-<pre class="mycelium"><code>theorem flip-const
-* \flip(\const) == \const(\id)
+1. \leq(a)(a) : chain
+    == \opt(\false)(\const(\true))(\minus(a)(a))
+        : use def-leq;
+    == \opt(\false)(\const(\true))(\just(\zero))
+        : use minus-self; at z in \opt(\false)(\const(\true))(z)
+    == \const(\true)(\zero) : use opt-just;
+    == \true : use def-const;</code></pre>
+<pre class="mycelium"><code>theorem leq-impl-plus
+if
+ * \leq(a)(b) == \true
+then
+ * ∃k. b == \plus(a)(k)
 
 proof
-1. \flip(\const)(b)(a) : chain
-    == \const(a)(b) : use def-flip;
-    == a : use def-const;
-    == \id(a) : flop use def-id;
-    == \const(\id)(b)(a) : flop use def-const; at f in f(a)
-2. ∀x. \flip(\const)(b)(x) == \const(\id)(b)(x)
-    : forall-intro a -&gt; x; 1
-3. \flip(\const)(b) == \const(\id)(b) : use fun-eq; 2
-4. ∀x. \flip(\const)(x) == \const(\id)(x) : forall-intro b -&gt; x; 3
-5. \flip(\const) == \const(\id) : use fun-eq; 4</code></pre>
+1. (\minus(b)(a) == \nothing) \/ (∃u. \minus(b)(a) == \just(u)) : use maybe-cases;
+2.   \minus(b)(a) == \nothing : hypothesis nothing
+3.   </code></pre>
 
     </main>
 

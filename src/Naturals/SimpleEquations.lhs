@@ -27,7 +27,7 @@ proof
 10. ~(∃n. \zero == \plus(\next(\zero))(n)) : use neg-intro; 7, 9
 ~~~
 
-We can show that $$0 = a + b$$ has only one solution, namely $a = 0$ and $b = 0$.
+We've already shown that $ab = 0$ has only one solution -- namely $a = \zero, b = \zero$. The same is true of $$0 = a + b.$$
 
 ~~~ {.mycelium}
 theorem plus-eq-zero

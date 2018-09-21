@@ -58,10 +58,10 @@ Finally, we need an induction principle for $\Nat$.
 ~~~ {.mycelium}
 rule nat-induction
 if
-  * (k == \zero) => P
-  * ∀n. ((k == n) => P) => ((k == \next(n)) => P)
+  * P[_ :-> \zero]
+  * ∀n. P[_ :-> n] => P[_ :-> \next(n)]
 then
-  * P
+  * ∀n. P[_ :-> n]
 ~~~
 
 Using the uniqueness of $\natrec$, we can characterize $\id$ as an $F$-algebra homomorphism. This theorem essentially states that $$n = \underbrace{1 + 1 + \cdots + 1}_{n\ \mathrm{times}}$$
@@ -85,22 +85,29 @@ theorem nat-disj-cases-1
 * (a == \zero) \/ (∃k. a == \next(k))
 
 proof
-1.    a == \zero : hypothesis a-zero
-2.    (a == \zero) \/ (∃k. a == \next(k)) : use disj-intro-l; 1
-3.  (a == \zero) => ((a == \zero) \/ (∃k. a == \next(k)))
-     : discharge a-zero; 2
-4.      a == \next(n) : hypothesis a-next
-5.      ∃k. a == \next(k) : exists-intro k <- n; 4
-6.      (a == \zero) \/ (∃k. a == \next(k)) : use disj-intro-r; 5
-7.  (a == \next(n)) => ((a == \zero) \/ (∃k. a == \next(k)))
-     : discharge a-next; 6
-8.  ((a == n) => ((a == \zero) \/ (∃k. a == \next(k)))) =>
-      ((a == \next(n)) => ((a == \zero) \/ (∃k. a == \next(k))))
-     : use simp; 7
-9.  ∀t. ((a == t) => ((a == \zero) \/ (∃k. a == \next(k)))) =>
-      ((a == \next(t)) => ((a == \zero) \/ (∃k. a == \next(k))))
-     : forall-intro n -> t; 8
-10. (a == \zero) \/ (∃k. a == \next(k)) : use nat-induction; 3, 9
+1. \zero == \zero : eq-intro
+2. (\zero == \zero) \/ (∃k. \zero == \next(k)) : use disj-intro-l; 1
+3.   (t == \zero) \/ (∃k. t == \next(k)) : hypothesis t-n
+4.     t == \zero : hypothesis t-zero
+5.     \next(t) : chain
+        == \next(\zero) : hypothesis t-zero at z in \next(z)
+6.     ∃k. \next(t) == \next(k) : exists-intro k <- \zero; 5
+7.     (\next(t) == \zero) \/ (∃k. \next(t) == \next(k)) : use disj-intro-r; 6
+8.   (t == \zero) => ((\next(t) == \zero) \/ (∃k. \next(t) == \next(k))) : discharge t-zero; 7
+9.     ∃k. t == \next(k) : hypothesis t-next
+10.      t == \next(u) : hypothesis t-next-u
+11.      \next(t) : chain
+          == \next(\next(u)) : hypothesis t-next-u at z in \next(z)
+12.      ∃k. \next(t) == \next(k) : exists-intro k <- \next(u); 11
+13.      (\next(t) == \zero) \/ (∃k. \next(t) == \next(k)) : use disj-intro-r; 12
+14.    (t == \next(u)) => ((\next(t) == \zero) \/ (∃k. \next(t) == \next(k))) : discharge t-next-u; 13
+15.    (\next(t) == \zero) \/ (∃k. \next(t) == \next(k)) : exists-elim u <- k; 9, 14
+16.  (∃k. t == \next(k)) => ((\next(t) == \zero) \/ (∃k. \next(t) == \next(k))) : discharge t-next; 15
+17.  (\next(t) == \zero) \/ (∃k. \next(t) == \next(k)) : use disj-elim; 3, 8, 16
+18. ((t == \zero) \/ (∃k. t == \next(k))) => ((\next(t) == \zero) \/ (∃k. \next(t) == \next(k))) : discharge t-n; 17
+19. ∀n. ((n == \zero) \/ (∃k. n == \next(k))) => ((\next(n) == \zero) \/ (∃k. \next(n) == \next(k))) : forall-intro t -> n; 18
+20. ∀n. (n == \zero) \/ (∃k. n == \next(k)) : invoke nat-induction [P :-> (_ == \zero) \/ (∃u. _ == \next(u))]; 2, 19
+21. (a == \zero) \/ (∃k. a == \next(k)) : forall-elim n -> a; 20
 ~~~
 
 It's also handy to state this result in a more general form.

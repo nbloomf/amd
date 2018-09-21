@@ -43,6 +43,7 @@
 \(\newcommand{\fst}{\mathsf{fst}}\)
 \(\newcommand{\snd}{\mathsf{snd}}\)
 \(\newcommand{\tup}{\mathsf{tup}}\)
+\(\newcommand{\uncurry}{\mathsf{uncurry}}\)
 
 <!-- Either -->
 \(\newcommand{\Either}{\mathsf{Either}}\)
@@ -117,111 +118,58 @@ proof
 * \and(\true)(q) == q
 
 proof
-1.   q == \true : hypothesis q-T
-2.     \and(\true)(q) : chain
-        == \and(\true)(\true) : hypothesis q-T at w in \and(\true)(w)
-        == \true : use and-true-true;
-        == q : use eq-sym; 1
-3. (q == \true) =&gt; (\and(\true)(q) == q) : discharge q-T; 2
-4.   q == \false : hypothesis q-F
-5.     \and(\true)(q) : chain
-         == \and(\true)(\false) : hypothesis q-F at w in \and(\true)(w)
-         == \false : use and-true-false;
-         == q : use eq-sym; 4
-6. (q == \false) =&gt; (\and(\true)(q) == q) : discharge q-F; 5
-7. \and(\true)(q) == q : use bool-induction; 3, 6</code></pre>
+1. \and(\true)(\true) == \true : use and-true-true;
+2. \and(\true)(\false) == \false : use and-true-false;
+3. ∀u. \and(\true)(u) == u
+   : invoke bool-induction [P :-&gt; \and(\true)(_) == _]; 1, 2
+4. \and(\true)(q) == q : forall-elim u -&gt; q; 3</code></pre>
 <p>From here, the usual properties of boolean and are straightforward. <span class="math inline">\(\and\)</span> is idempotent:</p>
 <pre class="mycelium"><code>theorem and-idemp
 * \and(q)(q) == q
 
 proof
-1.   q == \true : hypothesis T
-2.   \and(q)(q) : chain
-       == \and(\true)(q) : hypothesis T at z in \and(z)(q)
-       == q : use and-true-l;
-3. (q == \true) =&gt; (\and(q)(q) == q) : discharge T; 2
-4.   q == \false : hypothesis F
-5.   \and(q)(q) : chain
-       == \and(\false)(q) : hypothesis F at z in \and(z)(q)
-       == \false : use and-false-l;
-       == q : flop hypothesis F
-6. (q == \false) =&gt; (\and(q)(q) == q) : discharge F; 5
-7. \and(q)(q) == q : use bool-induction; 3, 6</code></pre>
+1. \and(\true)(\true) == \true : use and-true-true;
+2. \and(\false)(\false) == \false : use and-false-l;
+3. ∀u. \and(u)(u) == u
+   : invoke bool-induction [P :-&gt; \and(_)(_) == _]; 1, 2
+4. \and(q)(q) == q : forall-elim u -&gt; q; 3</code></pre>
 <p><span class="math inline">\(\and\)</span> is commutative:</p>
 <pre class="mycelium"><code>theorem and-comm
 * \and(p)(q) == \and(q)(p)
 
 proof
-1.    q == \true : hypothesis q-T
-2.      p == \true : hypothesis p-T
-3.      \and(p)(q) : chain
-         == \and(\true)(q) : hypothesis p-T at w in \and(w)(q)
-         == \and(\true)(\true)
-             : hypothesis q-T at w in \and(\true)(w)
-         == \and(q)(\true) : use eq-sym; 1 at w in \and(w)(\true)
-         == \and(q)(p) : use eq-sym; 2 at w in \and(q)(w)
-4.    (p == \true) =&gt; (\and(p)(q) == \and(q)(p)) : discharge p-T; 3
-5.      p == \false : hypothesis p-F
-6.      \and(p)(q) : chain
-         == \and(\false)(q) : hypothesis p-F at w in \and(w)(q)
-         == \false : use and-false-l;
-         == \and(\true)(\false) : flop use and-true-false;
-         == \and(q)(\false) : use eq-sym; 1 at w in \and(w)(\false)
-         == \and(q)(p) : use eq-sym; 5 at w in \and(q)(w)
-7.    (p == \false) =&gt; (\and(p)(q) == \and(q)(p)) : discharge p-F; 6
-8.    \and(p)(q) == \and(q)(p) : use bool-induction; 4, 7
-9.  (q == \true) =&gt; (\and(p)(q) == \and(q)(p)) : discharge q-T; 8
-10.   q == \false : hypothesis q-F
-11.     p == \true : hypothesis p-T
-12.     \and(p)(q) : chain
-         == \and(\true)(q) : hypothesis p-T at w in \and(w)(q)
-         == \and(\true)(\false)
-             : hypothesis q-F at w in \and(\true)(w)
-         == \false : use and-true-false;
-         == \and(\false)(\true) : flop use and-false-l;
-         == \and(q)(\true) : use eq-sym; 10 at w in \and(w)(\true)
-         == \and(q)(p) : use eq-sym; 11 at w in \and(q)(w)
-13.   (p == \true) =&gt; (\and(p)(q) == \and(q)(p)) : discharge p-T; 12
-14.     p == \false : hypothesis p-F
-15.     \and(p)(q) : chain
-         == \and(\false)(q) : hypothesis p-F at w in \and(w)(q)
-         == \false : use and-false-l;
-         == \and(\false)(p) : flop use and-false-l;
-         == \and(q)(p) : use eq-sym; 10 at w in \and(w)(p)
-16.   (p == \false) =&gt; (\and(p)(q) == \and(q)(p)) : discharge p-F; 15
-17.   \and(p)(q) == \and(q)(p) : use bool-induction; 13, 16
-18. (q == \false) =&gt; (\and(p)(q) == \and(q)(p)) : discharge q-F; 17
-19. \and(p)(q) == \and(q)(p) : use bool-induction; 9, 18</code></pre>
+1.  \and(\true)(\true) == \and(\true)(\true) : eq-intro
+2.  \and(\true)(\false) : chain
+     == \false : use and-true-false;
+     == \and(\false)(\true) : flop use and-false-l;
+3.  ∀u. \and(\true)(u) == \and(u)(\true)
+     : invoke bool-induction [P :-&gt; \and(\true)(_) == \and(_)(\true)]; 1, 2
+4.  \and(\true)(q) == \and(q)(\true) : forall-elim u -&gt; q; 3
+5.  \and(\false)(\true) : chain
+     == \false : use and-false-l;
+     == \and(\true)(\false) : flop use and-true-false;
+6.  \and(\false)(\false) == \and(\false)(\false) : eq-intro
+7.  ∀u. \and(\false)(u) == \and(u)(\false)
+     : invoke bool-induction [P :-&gt; \and(\false)(_) == \and(_)(\false)]; 5, 6
+8.  \and(\false)(q) == \and(q)(\false) : forall-elim u -&gt; q; 7
+9.  ∀u. \and(u)(q) == \and(q)(u)
+     : invoke bool-induction [P :-&gt; \and(_)(q) == \and(q)(_)]; 4, 8
+10. \and(p)(q) == \and(q)(p) : forall-elim u -&gt; p; 9</code></pre>
 <p>And <span class="math inline">\(\and\)</span> is associative.</p>
 <pre class="mycelium"><code>theorem and-assoc-l
 * \and(p)(\and(q)(r)) == \and(\and(p)(q))(r)
 
 proof
-1.   p == \true : hypothesis p-T
-2.   \and(p)(\and(q)(r)) : chain
-      == \and(\true)(\and(q)(r))
-          : hypothesis p-T at w in \and(w)(\and(q)(r))
-      == \and(q)(r) : use and-true-l;
-      == \and(\and(\true)(q))(r)
-          : flop use and-true-l; at w in \and(w)(r)
-      == \and(\and(p)(q))(r)
-          : use eq-sym; 1 at w in \and(\and(w)(q))(r)
-3. (p == \true) =&gt; (\and(p)(\and(q)(r)) == \and(\and(p)(q))(r))
-    : discharge p-T; 2
-4.   p == \false : hypothesis p-F
-5.   \and(p)(\and(q)(r)) : chain
-      == \and(\false)(\and(q)(r))
-          : hypothesis p-F at w in \and(w)(\and(q)(r))
-      == \false : use and-false-l;
-      == \and(\false)(r) : flop use and-false-l;
-      == \and(\and(\false)(q))(r)
-          : flop use and-false-l; at w in \and(w)(r)
-      == \and(\and(p)(q))(r)
-          : use eq-sym; 4 at w in \and(\and(w)(q))(r)
-6. (p == \false) =&gt; (\and(p)(\and(q)(r)) == \and(\and(p)(q))(r))
-    : discharge p-F; 5
-7. \and(p)(\and(q)(r)) == \and(\and(p)(q))(r)
-    : use bool-induction; 3, 6
+1.  \and(\true)(\and(q)(r)) : chain
+     == \and(q)(r) : use and-true-l;
+     == \and(\and(\true)(q))(r) : flop use and-true-l; at z in \and(z)(r)
+2.  \and(\false)(\and(q)(r)) : chain
+     == \false : use and-false-l;
+     == \and(\false)(r) : flop use and-false-l;
+     == \and(\and(\false)(q))(r) : flop use and-false-l; at z in \and(z)(r)
+3.  ∀u. \and(u)(\and(q)(r)) == \and(\and(u)(q))(r)
+     : invoke bool-induction [P :-&gt; \and(_)(\and(q)(r)) == \and(\and(_)(q))(r)]; 1, 2
+4. \and(p)(\and(q)(r)) == \and(\and(p)(q))(r) : forall-elim u -&gt; p; 3
 
 
 theorem and-assoc-r
