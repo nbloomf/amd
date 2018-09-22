@@ -91,3 +91,28 @@ proof
 2. \const(a)(\false) == a : use def-const;
 3. \const(a) == \if(a)(a) : use if-unique; 1, 2
 ~~~
+
+~~~ {.mycelium}
+theorem not-eq-true
+if
+  * ~(q == \true)
+then
+  * q == \false
+
+proof
+1. (q == \true) \/ (q == \false) : use bool-cases;
+2. ~(q == \true) : assumption 1
+3. q == \false : use disj-syllogism-l; 1, 2
+
+
+theorem not-eq-false
+if
+  * ~(q == \false)
+then
+  * q == \true
+
+proof
+1. (q == \true) \/ (q == \false) : use bool-cases;
+2. ~(q == \false) : assumption 1
+3. q == \true : use disj-syllogism-r; 1, 2
+~~~

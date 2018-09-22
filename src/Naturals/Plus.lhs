@@ -272,3 +272,34 @@ proof
     == \plus(b)(c) : use plus-comm;
 2. a == b : use plus-cancel-r; 1
 ~~~
+
+~~~ {.mycelium}
+theorem plus-self-cancel-l
+if
+  * a == \plus(a)(b)
+then
+  * b == \zero
+
+proof
+1. \plus(a)(b) : chain
+    == a
+     : flop assumption 1
+    == \plus(a)(\zero)
+     : flop use plus-zero-r;
+
+2. b == \zero : use plus-cancel-l; 1
+
+
+theorem plus-self-cancel-r
+if
+  * a == \plus(b)(a)
+then
+  * b == \zero
+
+proof
+1. a : chain
+    == \plus(b)(a) : assumption 1
+    == \plus(a)(b) : use plus-comm;
+
+2. b == \zero : use plus-self-cancel-l; 1
+~~~
