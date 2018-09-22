@@ -146,10 +146,9 @@ then
 proof
 1.   P : hypothesis hyp-P
 2.   P =&gt; Q : assumption 1
-3.   Q : use impl-elim; 1, 2
-4.   Q =&gt; R : assumption 2
-5.   R : use impl-elim; 3, 4
-6. P =&gt; R : discharge hyp-P; 5</code></pre>
+3.   Q =&gt; R : assumption 2
+4.   R : use impl-elim-2; 1, 2, 3
+5. P =&gt; R : discharge hyp-P; 4</code></pre>
 <p>This proof introduces two new kinds of evidence: <code>hypothesis</code> and <code>discharge</code>. Together these are the introduction rule for <span class="math inline">\(\Rightarrow\)</span>. <code>hypothesis</code> lets us pull a supported judgement out of thin air, but this comes with a price: the hypothesis must be <code>discharge</code>d before the proof is done, and the judgement must appear on the left of a <span class="math inline">\(\Rightarrow\)</span>. Hypotheses are also given a name (<code>hyp-P</code> here) so we can tell them apart.</p>
 <p>Typically when writing natural deduction proofs hypotheses and statements that depend on them are indented, to help us remember that they need to be discharged. The proof checking tool doesn’t need this, but it’s easier on human eyes.</p>
 <p>Hypotheses and assumptions are similar; both let us pull judgements out of nowhere. But hypotheses must be discharged and can’t be used again after that, while assumptions are never discharged. Here’s another example.</p>

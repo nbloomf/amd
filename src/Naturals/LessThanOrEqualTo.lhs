@@ -246,3 +246,83 @@ proof
 
 15. a == b : exists-elim u <- k; 2, 14
 ~~~
+
+~~~ {.mycelium}
+theorem leq-trans
+if
+  * \leq(a)(b) == \true
+  * \leq(b)(c) == \true
+then
+  * \leq(a)(c) == \true
+
+proof
+1.  \leq(a)(b) == \true : assumption 1
+
+2.  ∃k. b == \plus(a)(k) : use leq-impl-plus; 1
+
+3.    b == \plus(a)(u) : hypothesis u
+
+4.    \leq(b)(c) == \true : assumption 2
+
+5.    ∃k. c == \plus(b)(k) : use leq-impl-plus; 4
+
+6.      c == \plus(b)(v) : hypothesis v
+
+7.      c : chain
+         == \plus(b)(v)
+          : hypothesis v
+         == \plus(\plus(a)(u))(v)
+          : hypothesis u at z in \plus(z)(v)
+         == \plus(a)(\plus(u)(v))
+          : use plus-assoc-r;
+
+8.      ∃k. c == \plus(a)(k)
+         : exists-intro k <- \plus(u)(v); 7
+
+9.    (c == \plus(b)(v)) => (∃k. c == \plus(a)(k))
+       : discharge v; 8
+
+10.   ∃k. c == \plus(a)(k) : exists-elim v <- k; 5, 9
+
+11. (b == \plus(a)(u)) => (∃k. c == \plus(a)(k))
+     : discharge u; 10
+
+12. ∃k. c == \plus(a)(k) : exists-elim u <- k; 2, 11
+
+13. \leq(a)(c) == \true : use plus-impl-leq; 12
+~~~
+
+~~~ {.mycelium}
+theorem leq-plus-compat-r
+* \leq(\plus(a)(c))(\plus(b)(c)) == \leq(a)(b)
+
+proof
+1. \leq(\plus(a)(c))(\plus(b)(c)) : chain
+
+    == \opt(\false)(\const(\true))(
+         \minus(\plus(b)(c))(\plus(a)(c)))
+     : use def-leq;
+
+    == \opt(\false)(\const(\true))(
+         \minus(b)(a))
+     : use minus-plus-cancel-r; at z in
+       \opt(\false)(\const(\true))(z)
+
+    == \leq(a)(b)
+     : flop use def-leq;
+
+
+theorem leq-plus-compat-l
+* \leq(\plus(c)(a))(\plus(c)(b)) == \leq(a)(b)
+
+proof
+1. \leq(\plus(c)(a))(\plus(c)(b)) : chain
+    == \leq(\plus(a)(c))(\plus(c)(b))
+     : use plus-comm; at z in
+       \leq(z)(\plus(c)(b))
+    == \leq(\plus(a)(c))(\plus(b)(c))
+     : use plus-comm; at z in
+       \leq(\plus(a)(c))(z)
+    == \leq(a)(b)
+     : use leq-plus-compat-r;
+~~~

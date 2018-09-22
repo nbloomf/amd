@@ -109,10 +109,9 @@ then
 proof
 1.   P : hypothesis hyp-P
 2.   P => Q : assumption 1
-3.   Q : use impl-elim; 1, 2
-4.   Q => R : assumption 2
-5.   R : use impl-elim; 3, 4
-6. P => R : discharge hyp-P; 5
+3.   Q => R : assumption 2
+4.   R : use impl-elim-2; 1, 2, 3
+5. P => R : discharge hyp-P; 4
 ~~~
 
 This proof introduces two new kinds of evidence: `hypothesis` and `discharge`. Together these are the introduction rule for $\Rightarrow$. `hypothesis` lets us pull a supported judgement out of thin air, but this comes with a price: the hypothesis must be `discharge`d before the proof is done, and the judgement must appear on the left of a $\Rightarrow$. Hypotheses are also given a name (`hyp-P` here) so we can tell them apart.

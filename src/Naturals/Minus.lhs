@@ -1127,3 +1127,73 @@ proof
 4. \minus(\times(c)(a))(\times(c)(b)) == \just(\times(c)(d))
     : use plus-to-minus; 3
 ~~~
+
+~~~ {.mycelium}
+theorem minus-plus-cancel-r
+* \minus(\plus(a)(c))(\plus(b)(c)) == \minus(a)(b)
+
+proof
+1. \minus(\plus(a)(\zero))(\plus(b)(\zero)) : chain
+
+    == \minus(a)(\plus(b)(\zero))
+     : use plus-zero-r; at z in
+       \minus(z)(\plus(b)(\zero))
+
+    == \minus(a)(b)
+     : use plus-zero-r; at z in
+       \minus(a)(z)
+
+2.   \minus(\plus(a)(n))(\plus(b)(n)) == \minus(a)(b)
+      : hypothesis n
+
+3.   \minus(\plus(a)(\next(n)))(\plus(b)(\next(n))) : chain
+
+      == \minus(\next(\plus(a)(n)))(\plus(b)(\next(n)))
+       : use plus-next-r; at z in
+         \minus(z)(\plus(b)(\next(n)))
+
+      == \minus(\next(\plus(a)(n)))(\next(\plus(b)(n)))
+       : use plus-next-r; at z in
+         \minus(\next(\plus(a)(n)))(z)
+
+      == \minus(\plus(a)(n))(\plus(b)(n))
+       : use minus-next-next;
+
+      == \minus(a)(b)
+       : hypothesis n
+
+4. (\minus(\plus(a)(n))(\plus(b)(n))
+    == \minus(a)(b)) =>
+     (\minus(\plus(a)(\next(n)))(\plus(b)(\next(n)))
+      == \minus(a)(b))
+    : discharge n; 3
+
+5. ∀k. (\minus(\plus(a)(k))(\plus(b)(k))
+    == \minus(a)(b)) =>
+     (\minus(\plus(a)(\next(k)))(\plus(b)(\next(k)))
+      == \minus(a)(b))
+    : forall-intro n -> k; 4
+
+6. ∀k. (\minus(\plus(a)(k))(\plus(b)(k))
+    == \minus(a)(b))
+    : invoke nat-induction
+      [P :-> \minus(\plus(a)(_))(\plus(b)(_))
+              == \minus(a)(b)]; 1, 5
+
+7. \minus(\plus(a)(c))(\plus(b)(c)) == \minus(a)(b)
+    : forall-elim k -> c; 6
+~~~
+
+~~~ {.mycelium}
+theorem minus-plus-cancel-l
+* \minus(\plus(c)(a))(\plus(c)(b)) == \minus(a)(b)
+
+proof
+1. \minus(\plus(c)(a))(\plus(c)(b)) : chain
+    == \minus(\plus(a)(c))(\plus(c)(b))
+     : use plus-comm; at z in \minus(z)(\plus(c)(b))
+    == \minus(\plus(a)(c))(\plus(b)(c))
+     : use plus-comm; at z in \minus(\plus(a)(c))(z)
+    == \minus(a)(b)
+     : use minus-plus-cancel-r;
+~~~
