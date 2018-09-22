@@ -293,7 +293,7 @@ proof
 ~~~
 
 ~~~ {.mycelium}
-theorem leq-plus-compat-r
+theorem leq-plus-cancel-r
 * \leq(\plus(a)(c))(\plus(b)(c)) == \leq(a)(b)
 
 proof
@@ -312,7 +312,7 @@ proof
      : flop use def-leq;
 
 
-theorem leq-plus-compat-l
+theorem leq-plus-cancel-l
 * \leq(\plus(c)(a))(\plus(c)(b)) == \leq(a)(b)
 
 proof
@@ -324,5 +324,5 @@ proof
      : use plus-comm; at z in
        \leq(\plus(a)(c))(z)
     == \leq(a)(b)
-     : use leq-plus-compat-r;
+     : use leq-plus-cancel-r;
 ~~~
