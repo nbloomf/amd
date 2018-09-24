@@ -206,6 +206,94 @@ proof
      : discharge t; 19
 21. ∃k. b == \plus(a)(\next(k))
      : exists-elim t &lt;- k; 5, 20</code></pre>
+<pre class="mycelium"><code>theorem plus-next-impl-lt
+if
+  * ∃k. b == \plus(a)(\next(k))
+then
+  * \lt(a)(b) == \true
+
+proof
+1.  ∃k. b == \plus(a)(\next(k)) : assumption 1
+2.    b == \plus(a)(\next(u)) : hypothesis u
+3.    ∃k. b == \plus(a)(k)
+       : exists-intro k &lt;- \next(u); 2
+4.    \leq(a)(b) == \true
+       : use plus-impl-leq; 3
+5.      \eq(a)(b) == \true : hypothesis eq
+6.      \plus(a)(\zero) : chain
+         == a : use plus-zero-r;
+         == b : use eq-dereify; 5
+         == \plus(a)(\next(u))
+          : hypothesis u
+7.      \zero == \next(u)
+         : use plus-cancel-l; 6
+8.      ∃k. \zero == \next(k)
+         : exists-intro k &lt;- u; 7
+9.    (\eq(a)(b) == \true) =&gt; (∃k. \zero == \next(k))
+       : discharge eq; 8
+10.   ~(∃k. \zero == \next(k))
+       : use nat-disc;
+11.   ~(\eq(a)(b) == \true)
+       : use modus-tollens; 9, 10
+12.   \not(\eq(a)(b)) : chain
+       == \not(\false)
+        : use not-eq-true; 11 at z in
+          \not(z)
+       == \true : use not-false;
+13.   \lt(a)(b) : chain
+       == \and(\leq(a)(b))(\not(\eq(a)(b)))
+        : use def-lt;
+       == \and(\leq(a)(b))(\true)
+        : use reiterate; 12 at z in
+          \and(\leq(a)(b))(z)
+       == \and(\true)(\true)
+        : use reiterate; 4 at z in
+          \and(z)(\true)
+       == \true
+        : use and-true-true;
+14. (b == \plus(a)(\next(u))) =&gt; (\lt(a)(b) == \true)
+     : discharge u; 13
+15. \lt(a)(b) == \true
+     : exists-elim u &lt;- k; 1, 14</code></pre>
+<pre class="mycelium"><code>theorem lt-trans
+if
+  * \lt(a)(b) == \true
+  * \lt(b)(c) == \true
+then
+  * \lt(a)(c) == \true
+
+proof
+1.  \lt(a)(b) == \true : assumption 1
+2.  ∃k. b == \plus(a)(\next(k)) : use lt-impl-plus-next; 1
+3.    b == \plus(a)(\next(t)) : hypothesis t
+4.    \lt(b)(c) == \true : assumption 2
+5.    ∃k. c == \plus(b)(\next(k)) : use lt-impl-plus-next; 4
+6.      c == \plus(b)(\next(u)) : hypothesis u
+7.        c : chain
+           == \plus(b)(\next(u))
+            : hypothesis u
+           == \plus(\plus(a)(\next(t)))(\next(u))
+            : hypothesis t at z in
+              \plus(z)(\next(u))
+           == \plus(a)(\plus(\next(t))(\next(u)))
+            : use plus-assoc-r;
+           == \plus(a)(\next(\plus(t)(\next(u))))
+            : use plus-next-l; at z in
+              \plus(a)(z)
+8.      ∃k. c == \plus(a)(\next(k))
+         : exists-intro k &lt;- \plus(t)(\next(u)); 7
+9.    (c == \plus(b)(\next(u))) =&gt;
+        (∃k. c == \plus(a)(\next(k)))
+       : discharge u; 8
+10.   ∃k. c == \plus(a)(\next(k))
+       : exists-elim u &lt;- k; 5, 9
+11. (b == \plus(a)(\next(t))) =&gt;
+      (∃k. c == \plus(a)(\next(k)))
+     : discharge t; 10
+12. ∃k. c == \plus(a)(\next(k))
+     : exists-elim t &lt;- k; 2, 11
+13. \lt(a)(c) == \true
+     : use plus-next-impl-lt; 12</code></pre>
 
     </main>
 
