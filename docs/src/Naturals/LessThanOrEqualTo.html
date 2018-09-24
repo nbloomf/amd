@@ -406,6 +406,47 @@ proof
 
 3. \leq(\plus(a1)(a2))(\plus(b1)(b2)) == \true
     : use leq-trans; 1, 2</code></pre>
+<pre class="mycelium"><code>type \lt :: Nat -&gt; Nat -&gt; Bool
+
+definition def-lt
+* \lt(a)(b) == \and(\leq(a)(b))(\not(\eq(a)(b)))</code></pre>
+<pre class="mycelium"><code>theorem leq-eq-lt-impl
+if
+  * \leq(a)(b) == \true
+  * \eq(a)(b) == \false
+then
+  * \lt(a)(b) == \true
+
+proof
+1. \lt(a)(b) : chain
+    == \and(\leq(a)(b))(\not(\eq(a)(b)))
+     : use def-lt;
+    == \and(\true)(\not(\eq(a)(b)))
+     : assumption 1 at z in
+       \and(z)(\not(\eq(a)(b)))
+    == \and(\true)(\not(\false))
+     : assumption 2 at z in
+       \and(\true)(\not(z))
+    == \and(\true)(\true)
+     : use not-false; at z in
+       \and(\true)(z)
+    == \true
+     : use and-true-true;</code></pre>
+<pre class="mycelium"><code>theorem lt-next-next
+* \lt(\next(a))(\next(b)) == \lt(a)(b)
+
+proof
+1. \lt(\next(a))(\next(b)) : chain
+    == \and(\leq(\next(a))(\next(b)))(\not(\eq(\next(a))(\next(b))))
+     : use def-lt;
+    == \and(\leq(a)(b))(\not(\eq(\next(a))(\next(b))))
+     : use leq-next-next; at z in
+       \and(z)(\not(\eq(\next(a))(\next(b))))
+    == \and(\leq(a)(b))(\not(\eq(a)(b)))
+     : use eq-next-next; at z in
+       \and(\leq(a)(b))(\not(z))
+    == \lt(a)(b)
+     : flop use def-lt;</code></pre>
 
     </main>
 
