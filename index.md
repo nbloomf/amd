@@ -44,5 +44,6 @@ Contents
     * [Simple Equations](/src/Naturals/SimpleEquations.html)
     * [Minus](/src/Naturals/Minus.html)
     * [Less Than or Equal To](/src/Naturals/LessThanOrEqualTo.html)
+      * [Less Than](/src/Naturals/LessThan.html)
     * [Max and Min](/src/Naturals/MaxAndMin.html)
 * Lists

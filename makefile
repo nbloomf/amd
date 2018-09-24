@@ -29,6 +29,7 @@ modules = \
   src/Naturals/SimpleEquations.lhs \
   src/Naturals/Minus.lhs \
   src/Naturals/LessThanOrEqualTo.lhs \
+  src/Naturals/LessThan.lhs \
   src/Naturals/MaxAndMin.lhs
 
 build:

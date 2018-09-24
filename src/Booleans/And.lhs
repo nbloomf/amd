@@ -97,6 +97,16 @@ proof
 10. \and(p)(q) == \and(q)(p) : forall-elim u -> p; 9
 ~~~
 
+~~~ {.mycelium}
+theorem and-false-r
+* \and(p)(\false) == \false
+
+proof
+1. \and(p)(\false) : chain
+    == \and(\false)(p) : use and-comm;
+    == \false : use and-false-l;
+~~~
+
 And $\and$ is associative.
 
 ~~~ {.mycelium}
@@ -122,4 +132,35 @@ theorem and-assoc-r
 proof
 1. \and(p)(\and(q)(r)) == \and(\and(p)(q))(r) : use and-assoc-l;
 2. \and(\and(p)(q))(r) == \and(p)(\and(q)(r)) : use eq-sym; 1
+~~~
+
+~~~ {.mycelium}
+theorem and-conj
+if
+  * \and(p)(q) == \true
+then
+  * (p == \true) /\ (q == \true)
+
+proof
+1.  (p == \true) \/ (p == \false) : use bool-cases;
+2.    p == \false : hypothesis p-false
+3.    \true : chain
+       == \and(p)(q) : flop assumption 1
+       == \and(\false)(q) : hypothesis p-false at z in \and(z)(q)
+       == \false : use and-false-l;
+4.  (p == \false) => (\true == \false) : discharge p-false; 3
+5.  ~(\true == \false) : use bool-disc;
+6.  ~(p == \false) : use modus-tollens; 4, 5
+7.  p == \true : use disj-syllogism-r; 1, 6
+8.  (q == \true) \/ (q == \false) : use bool-cases;
+9.    q == \false : hypothesis q-false
+10.   \true : chain
+       == \and(p)(q) : flop assumption 1
+       == \and(p)(\false) : hypothesis q-false at z in \and(p)(z)
+       == \false : use and-false-r;
+11. (q == \false) => (\true == \false) : discharge q-false; 10
+12. ~(\true == \false) : use bool-disc;
+13. ~(q == \false) : use modus-tollens; 11, 12
+14. q == \true : use disj-syllogism-r; 8, 13
+15. (p == \true) /\ (q == \true) : use conj-intro; 7, 14
 ~~~

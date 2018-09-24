@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Arithmetic Made Difficult - Less Than</title>
+    <link rel="stylesheet" href="../../css/default.css" />
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  </head>
+
+  <body>
+    <header>
+      <div class="logo">
+        <a href="../../">Arithmetic Made Difficult</a>
+      </div>
+      <nav>
+        <a href="../../">Contents</a>
+        <a href="../../about.html">About</a>
+      </nav>
+    </header>
+
+    <main role="main">
+      <h1>Less Than</h1>
+      <!-- LaTeX Macros -->
+<div style="display:none;">
+<!-- Functions -->
+\(\newcommand{\id}{\mathsf{id}}\)
+\(\newcommand{\comp}{\mathsf{comp}}\)
+\(\newcommand{\app}{\mathsf{app}}\)
+\(\newcommand{\const}{\mathsf{const}}\)
+\(\newcommand{\flip}{\mathsf{flip}}\)
+\(\newcommand{\clone}{\mathsf{clone}}\)
+
+<!-- Unit -->
+\(\newcommand{\Unit}{\mathsf{Unit}}\)
+\(\newcommand{\unit}{\mathsf{unit}}\)
+\(\newcommand{\only}{\mathsf{only}}\)
+
+<!-- Pair -->
+\(\newcommand{\Pair}{\mathsf{Pair}}\)
+\(\newcommand{\pair}{\mathsf{pair}}\)
+\(\newcommand{\fst}{\mathsf{fst}}\)
+\(\newcommand{\snd}{\mathsf{snd}}\)
+\(\newcommand{\tup}{\mathsf{tup}}\)
+\(\newcommand{\uncurry}{\mathsf{uncurry}}\)
+
+<!-- Either -->
+\(\newcommand{\Either}{\mathsf{Either}}\)
+\(\newcommand{\either}{\mathsf{either}}\)
+\(\newcommand{\lft}{\mathsf{lft}}\)
+\(\newcommand{\rgt}{\mathsf{rgt}}\)
+
+<!-- Maybe -->
+\(\newcommand{\Maybe}{\mathsf{Maybe}}\)
+\(\newcommand{\nothing}{\mathsf{nothing}}\)
+\(\newcommand{\just}{\mathsf{just}}\)
+\(\newcommand{\opt}{\mathsf{opt}}\)
+
+<!-- Bool -->
+\(\newcommand{\Bool}{\mathsf{Bool}}\)
+\(\newcommand{\true}{\mathsf{true}}\)
+\(\newcommand{\false}{\mathsf{false}}\)
+\(\newcommand{\if}{\mathsf{if}}\)
+\(\newcommand{\and}{\mathsf{and}}\)
+\(\newcommand{\or}{\mathsf{or}}\)
+\(\newcommand{\not}{\mathsf{not}}\)
+\(\newcommand{\eq}{\mathsf{eq}}\)
+
+<!-- Nat -->
+\(\newcommand{\Nat}{\mathsf{Nat}}\)
+\(\newcommand{\zero}{\mathsf{zero}}\)
+\(\newcommand{\next}{\mathsf{next}}\)
+\(\newcommand{\natrec}{\mathsf{natrec}}\)
+\(\newcommand{\simprec}{\mathsf{simprec}}\)
+\(\newcommand{\mutrec}{\mathsf{mutrec}}\)
+\(\newcommand{\prev}{\mathsf{prev}}\)
+\(\newcommand{\plus}{\mathsf{plus}}\)
+\(\newcommand{\times}{\mathsf{times}}\)
+</div>
+<!-- End LaTeX Macros -->
+
+<pre class="mycelium"><code>type \lt :: Nat -&gt; Nat -&gt; Bool
+
+definition def-lt
+* \lt(a)(b) == \and(\leq(a)(b))(\not(\eq(a)(b)))</code></pre>
+<pre class="mycelium"><code>theorem leq-eq-lt-impl
+if
+  * \leq(a)(b) == \true
+  * \eq(a)(b) == \false
+then
+  * \lt(a)(b) == \true
+
+proof
+1. \lt(a)(b) : chain
+    == \and(\leq(a)(b))(\not(\eq(a)(b)))
+     : use def-lt;
+    == \and(\true)(\not(\eq(a)(b)))
+     : assumption 1 at z in
+       \and(z)(\not(\eq(a)(b)))
+    == \and(\true)(\not(\false))
+     : assumption 2 at z in
+       \and(\true)(\not(z))
+    == \and(\true)(\true)
+     : use not-false; at z in
+       \and(\true)(z)
+    == \true
+     : use and-true-true;</code></pre>
+<pre class="mycelium"><code>theorem lt-leq-eq-impl
+if
+  * \lt(a)(b) == \true
+then
+  * (\leq(a)(b) == \true) /\ (\eq(a)(b) == \false)
+
+proof
+1. \and(\leq(a)(b))(\not(\eq(a)(b))) : chain
+    == \lt(a)(b) : flop use def-lt;
+    == \true : assumption 1
+2. (\leq(a)(b) == \true) /\ (\not(\eq(a)(b)) == \true) : use and-conj; 1
+3. \leq(a)(b) == \true : use conj-elim-l; 2
+4. \not(\eq(a)(b)) == \true : use conj-elim-r; 2
+5. \eq(a)(b) == \false : use not-true-impl; 4
+6. (\leq(a)(b) == \true) /\ (\eq(a)(b) == \false)
+    : use conj-intro; 3, 5</code></pre>
+<pre class="mycelium"><code>theorem lt-next-next
+* \lt(\next(a))(\next(b)) == \lt(a)(b)
+
+proof
+1. \lt(\next(a))(\next(b)) : chain
+    == \and(
+         \leq(\next(a))(\next(b)))(
+         \not(\eq(\next(a))(\next(b))))
+     : use def-lt;
+    == \and(\leq(a)(b))(\not(\eq(\next(a))(\next(b))))
+     : use leq-next-next; at z in
+       \and(z)(\not(\eq(\next(a))(\next(b))))
+    == \and(\leq(a)(b))(\not(\eq(a)(b)))
+     : use eq-next-next; at z in
+       \and(\leq(a)(b))(\not(z))
+    == \lt(a)(b)
+     : flop use def-lt;</code></pre>
+<pre class="mycelium"><code>theorem not-lt-refl
+* \lt(a)(a) == \false
+
+proof
+1.  \lt(a)(a) == \true : hypothesis t
+2.  \and(\leq(a)(a))(\not(\eq(a)(a))) : chain
+     == \lt(a)(a) : flop use def-lt;
+     == \true : hypothesis t
+3.  (\leq(a)(a) == \true) /\ (\not(\eq(a)(a)) == \true)
+     : use and-conj; 2
+4.  \not(\eq(a)(a)) == \true : use conj-elim-r; 3
+5.  \true : chain
+     == \not(\eq(a)(a)) : flop use reiterate; 4
+     == \not(\true) : use eq-refl; at z in \not(z)
+     == \false : use not-true;
+6. (\lt(a)(a) == \true) =&gt; (\true == \false)
+    : discharge t; 5
+7. ~(\true == \false) : use bool-disc;
+8. ~(\lt(a)(a) == \true) : use modus-tollens; 6, 7
+9. \lt(a)(a) == \false : use not-eq-true; 8</code></pre>
+<pre class="mycelium"><code>theorem lt-impl-plus-next
+if
+  * \lt(a)(b) == \true
+then
+  * ∃k. b == \plus(a)(\next(k))
+
+proof
+1.  \lt(a)(b) == \true : assumption 1
+2.  (\leq(a)(b) == \true) /\ (\eq(a)(b) == \false)
+     : use lt-leq-eq-impl; 1
+3.  \leq(a)(b) == \true : use conj-elim-l; 2
+4.  \eq(a)(b) == \false : use conj-elim-r; 2
+5.  ∃k. b == \plus(a)(k) : use leq-impl-plus; 3
+6.    b == \plus(a)(t) : hypothesis t
+7.    (t == \zero) \/ (∃u. t == \next(u))
+       : use nat-disj-cases-1;
+8.      t == \zero : hypothesis t-zero
+9.      a : chain
+         == \plus(a)(\zero) : flop use plus-zero-r;
+         == \plus(a)(t)
+          : flop hypothesis t-zero at z in
+            \plus(a)(z)
+         == b : flop hypothesis t
+10.     \true : chain
+         == \eq(a)(b) : flop use eq-reify; 9
+         == \false : use reiterate; 4
+11.   (t == \zero) =&gt; (\true == \false)
+       : discharge t-zero; 10
+12.   ~(\true == \false) : use bool-disc;
+13.   ~(t == \zero) : use modus-tollens; 11, 12
+14.   ∃u. t == \next(u) : use disj-syllogism-l; 7, 13
+15.     t == \next(w) : hypothesis t-next-w
+16.     b : chain
+         == \plus(a)(t) : hypothesis t
+         == \plus(a)(\next(w))
+          : hypothesis t-next-w at z in
+            \plus(a)(z)
+17.     ∃k. b == \plus(a)(\next(k))
+         : exists-intro k &lt;- w; 16
+18.   (t == \next(w)) =&gt; (∃k. b == \plus(a)(\next(k)))
+       : discharge t-next-w; 17
+19.   ∃k. b == \plus(a)(\next(k))
+       : exists-elim w &lt;- u; 14, 18
+20. (b == \plus(a)(t)) =&gt; (∃k. b == \plus(a)(\next(k)))
+     : discharge t; 19
+21. ∃k. b == \plus(a)(\next(k))
+     : exists-elim t &lt;- k; 5, 20</code></pre>
+
+    </main>
+
+    <footer>
+      Site generated by
+      <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+    </footer>
+  </body>
+</html>

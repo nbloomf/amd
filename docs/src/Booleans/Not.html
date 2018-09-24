@@ -156,9 +156,47 @@ proof
     == \or(\not(\false))(\not(q))
         : flop use not-false; at z in \or(z)(\not(q))
 3. ∀u. \not(\and(u)(q)) == \or(\not(u))(\not(q))
-    : invoke bool-induction [P :-&gt; \not(\and(_)(q)) == \or(\not(_))(\not(q))]; 1, 2
+    : invoke bool-induction
+      [P :-&gt; \not(\and(_)(q))
+              == \or(\not(_))(\not(q))]; 1, 2
 4. \not(\and(p)(q)) == \or(\not(p))(\not(q))
     : forall-elim u -&gt; p; 3</code></pre>
+<pre class="mycelium"><code>theorem not-true-impl
+if
+  * \not(p) == \true
+then
+  * p == \false
+
+proof
+1. p : chain
+    == \id(p) : flop use def-id;
+    == \comp(\not)(\not)(p)
+     : flop use not-invol; at f in f(p)
+    == \not(\not(p))
+     : use def-comp;
+    == \not(\true)
+     : assumption 1 at z in \not(z)
+    == \false
+     : use not-true;
+
+
+theorem not-false-impl
+if
+  * \not(p) == \false
+then
+  * p == \true
+
+proof
+1. p : chain
+    == \id(p) : flop use def-id;
+    == \comp(\not)(\not)(p)
+     : flop use not-invol; at f in f(p)
+    == \not(\not(p))
+     : use def-comp;
+    == \not(\false)
+     : assumption 1 at z in \not(z)
+    == \true
+     : use not-false;</code></pre>
 
     </main>
 
