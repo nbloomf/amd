@@ -28,7 +28,8 @@ modules = \
   src/Naturals/Times.lhs \
   src/Naturals/SimpleEquations.lhs \
   src/Naturals/Minus.lhs \
-  src/Naturals/LessThanOrEqualTo.lhs
+  src/Naturals/LessThanOrEqualTo.lhs \
+  src/Naturals/MaxAndMin.lhs
 
 build:
 	stack exec site build

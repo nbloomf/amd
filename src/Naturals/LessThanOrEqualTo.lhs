@@ -25,6 +25,23 @@ proof
 ~~~
 
 ~~~ {.mycelium}
+theorem leq-zero-l
+* \leq(\zero)(a) == \true
+
+proof
+1. \leq(\zero)(a) : chain
+    == \opt(\false)(\const(\true))(\minus(a)(\zero))
+     : use def-leq;
+    == \opt(\false)(\const(\true))(\just(a))
+     : use minus-zero-r; at z in
+       \opt(\false)(\const(\true))(z)
+    == \const(\true)(a)
+     : use opt-just;
+    == \true
+     : use def-const;
+~~~
+
+~~~ {.mycelium}
 theorem leq-impl-plus
 if
   * \leq(a)(b) == \true
@@ -317,12 +334,36 @@ theorem leq-plus-cancel-l
 
 proof
 1. \leq(\plus(c)(a))(\plus(c)(b)) : chain
+
     == \leq(\plus(a)(c))(\plus(c)(b))
      : use plus-comm; at z in
        \leq(z)(\plus(c)(b))
+
     == \leq(\plus(a)(c))(\plus(b)(c))
      : use plus-comm; at z in
        \leq(\plus(a)(c))(z)
+
     == \leq(a)(b)
      : use leq-plus-cancel-r;
+~~~
+
+~~~ {.mycelium}
+theorem leq-plus-compat
+if
+  * \leq(a1)(b1) == \true
+  * \leq(a2)(b2) == \true
+then
+  * \leq(\plus(a1)(a2))(\plus(b1)(b2)) == \true
+
+proof
+1. \leq(\plus(a1)(a2))(\plus(a1)(b2)) : chain
+    == \leq(a2)(b2) : use leq-plus-cancel-l;
+    == \true : assumption 2
+
+2. \leq(\plus(a1)(b2))(\plus(b1)(b2)) : chain
+    == \leq(a1)(b1) : use leq-plus-cancel-r;
+    == \true : assumption 1
+
+3. \leq(\plus(a1)(a2))(\plus(b1)(b2)) == \true
+    : use leq-trans; 1, 2
 ~~~

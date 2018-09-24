@@ -116,3 +116,26 @@ proof
 2. ~(q == \false) : assumption 1
 3. q == \true : use disj-syllogism-r; 1, 2
 ~~~
+
+~~~ {.mycelium}
+theorem if-ap
+* \if(f(a))(f(b))(p) == f(\if(a)(b)(p))
+
+proof
+1. \if(f(a))(f(b))(\true) : chain
+    == f(a) : use if-true;
+    == f(\if(a)(b)(\true))
+     : flop use if-true; at z in f(z)
+
+2. \if(f(a))(f(b))(\false) : chain
+    == f(b) : use if-false;
+    == f(\if(a)(b)(\false))
+     : flop use if-false; at z in f(z)
+
+3. ∀u. \if(f(a))(f(b))(u) == f(\if(a)(b)(u))
+    : invoke bool-induction
+      [P :-> \if(f(a))(f(b))(_) == f(\if(a)(b)(_))]; 1, 2
+
+4. \if(f(a))(f(b))(p) == f(\if(a)(b)(p))
+    : forall-elim u -> p; 3
+~~~
