@@ -22,6 +22,25 @@ proof
         : use minus-self; at z in \opt(\false)(\const(\true))(z)
     == \const(\true)(\zero) : use opt-just;
     == \true : use def-const;
+
+
+theorem eq-impl-leq
+if
+  * \eq(a)(b) == \true
+then
+  * \leq(a)(b) == \true
+
+proof
+1. \eq(a)(b) == \true : assumption 1
+
+2. a == b : use eq-dereify; 1
+
+3. \leq(a)(b) : chain
+    == \leq(b)(b)
+     : use reiterate; 2 at z in
+       \leq(z)(b)
+    == \true
+     : use leq-refl;
 ~~~
 
 ~~~ {.mycelium}
@@ -366,4 +385,79 @@ proof
 
 3. \leq(\plus(a1)(a2))(\plus(b1)(b2)) == \true
     : use leq-trans; 1, 2
+~~~
+
+~~~ {.mycelium}
+theorem leq-false-flip
+if
+  * \leq(a)(b) == \false
+then
+  * \leq(b)(a) == \true
+
+proof
+1.  \leq(a)(b) == \false
+     : assumption 1
+
+2.  (\minus(b)(a) == \nothing) \/ (∃k. \minus(b)(a) == \just(k))
+     : use maybe-cases;
+
+3.    ∃k. \minus(b)(a) == \just(k)
+       : hypothesis just
+
+4.      \minus(b)(a) == \just(u)
+         : hypothesis just-u
+
+5.      \true : chain
+         == \const(\true)(u)
+          : flop use def-const;
+         == \opt(\false)(\const(\true))(\just(u))
+          : flop use opt-just;
+         == \opt(\false)(\const(\true))(\minus(b)(a))
+          : flop hypothesis just-u at z in
+            \opt(\false)(\const(\true))(z)
+         == \leq(a)(b)
+          : flop use def-leq;
+         == \false
+          : assumption 1
+
+6.    (\minus(b)(a) == \just(u)) => (\true == \false)
+       : discharge just-u; 5
+
+7.    \true == \false
+       : exists-elim u <- k; 3, 6
+
+8.  (∃k. \minus(b)(a) == \just(k)) => (\true == \false)
+     : discharge just; 7
+
+9.  ~(\true == \false)
+     : use bool-disc;
+
+10. ~(∃k. \minus(b)(a) == \just(k))
+     : use modus-tollens; 8, 9
+
+11. \minus(b)(a) == \nothing
+     : use disj-syllogism-r; 2, 10
+
+12. ∃k. \minus(a)(b) == \just(\next(k))
+     : use minus-flip; 11
+
+13.   \minus(a)(b) == \just(\next(t))
+       : hypothesis t
+
+14.   \leq(b)(a) : chain
+       == \opt(\false)(\const(\true))(\minus(a)(b))
+        : use def-leq;
+       == \opt(\false)(\const(\true))(\just(\next(t)))
+        : hypothesis t at z in
+          \opt(\false)(\const(\true))(z)
+       == \const(\true)(\next(t))
+        : use opt-just;
+       == \true
+        : use def-const;
+
+15. (\minus(a)(b) == \just(\next(t))) => (\leq(b)(a) == \true)
+     : discharge t; 14
+
+16. \leq(b)(a) == \true
+     : exists-elim t <- k; 12, 15
 ~~~

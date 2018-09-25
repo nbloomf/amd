@@ -51,6 +51,72 @@ proof
 5. \eq(a)(b) == \false : use not-true-impl; 4
 6. (\leq(a)(b) == \true) /\ (\eq(a)(b) == \false)
     : use conj-intro; 3, 5
+
+
+theorem lt-impl-leq
+if
+  * \lt(a)(b) == \true
+then
+  * \leq(a)(b) == \true
+
+proof
+1. \lt(a)(b) == \true
+    : assumption 1
+2. (\leq(a)(b) == \true) /\ (\eq(a)(b) == \false)
+    : use lt-leq-eq-impl; 1
+3. \leq(a)(b) == \true
+    : use conj-elim-l; 2
+
+
+theorem lt-impl-not-eq
+if
+  * \lt(a)(b) == \true
+then
+  * \eq(a)(b) == \false
+
+proof
+1. \lt(a)(b) == \true
+    : assumption 1
+2. (\leq(a)(b) == \true) /\ (\eq(a)(b) == \false)
+    : use lt-leq-eq-impl; 1
+3. \eq(a)(b) == \false
+    : use conj-elim-r; 2
+
+
+theorem lt-impl-not-leq
+if
+  * \lt(a)(b) == \true
+then
+  * \leq(b)(a) == \false
+
+proof
+1.  (\leq(b)(a) == \true) \/ (\leq(b)(a) == \false)
+     : use bool-cases;
+
+2.    \leq(b)(a) == \true : hypothesis t
+
+3.    \lt(a)(b) == \true : assumption 1
+
+4.    \leq(a)(b) == \true : use lt-impl-leq; 3
+
+5.    a == b : use leq-antisym; 4, 2
+
+6.    \true : chain
+       == \eq(a)(b) : flop use eq-reify; 5
+       == \false : use lt-impl-not-eq; 3
+
+7.  (\leq(b)(a) == \true) =>
+      (\true == \false)
+     : discharge t; 6
+
+8.  ~(\true == \false)
+     : use bool-disc;
+
+9.  ~(\leq(b)(a) == \true)
+     : use modus-tollens; 7, 8
+
+10. \leq(b)(a) == \false
+     : use disj-syllogism-l; 1, 9
 ~~~
 
 ~~~ {.mycelium}
@@ -238,4 +304,100 @@ proof
      : exists-elim t <- k; 2, 11
 13. \lt(a)(c) == \true
      : use plus-next-impl-lt; 12
+~~~
+
+~~~ {.mycelium}
+theorem lt-trichotomy
+* (\eq(a)(b) == \true) \/
+    ((\lt(a)(b) == \true) \/ (\lt(b)(a) == \true))
+
+proof
+1.  (\eq(a)(b) == \true) \/ (\eq(a)(b) == \false)
+     : use bool-cases;
+
+2.    \eq(a)(b) == \true : hypothesis eq
+
+
+3.    (\eq(a)(b) == \true) \/
+        ((\lt(a)(b) == \true) \/ (\lt(b)(a) == \true))
+       : use disj-intro-l; 2
+
+4.  (\eq(a)(b) == \true) =>
+      ((\eq(a)(b) == \true) \/
+        ((\lt(a)(b) == \true) \/ (\lt(b)(a) == \true)))
+     : discharge eq; 3
+
+5.    \eq(a)(b) == \false : hypothesis neq
+
+6.    \not(\eq(a)(b)) : chain
+       == \not(\false)
+        : hypothesis neq at z in \not(z)
+       == \true
+        : use not-false;
+
+7.      (\leq(a)(b) == \true) \/ (\leq(a)(b) == \false)
+         : use bool-cases;
+
+8.        \leq(a)(b) == \true : hypothesis leq-t
+
+9.        \lt(a)(b) : chain
+           == \and(\leq(a)(b))(\not(\eq(a)(b)))
+            : use def-lt;
+           == \and(\leq(a)(b))(\true)
+            : use reiterate; 6 at z in
+              \and(\leq(a)(b))(z)
+           == \and(\true)(\true)
+            : hypothesis leq-t at z in
+              \and(z)(\true)
+           == \true
+            : use and-true-true;
+
+10.     (\lt(a)(b) == \true) \/ (\lt(b)(a) == \true)
+         : use disj-intro-l; 9
+
+11.     (\leq(a)(b) == \true) =>
+          ((\lt(a)(b) == \true) \/ (\lt(b)(a) == \true))
+         : discharge leq-t; 10
+
+12.       \leq(a)(b) == \false : hypothesis leq-f
+
+13.       \leq(b)(a) == \true : use leq-false-flip; 12
+
+14.       \lt(b)(a) : chain
+           == \and(\leq(b)(a))(\not(\eq(b)(a)))
+            : use def-lt;
+           == \and(\true)(\not(\eq(b)(a)))
+            : use reiterate; 13 at z in
+              \and(z)(\not(\eq(b)(a)))
+           == \not(\eq(b)(a))
+            : use and-true-l;
+           == \not(\eq(a)(b))
+            : use eq-comm; at z in \not(z)
+           == \not(\false)
+            : hypothesis neq at z in \not(z)
+           == \true
+            : use not-false;
+
+15.     (\lt(a)(b) == \true) \/ (\lt(b)(a) == \true)
+         : use disj-intro-r; 14
+
+16.   (\leq(a)(b) == \false) =>
+        ((\lt(a)(b) == \true) \/ (\lt(b)(a) == \true))
+       : discharge leq-f; 15
+
+17.   (\lt(a)(b) == \true) \/ (\lt(b)(a) == \true)
+       : use disj-elim; 7, 11, 16
+
+18.   (\eq(a)(b) == \true) \/
+        ((\lt(a)(b) == \true) \/ (\lt(b)(a) == \true))
+       : use disj-intro-r; 17
+
+19. (\eq(a)(b) == \false) =>
+      ((\eq(a)(b) == \true) \/
+        ((\lt(a)(b) == \true) \/ (\lt(b)(a) == \true)))
+     : discharge neq; 18
+
+20. (\eq(a)(b) == \true) \/
+      ((\lt(a)(b) == \true) \/ (\lt(b)(a) == \true))
+     : use disj-elim; 1, 4, 19
 ~~~

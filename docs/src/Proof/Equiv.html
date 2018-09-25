@@ -135,7 +135,37 @@ proof
 6. R =&gt; Q : use equiv-elim-l; 2
 7. Q =&gt; P : use equiv-elim-l; 1
 8. R =&gt; P : use syllogism; 6, 7
-9. P &lt;=&gt; R : use equiv-intro; 5, 8</code></pre>
+9. P &lt;=&gt; R : use equiv-intro; 5, 8
+
+
+theorem equiv-trans-3
+if
+  * P &lt;=&gt; Q
+  * Q &lt;=&gt; R
+  * R &lt;=&gt; S
+then
+  * P &lt;=&gt; S
+
+proof
+1. P &lt;=&gt; Q : assumption 1
+2. Q &lt;=&gt; R : assumption 2
+3. P &lt;=&gt; R : use equiv-trans; 1, 2
+4. R &lt;=&gt; S : assumption 3
+5. P &lt;=&gt; S : use equiv-trans; 3, 4</code></pre>
+<pre class="mycelium"><code>theorem eq-sym-equiv
+* (a == b) &lt;=&gt; (b == a)
+
+proof
+1.   a == b : hypothesis one
+2.   b == a : use eq-sym; 1
+3. (a == b) =&gt; (b == a)
+    : discharge one; 2
+4.   b == a : hypothesis two
+5.   a == b : use eq-sym; 4
+6. (b == a) =&gt; (a == b)
+    : discharge two; 5
+7. (a == b) &lt;=&gt; (b == a)
+    : use equiv-intro; 3, 6</code></pre>
 
     </main>
 

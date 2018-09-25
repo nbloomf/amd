@@ -65,6 +65,29 @@ proof
 2. a == b : use eq-dereify; 1
 3. b == a : use eq-sym; 2
 4. \eq(b)(a) == \true : use eq-reify; 3
+
+
+theorem eq-comm
+* \eq(a)(b) == \eq(b)(a)
+
+proof
+1. (\eq(a)(b) == \true) <=> (a == b)
+    : use def-eq;
+
+2. (a == b) <=> (b == a)
+    : use eq-sym-equiv;
+
+3. (\eq(b)(a) == \true) <=> (b == a)
+    : use def-eq;
+
+4. (b == a) <=> (\eq(b)(a) == \true)
+    : use equiv-sym; 3
+
+5. (\eq(a)(b) == \true) <=> (\eq(b)(a) == \true)
+    : use equiv-trans-3; 1, 2, 4
+
+6. \eq(a)(b) == \eq(b)(a)
+    : use equiv-true-eq; 5
 ~~~
 
 And $\eq$ is transitive.

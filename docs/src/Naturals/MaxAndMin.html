@@ -90,6 +90,38 @@ type \min :: Nat -&gt; Nat -&gt; Nat
 
 definition def-min
 * \min(a)(b) == \if(a)(b)(\leq(a)(b))</code></pre>
+<pre class="mycelium"><code>theorem leq-impl-max
+if
+  * \leq(a)(b) == \true
+then
+  * \max(a)(b) == b
+
+proof
+1. \max(a)(b) : chain
+    == \if(b)(a)(\leq(a)(b))
+     : use def-max;
+    == \if(b)(a)(\true)
+     : assumption 1 at z in
+       \if(b)(a)(z)
+    == b
+     : use if-true;
+
+
+theorem leq-impl-min
+if
+  * \leq(a)(b) == \true
+then
+  * \min(a)(b) == a
+
+proof
+1. \min(a)(b) : chain
+    == \if(a)(b)(\leq(a)(b))
+     : use def-min;
+    == \if(a)(b)(\true)
+     : assumption 1 at z in
+       \if(a)(b)(z)
+    == a
+     : use if-true;</code></pre>
 <pre class="mycelium"><code>theorem max-idemp
 * \max(a)(a) == a
 
@@ -174,6 +206,89 @@ proof
     == \next(\min(a)(b))
      : flop use def-min; at z in
        \next(z)</code></pre>
+<pre class="mycelium"><code>theorem max-sym
+* \max(a)(b) == \max(b)(a)
+
+proof
+1.  (\eq(a)(b) == \true) \/
+      ((\lt(a)(b) == \true) \/ (\lt(b)(a) == \true))
+     : use lt-trichotomy;
+
+2.    \eq(a)(b) == \true : hypothesis eq
+
+3.    \leq(a)(b) == \true : use eq-impl-leq; 2
+
+4.    \eq(b)(a) == \true : use eq-reify-sym; 2
+
+5.    \leq(b)(a) == \true : use eq-impl-leq; 4
+
+6.    \max(a)(b) : chain
+       == b : use leq-impl-max; 3
+       == a : flop use eq-dereify; 2
+       == \max(b)(a) : flop use leq-impl-max; 5
+
+7.  (\eq(a)(b) == \true) =&gt;
+      (\max(a)(b) == \max(b)(a))
+     : discharge eq; 6
+
+8.    (\lt(a)(b) == \true) \/ (\lt(b)(a) == \true)
+       : hypothesis neq
+
+9.      \lt(a)(b) == \true
+         : hypothesis lt-ab
+
+10.     \max(a)(b) : chain
+         == \if(b)(a)(\leq(a)(b))
+          : use def-max;
+         == \if(b)(a)(\true)
+          : use lt-impl-leq; 9 at z in
+            \if(b)(a)(z)
+         == b
+          : use if-true;
+         == \if(a)(b)(\false)
+          : flop use if-false;
+         == \if(a)(b)(\leq(b)(a))
+          : flop use lt-impl-not-leq; 9 at z in
+            \if(a)(b)(z)
+         == \max(b)(a)
+          : flop use def-max;
+
+11.   (\lt(a)(b) == \true) =&gt;
+        (\max(a)(b) == \max(b)(a))
+       : discharge lt-ab; 10
+
+12.     \lt(b)(a) == \true
+         : hypothesis lt-ba
+
+13.     \max(a)(b) : chain
+         == \if(b)(a)(\leq(a)(b))
+          : use def-max;
+         == \if(b)(a)(\false)
+          : use lt-impl-not-leq; 12 at z in
+            \if(b)(a)(z)
+         == a
+          : use if-false;
+         == \if(a)(b)(\true)
+          : flop use if-true;
+         == \if(a)(b)(\leq(b)(a))
+          : flop use lt-impl-leq; 12 at z in
+            \if(a)(b)(z)
+         == \max(b)(a)
+          : flop use def-max;
+
+14.   (\lt(b)(a) == \true) =&gt;
+        (\max(a)(b) == \max(b)(a))
+       : discharge lt-ba; 13
+
+15.   \max(a)(b) == \max(b)(a)
+       : use disj-elim; 8, 11, 14
+
+16. ((\lt(a)(b) == \true) \/ (\lt(b)(a) == \true)) =&gt;
+      (\max(a)(b) == \max(b)(a))
+     : discharge neq; 15
+
+17. \max(a)(b) == \max(b)(a)
+     : use disj-elim; 1, 7, 16</code></pre>
 
     </main>
 

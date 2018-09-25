@@ -139,3 +139,65 @@ proof
 4. \if(f(a))(f(b))(p) == f(\if(a)(b)(p))
     : forall-elim u -> p; 3
 ~~~
+
+~~~ {.mycelium}
+theorem equiv-true-eq
+if
+  * (p == \true) <=> (q == \true)
+then
+  * p == q
+
+proof
+1.  (p == \true) <=> (q == \true)
+     : assumption 1
+
+2.  (p == \true) \/ (p == \false)
+     : use bool-cases;
+
+3.    p == \true : hypothesis p-t
+
+4.    (p == \true) => (q == \true)
+       : use equiv-elim-r; 1
+
+5.    q == \true : use impl-elim; 3, 4
+
+6.    p : chain
+       == \true : hypothesis p-t
+       == q : flop use reiterate; 5
+
+7.  (p == \true) => (p == q)
+     : discharge p-t; 6
+
+8.    p == \false : hypothesis p-f
+
+9.      q == \true : hypothesis q-t
+
+10.     (q == \true) => (p == \true)
+         : use equiv-elim-l; 1
+
+11.     p == \true : use impl-elim; 9, 10
+
+12.     \true : chain
+         == p : flop use reiterate; 11
+         == \false : hypothesis p-f
+
+13.   (q == \true) => (\true == \false)
+       : discharge q-t; 12
+
+14.   ~(\true == \false)
+       : use bool-disc;
+
+15.   ~(q == \true) : use modus-tollens; 13, 14
+
+16.   q == \false : use not-eq-true; 15
+
+17.   p : chain
+       == \false : hypothesis p-f
+       == q : flop use reiterate; 16
+
+18. (p == \false) => (p == q)
+     : discharge p-f; 17
+
+19. p == q
+     : use disj-elim; 2, 7, 18
+~~~
