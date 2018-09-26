@@ -144,7 +144,7 @@ proof
 ~~~
 
 ~~~ {.mycelium}
-theorem max-sym
+theorem max-comm
 * \max(a)(b) == \max(b)(a)
 
 proof
@@ -240,12 +240,12 @@ proof
 1. \leq(a)(b) == \false : assumption 1
 2. \leq(b)(a) == \true : use leq-false-flip; 1
 3. \max(a)(b) : chain
-    == \max(b)(a) : use max-sym;
+    == \max(b)(a) : use max-comm;
     == a : use leq-impl-max; 2
 ~~~
 
 ~~~ {.mycelium}
-theorem min-sym
+theorem min-comm
 * \min(a)(b) == \min(b)(a)
 
 proof
@@ -341,7 +341,7 @@ proof
 1. \leq(a)(b) == \false : assumption 1
 2. \leq(b)(a) == \true : use leq-false-flip; 1
 3. \min(a)(b) : chain
-    == \min(b)(a) : use min-sym;
+    == \min(b)(a) : use min-comm;
     == b : use leq-impl-min; 2
 ~~~
 
@@ -382,7 +382,7 @@ theorem leq-max-r
 proof
 1. \leq(b)(\max(a)(b)) : chain
     == \leq(b)(\max(b)(a))
-     : use max-sym; at z in
+     : use max-comm; at z in
        \leq(b)(z)
     == \true
      : use leq-max-l;
@@ -425,7 +425,7 @@ theorem leq-min-r
 proof
 1. \leq(\min(a)(b))(b) : chain
     == \leq(\min(b)(a))(b)
-     : use min-sym; at z in
+     : use min-comm; at z in
        \leq(z)(b)
     == \true
      : use leq-min-l;
@@ -596,7 +596,7 @@ proof
      : use leq-max-l;
 10. \leq(b)(\max(a)(\max(b)(c))) : chain
      == \leq(b)(\max(\max(b)(c))(a))
-      : use max-sym; at z in
+      : use max-comm; at z in
         \leq(b)(z)
      == \true
       : use leq-leq-max; 9
@@ -606,7 +606,7 @@ proof
      : use leq-max-r;
 13. \leq(c)(\max(a)(\max(b)(c))) : chain
      == \leq(c)(\max(\max(b)(c))(a))
-      : use max-sym; at z in
+      : use max-comm; at z in
         \leq(c)(z)
      == \true
       : use leq-leq-max; 12
@@ -622,13 +622,428 @@ theorem max-assoc-r
 proof
 1. \max(\max(a)(b))(c) : chain
     == \max(c)(\max(a)(b))
-     : use max-sym;
+     : use max-comm;
     == \max(c)(\max(b)(a))
-     : use max-sym; at z in \max(c)(z)
+     : use max-comm; at z in \max(c)(z)
     == \max(\max(c)(b))(a)
      : use max-assoc-l;
     == \max(a)(\max(c)(b))
-     : use max-sym;
+     : use max-comm;
     == \max(a)(\max(b)(c))
-     : use max-sym; at z in \max(a)(z)
+     : use max-comm; at z in \max(a)(z)
+~~~
+
+~~~ {.mycelium}
+theorem min-assoc-l
+* \min(a)(\min(b)(c)) == \min(\min(a)(b))(c)
+
+proof
+1.  \leq(\min(a)(b))(a) == \true
+     : use leq-min-l;
+2.  \leq(\min(\min(a)(b))(c))(a) == \true
+     : use leq-leq-min; 1
+3.  \leq(\min(a)(b))(b) == \true
+     : use leq-min-r;
+4.  \leq(\min(\min(a)(b))(c))(b) == \true
+     : use leq-leq-min; 3
+5.  \leq(\min(\min(a)(b))(c))(c) == \true
+     : use leq-min-r;
+6.  \leq(\min(\min(a)(b))(c))(\min(b)(c)) == \true
+     : use min-lub; 4, 5
+7.  \leq(\min(\min(a)(b))(c))(\min(a)(\min(b)(c))) == \true
+     : use min-lub; 2, 6
+8.  \leq(\min(a)(\min(b)(c)))(a) == \true
+     : use leq-min-l;
+9.  \leq(\min(b)(c))(b) == \true
+     : use leq-min-l;
+10. \leq(\min(a)(\min(b)(c)))(b) : chain
+     == \leq(\min(\min(b)(c))(a))(b)
+      : use min-comm; at z in
+        \leq(z)(b)
+     == \true
+      : use leq-leq-min; 9
+11. \leq(\min(a)(\min(b)(c)))(\min(a)(b)) == \true
+     : use min-lub; 8, 10
+12. \leq(\min(b)(c))(c) == \true
+     : use leq-min-r;
+13. \leq(\min(a)(\min(b)(c)))(c) : chain
+     == \leq(\min(\min(b)(c))(a))(c)
+      : use min-comm; at z in
+        \leq(z)(c)
+     == \true
+      : use leq-leq-min; 12
+14. \leq(\min(a)(\min(b)(c)))(\min(\min(a)(b))(c)) == \true
+     : use min-lub; 11, 13
+15. \min(a)(\min(b)(c)) == \min(\min(a)(b))(c)
+     : use leq-antisym; 14, 7
+
+
+theorem min-assoc-r
+* \min(\min(a)(b))(c) == \min(a)(\min(b)(c))
+
+proof
+1. \min(\min(a)(b))(c) : chain
+    == \min(c)(\min(a)(b))
+     : use min-comm;
+    == \min(c)(\min(b)(a))
+     : use min-comm; at z in \min(c)(z)
+    == \min(\min(c)(b))(a)
+     : use min-assoc-l;
+    == \min(a)(\min(c)(b))
+     : use min-comm;
+    == \min(a)(\min(b)(c))
+     : use min-comm; at z in \min(a)(z)
+~~~
+
+~~~ {.mycelium}
+theorem plus-max-dist-l
+* \plus(a)(\max(b)(c)) == \max(\plus(a)(b))(\plus(a)(c))
+
+proof
+1. \plus(\zero)(\max(b)(c)) : chain
+    == \max(b)(c)
+     : use plus-zero-l;
+    == \max(\plus(\zero)(b))(c)
+     : flop use plus-zero-l; at z in
+       \max(z)(c)
+    == \max(\plus(\zero)(b))(\plus(\zero)(c))
+     : flop use plus-zero-l; at z in
+       \max(\plus(\zero)(b))(z)
+
+2.   \plus(n)(\max(b)(c))
+      == \max(\plus(n)(b))(\plus(n)(c))
+      : hypothesis n
+
+3.   \plus(\next(n))(\max(b)(c)) : chain
+      == \next(\plus(n)(\max(b)(c)))
+       : use plus-next-l;
+      == \next(\max(\plus(n)(b))(\plus(n)(c)))
+       : hypothesis n at z in \next(z)
+      == \max(\next(\plus(n)(b)))(\next(\plus(n)(c)))
+       : flop use max-next-next;
+      == \max(\plus(\next(n))(b))(\next(\plus(n)(c)))
+       : flop use plus-next-l; at z in
+         \max(z)(\next(\plus(n)(c)))
+      == \max(\plus(\next(n))(b))(\plus(\next(n))(c))
+       : flop use plus-next-l; at z in
+         \max(\plus(\next(n))(b))(z)
+
+4. (\plus(n)(\max(b)(c))
+       == \max(\plus(n)(b))(\plus(n)(c))) =>
+     (\plus(\next(n))(\max(b)(c))
+         == \max(\plus(\next(n))(b))(\plus(\next(n))(c)))
+    : discharge n; 3
+
+5. ∀k. (\plus(k)(\max(b)(c))
+       == \max(\plus(k)(b))(\plus(k)(c))) =>
+     (\plus(\next(k))(\max(b)(c))
+         == \max(\plus(\next(k))(b))(\plus(\next(k))(c)))
+    : forall-intro n -> k; 4
+
+6. ∀k. \plus(k)(\max(b)(c))
+    == \max(\plus(k)(b))(\plus(k)(c))
+    : invoke nat-induction
+      [P :-> \plus(_)(\max(b)(c))
+               == \max(\plus(_)(b))(\plus(_)(c))]; 1, 5
+
+7. \plus(a)(\max(b)(c))
+    == \max(\plus(a)(b))(\plus(a)(c))
+     : forall-elim k -> a; 6
+
+
+theorem plus-max-dist-r
+* \plus(\max(a)(b))(c) == \max(\plus(a)(c))(\plus(b)(c))
+
+proof
+1. \plus(\max(a)(b))(c) : chain
+    == \plus(c)(\max(a)(b))
+     : use plus-comm;
+    == \max(\plus(c)(a))(\plus(c)(b))
+     : use plus-max-dist-l;
+    == \max(\plus(a)(c))(\plus(c)(b))
+     : use plus-comm; at z in
+       \max(z)(\plus(c)(b))
+    == \max(\plus(a)(c))(\plus(b)(c))
+     : use plus-comm; at z in
+       \max(\plus(a)(c))(z)
+~~~
+
+~~~ {.mycelium}
+theorem plus-min-dist-l
+* \plus(a)(\min(b)(c)) == \min(\plus(a)(b))(\plus(a)(c))
+
+proof
+1. \plus(\zero)(\min(b)(c)) : chain
+    == \min(b)(c)
+     : use plus-zero-l;
+    == \min(\plus(\zero)(b))(c)
+     : flop use plus-zero-l; at z in
+       \min(z)(c)
+    == \min(\plus(\zero)(b))(\plus(\zero)(c))
+     : flop use plus-zero-l; at z in
+       \min(\plus(\zero)(b))(z)
+
+2.   \plus(n)(\min(b)(c))
+      == \min(\plus(n)(b))(\plus(n)(c))
+      : hypothesis n
+
+3.   \plus(\next(n))(\min(b)(c)) : chain
+      == \next(\plus(n)(\min(b)(c)))
+       : use plus-next-l;
+      == \next(\min(\plus(n)(b))(\plus(n)(c)))
+       : hypothesis n at z in \next(z)
+      == \min(\next(\plus(n)(b)))(\next(\plus(n)(c)))
+       : flop use min-next-next;
+      == \min(\plus(\next(n))(b))(\next(\plus(n)(c)))
+       : flop use plus-next-l; at z in
+         \min(z)(\next(\plus(n)(c)))
+      == \min(\plus(\next(n))(b))(\plus(\next(n))(c))
+       : flop use plus-next-l; at z in
+         \min(\plus(\next(n))(b))(z)
+
+4. (\plus(n)(\min(b)(c))
+       == \min(\plus(n)(b))(\plus(n)(c))) =>
+     (\plus(\next(n))(\min(b)(c))
+         == \min(\plus(\next(n))(b))(\plus(\next(n))(c)))
+    : discharge n; 3
+
+5. ∀k. (\plus(k)(\min(b)(c))
+       == \min(\plus(k)(b))(\plus(k)(c))) =>
+     (\plus(\next(k))(\min(b)(c))
+         == \min(\plus(\next(k))(b))(\plus(\next(k))(c)))
+    : forall-intro n -> k; 4
+
+6. ∀k. \plus(k)(\min(b)(c))
+    == \min(\plus(k)(b))(\plus(k)(c))
+    : invoke nat-induction
+      [P :-> \plus(_)(\min(b)(c))
+               == \min(\plus(_)(b))(\plus(_)(c))]; 1, 5
+
+7. \plus(a)(\min(b)(c))
+    == \min(\plus(a)(b))(\plus(a)(c))
+     : forall-elim k -> a; 6
+
+
+theorem plus-min-dist-r
+* \plus(\min(a)(b))(c) == \min(\plus(a)(c))(\plus(b)(c))
+
+proof
+1. \plus(\min(a)(b))(c) : chain
+    == \plus(c)(\min(a)(b))
+     : use plus-comm;
+    == \min(\plus(c)(a))(\plus(c)(b))
+     : use plus-min-dist-l;
+    == \min(\plus(a)(c))(\plus(c)(b))
+     : use plus-comm; at z in
+       \min(z)(\plus(c)(b))
+    == \min(\plus(a)(c))(\plus(b)(c))
+     : use plus-comm; at z in
+       \min(\plus(a)(c))(z)
+~~~
+
+~~~ {.mycelium}
+theorem leq-min-max
+* \leq(\min(a)(b))(\max(a)(b)) == \true
+
+proof
+1. \leq(\min(a)(b))(a) == \true
+    : use leq-min-l;
+2. \leq(\min(a)(b))(\max(a)(b)) == \true
+    : use leq-leq-max; 1
+~~~
+
+~~~ {.mycelium}
+theorem min-max-dist-l
+* \min(a)(\max(b)(c)) == \max(\min(a)(b))(\min(a)(c))
+
+proof
+1.  \leq(b)(\max(b)(c)) == \true
+     : use leq-max-l;
+2.  \leq(\min(a)(b))(b) == \true
+     : use leq-min-r;
+3.  \leq(\min(a)(b))(\max(b)(c)) == \true
+     : use leq-trans; 2, 1
+4.  \leq(\min(a)(b))(a) == \true
+     : use leq-min-l;
+5.  \leq(\min(a)(b))(\min(a)(\max(b)(c))) == \true
+     : use min-lub; 4, 3
+6.  \leq(c)(\max(b)(c)) == \true
+     : use leq-max-r;
+7.  \leq(\min(a)(c))(c) == \true
+     : use leq-min-r;
+8.  \leq(\min(a)(c))(\max(b)(c)) == \true
+     : use leq-trans; 7, 6
+9.  \leq(\min(a)(c))(a) == \true
+     : use leq-min-l;
+10. \leq(\min(a)(c))(\min(a)(\max(b)(c))) == \true
+     : use min-lub; 9, 8
+11. \leq(
+      \max(\min(a)(b))(\min(a)(c)))(
+      \min(a)(\max(b)(c)))
+       == \true
+     : use max-glb; 5, 10
+12. (\max(b)(c) == b) \/ (\max(b)(c) == c)
+     : use max-cases;
+13.   \max(b)(c) == b : hypothesis b
+14.   \leq(\min(a)(\max(b)(c)))(\min(a)(b)) : chain
+       == \leq(\min(a)(b))(\min(a)(b))
+        : hypothesis b at z in
+          \leq(\min(a)(z))(\min(a)(b))
+       == \true
+        : use leq-refl;
+15.   \leq(\min(a)(b))(\max(\min(a)(b))(\min(a)(c))) == \true
+       : use leq-max-l;
+16.   \leq(
+        \min(a)(\max(b)(c)))(
+        \max(\min(a)(b))(\min(a)(c)))
+         == \true
+       : use leq-trans; 14, 15
+17. (\max(b)(c) == b) =>
+      (\leq(
+        \min(a)(\max(b)(c)))(
+        \max(\min(a)(b))(\min(a)(c)))
+         == \true)
+     : discharge b; 16
+18.   \max(b)(c) == c : hypothesis c
+19.   \leq(\min(a)(\max(b)(c)))(\min(a)(c)) : chain
+       == \leq(\min(a)(c))(\min(a)(c))
+        : hypothesis c at z in
+          \leq(\min(a)(z))(\min(a)(c))
+       == \true
+        : use leq-refl;
+20.   \leq(\min(a)(c))(\max(\min(a)(b))(\min(a)(c))) == \true
+       : use leq-max-r;
+21.   \leq(
+        \min(a)(\max(b)(c)))(
+        \max(\min(a)(b))(\min(a)(c)))
+         == \true
+       : use leq-trans; 19, 20
+22. (\max(b)(c) == c) =>
+      (\leq(
+        \min(a)(\max(b)(c)))(
+        \max(\min(a)(b))(\min(a)(c)))
+         == \true)
+     : discharge c; 21
+23. \leq(
+      \min(a)(\max(b)(c)))(
+      \max(\min(a)(b))(\min(a)(c)))
+       == \true
+      : use disj-elim; 12, 17, 22
+24. \min(a)(\max(b)(c)) == \max(\min(a)(b))(\min(a)(c))
+     : use leq-antisym; 23, 11
+
+
+theorem min-max-dist-r
+* \min(\max(a)(b))(c) == \max(\min(a)(c))(\min(b)(c))
+
+proof
+1. \min(\max(a)(b))(c) : chain
+    == \min(c)(\max(a)(b))
+     : use min-comm;
+    == \max(\min(c)(a))(\min(c)(b))
+     : use min-max-dist-l;
+    == \max(\min(a)(c))(\min(c)(b))
+     : use min-comm; at z in
+       \max(z)(\min(c)(b))
+    == \max(\min(a)(c))(\min(b)(c))
+     : use min-comm; at z in
+       \max(\min(a)(c))(z)
+~~~
+
+~~~ {.mycelium}
+theorem max-min-dist-l
+* \max(a)(\min(b)(c)) == \min(\max(a)(b))(\max(a)(c))
+
+proof
+1.  \leq(\min(b)(c))(b) == \true
+     : use leq-min-l;
+2.  \leq(b)(\max(a)(b)) == \true
+     : use leq-max-r;
+3.  \leq(\min(b)(c))(\max(a)(b)) == \true
+     : use leq-trans; 1, 2
+4.  \leq(a)(\max(a)(b)) == \true
+     : use leq-max-l;
+5.  \leq(\max(a)(\min(b)(c)))(\max(a)(b)) == \true
+     : use max-glb; 4, 3
+6.  \leq(\min(b)(c))(c) == \true
+     : use leq-min-r;
+7.  \leq(c)(\max(a)(c)) == \true
+     : use leq-max-r;
+8.  \leq(\min(b)(c))(\max(a)(c)) == \true
+     : use leq-trans; 6, 7
+9.  \leq(a)(\max(a)(c)) == \true
+     : use leq-max-l;
+10. \leq(\max(a)(\min(b)(c)))(\max(a)(c)) == \true
+     : use max-glb; 9, 8
+11. \leq(
+      \max(a)(\min(b)(c)))(
+      \min(\max(a)(b))(\max(a)(c)))
+       == \true
+     : use min-lub; 5, 10
+12. (\min(b)(c) == b) \/ (\min(b)(c) == c)
+     : use min-cases;
+13.   \min(b)(c) == b : hypothesis b
+14.   \leq(\max(a)(b))(\max(a)(\min(b)(c))) : chain
+       == \leq(\max(a)(b))(\max(a)(b))
+        : hypothesis b at z in
+          \leq(\max(a)(b))(\max(a)(z))
+       == \true
+        : use leq-refl;
+15.   \leq(\min(\max(a)(b))(\max(a)(c)))(\max(a)(b)) == \true
+       : use leq-min-l;
+16.   \leq(
+        \min(\max(a)(b))(\max(a)(c)))(
+        \max(a)(\min(b)(c)))
+         == \true
+       : use leq-trans; 15, 14
+17. (\min(b)(c) == b) =>
+      (\leq(
+        \min(\max(a)(b))(\max(a)(c)))(
+        \max(a)(\min(b)(c)))
+         == \true)
+     : discharge b; 16
+18.   \min(b)(c) == c : hypothesis c
+19.   \leq(\max(a)(c))(\max(a)(\min(b)(c))) : chain
+       == \leq(\max(a)(c))(\max(a)(c))
+        : hypothesis c at z in
+          \leq(\max(a)(c))(\max(a)(z))
+       == \true
+        : use leq-refl;
+20.   \leq(\min(\max(a)(b))(\max(a)(c)))(\max(a)(c)) == \true
+       : use leq-min-r;
+21.   \leq(
+        \min(\max(a)(b))(\max(a)(c)))(
+        \max(a)(\min(b)(c)))
+         == \true
+       : use leq-trans; 20, 19
+22. (\min(b)(c) == c) =>
+      (\leq(
+        \min(\max(a)(b))(\max(a)(c)))(
+        \max(a)(\min(b)(c)))
+         == \true)
+     : discharge c; 21
+23. \leq(
+      \min(\max(a)(b))(\max(a)(c)))(
+      \max(a)(\min(b)(c)))
+       == \true
+      : use disj-elim; 12, 17, 22
+24. \max(a)(\min(b)(c)) == \min(\max(a)(b))(\max(a)(c))
+     : use leq-antisym; 11, 23
+
+
+theorem max-min-dist-r
+* \max(\min(a)(b))(c) == \min(\max(a)(c))(\max(b)(c))
+
+proof
+1. \max(\min(a)(b))(c) : chain
+    == \max(c)(\min(a)(b))
+     : use max-comm;
+    == \min(\max(c)(a))(\max(c)(b))
+     : use max-min-dist-l;
+    == \min(\max(a)(c))(\max(c)(b))
+     : use max-comm; at z in
+       \min(z)(\max(c)(b))
+    == \min(\max(a)(c))(\max(b)(c))
+     : use max-comm; at z in
+       \min(\max(a)(c))(z)
 ~~~
