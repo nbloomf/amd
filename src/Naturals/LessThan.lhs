@@ -401,3 +401,40 @@ proof
       ((\lt(a)(b) == \true) \/ (\lt(b)(a) == \true))
      : use disj-elim; 1, 4, 19
 ~~~
+
+~~~ {.mycelium}
+theorem leq-eq-next-r
+if
+  * \leq(a)(\next(b)) == \true
+  * \eq(a)(\next(b)) == \false
+then
+  * \leq(a)(b) == \true
+
+proof
+1.  \leq(a)(\next(b)) == \true
+     : assumption 1
+2.  \eq(a)(\next(b)) == \false
+     : assumption 2
+3.  \lt(a)(\next(b)) == \true
+     : use leq-eq-lt-impl; 1, 2
+4.  ∃k. \next(b) == \plus(a)(\next(k))
+     : use lt-impl-plus-next; 3
+5.    \next(b) == \plus(a)(\next(u))
+       : hypothesis u
+6.    \next(b) : chain
+       == \plus(a)(\next(u))
+        : hypothesis u
+       == \next(\plus(a)(u))
+        : use plus-next-r;
+7.    b == \plus(a)(u)
+       : use next-inj; 6
+8.    ∃k. b == \plus(a)(k)
+       : exists-intro k <- u; 7
+9.    \leq(a)(b) == \true
+       : use plus-impl-leq; 8
+10. (\next(b) == \plus(a)(\next(u))) =>
+      (\leq(a)(b) == \true)
+     : discharge u; 9
+11. \leq(a)(b) == \true
+     : exists-elim u <- k; 4, 10
+~~~

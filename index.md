@@ -46,4 +46,5 @@ Contents
     * [Less Than or Equal To](/src/Naturals/LessThanOrEqualTo.html)
       * [Less Than](/src/Naturals/LessThan.html)
     * [Max and Min](/src/Naturals/MaxAndMin.html)
+    * [Division Algorithm](/src/Naturals/DivisionAlgorithm.html)
 * Lists
