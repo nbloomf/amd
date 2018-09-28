@@ -1,9 +1,86 @@
----
-title: Division Algorithm
----
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Arithmetic Made Difficult - Division Algorithm</title>
+    <link rel="stylesheet" href="../../css/default.css" />
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  </head>
 
-~~~ {.mycelium}
-type \divalgH :: Nat -> Nat -> Pair Nat Nat -> Pair Nat Nat
+  <body>
+    <header>
+      <div class="logo">
+        <a href="../../">Arithmetic Made Difficult</a>
+      </div>
+      <nav>
+        <a href="../../">Contents</a>
+        <a href="../../about.html">About</a>
+      </nav>
+    </header>
+
+    <main role="main">
+      <h1>Division Algorithm</h1>
+      <!-- LaTeX Macros -->
+<div style="display:none;">
+<!-- Functions -->
+\(\newcommand{\id}{\mathsf{id}}\)
+\(\newcommand{\comp}{\mathsf{comp}}\)
+\(\newcommand{\app}{\mathsf{app}}\)
+\(\newcommand{\const}{\mathsf{const}}\)
+\(\newcommand{\flip}{\mathsf{flip}}\)
+\(\newcommand{\clone}{\mathsf{clone}}\)
+
+<!-- Unit -->
+\(\newcommand{\Unit}{\mathsf{Unit}}\)
+\(\newcommand{\unit}{\mathsf{unit}}\)
+\(\newcommand{\only}{\mathsf{only}}\)
+
+<!-- Pair -->
+\(\newcommand{\Pair}{\mathsf{Pair}}\)
+\(\newcommand{\pair}{\mathsf{pair}}\)
+\(\newcommand{\fst}{\mathsf{fst}}\)
+\(\newcommand{\snd}{\mathsf{snd}}\)
+\(\newcommand{\tup}{\mathsf{tup}}\)
+\(\newcommand{\uncurry}{\mathsf{uncurry}}\)
+
+<!-- Either -->
+\(\newcommand{\Either}{\mathsf{Either}}\)
+\(\newcommand{\either}{\mathsf{either}}\)
+\(\newcommand{\lft}{\mathsf{lft}}\)
+\(\newcommand{\rgt}{\mathsf{rgt}}\)
+
+<!-- Maybe -->
+\(\newcommand{\Maybe}{\mathsf{Maybe}}\)
+\(\newcommand{\nothing}{\mathsf{nothing}}\)
+\(\newcommand{\just}{\mathsf{just}}\)
+\(\newcommand{\opt}{\mathsf{opt}}\)
+
+<!-- Bool -->
+\(\newcommand{\Bool}{\mathsf{Bool}}\)
+\(\newcommand{\true}{\mathsf{true}}\)
+\(\newcommand{\false}{\mathsf{false}}\)
+\(\newcommand{\if}{\mathsf{if}}\)
+\(\newcommand{\and}{\mathsf{and}}\)
+\(\newcommand{\or}{\mathsf{or}}\)
+\(\newcommand{\not}{\mathsf{not}}\)
+\(\newcommand{\eq}{\mathsf{eq}}\)
+
+<!-- Nat -->
+\(\newcommand{\Nat}{\mathsf{Nat}}\)
+\(\newcommand{\zero}{\mathsf{zero}}\)
+\(\newcommand{\next}{\mathsf{next}}\)
+\(\newcommand{\natrec}{\mathsf{natrec}}\)
+\(\newcommand{\simprec}{\mathsf{simprec}}\)
+\(\newcommand{\mutrec}{\mathsf{mutrec}}\)
+\(\newcommand{\prev}{\mathsf{prev}}\)
+\(\newcommand{\plus}{\mathsf{plus}}\)
+\(\newcommand{\times}{\mathsf{times}}\)
+</div>
+<!-- End LaTeX Macros -->
+
+<pre class="mycelium"><code>type \divalgH :: Nat -&gt; Nat -&gt; Pair Nat Nat -&gt; Pair Nat Nat
 
 definition def-divalgH
 * \divalgH(b)(a)(x) == \if(
@@ -12,27 +89,21 @@ definition def-divalgH
     \eq(b)(\next(\snd(x))))
 
 
-type \divalg :: Nat -> Nat -> Pair Nat Nat
+type \divalg :: Nat -&gt; Nat -&gt; Pair Nat Nat
 
 definition def-divalg
-* \divalg == \flip(\simprec(\const(\tup(\zero)(\zero)))(\divalgH))
-~~~
-
-~~~ {.mycelium}
-type \quo :: Nat -> Nat -> Nat
+* \divalg == \flip(\simprec(\const(\tup(\zero)(\zero)))(\divalgH))</code></pre>
+<pre class="mycelium"><code>type \quo :: Nat -&gt; Nat -&gt; Nat
 
 definition def-quo
 * \quo(a)(b) == \fst(\divalg(a)(b))
 
 
-type \rem :: Nat -> Nat -> Nat
+type \rem :: Nat -&gt; Nat -&gt; Nat
 
 definition def-rem
-* \rem(a)(b) == \snd(\divalg(a)(b))
-~~~
-
-~~~ {.mycelium}
-theorem divalg-quo-rem
+* \rem(a)(b) == \snd(\divalg(a)(b))</code></pre>
+<pre class="mycelium"><code>theorem divalg-quo-rem
 * \divalg(a)(b) == \tup(\quo(a)(b))(\rem(a)(b))
 
 proof
@@ -44,11 +115,8 @@ proof
        \tup(z)(\snd(\divalg(a)(b)))
     == \tup(\quo(a)(b))(\rem(a)(b))
      : flop use def-rem; at z in
-       \tup(\quo(a)(b))(z)
-~~~
-
-~~~ {.mycelium}
-theorem divalg-zero-l
+       \tup(\quo(a)(b))(z)</code></pre>
+<pre class="mycelium"><code>theorem divalg-zero-l
 * \divalg(\zero)(b) == \tup(\zero)(\zero)
 
 proof
@@ -60,11 +128,8 @@ proof
     == \const(\tup(\zero)(\zero))(b)
      : use simprec-zero;
     == \tup(\zero)(\zero)
-     : use def-const;
-~~~
-
-~~~ {.mycelium}
-theorem divalg-exists
+     : use def-const;</code></pre>
+<pre class="mycelium"><code>theorem divalg-exists
 if
   * \divalg(a)(\next(b)) == \tup(q)(r)
 then
@@ -110,35 +175,35 @@ proof
         (\leq(r)(b) == \true)
        : use conj-intro; 6, 7
 
-9.  (\divalg(\zero)(\next(b)) == \tup(q)(r)) =>
+9.  (\divalg(\zero)(\next(b)) == \tup(q)(r)) =&gt;
       ((\zero == \plus(\times(q)(\next(b)))(r)) /\
         (\leq(r)(b) == \true))
      : discharge zero; 8
 
-10. ∀v. (\divalg(\zero)(\next(b)) == \tup(q)(v)) =>
+10. ∀v. (\divalg(\zero)(\next(b)) == \tup(q)(v)) =&gt;
       ((\zero == \plus(\times(q)(\next(b)))(v)) /\
         (\leq(v)(b) == \true))
-     : forall-intro r -> v; 9
+     : forall-intro r -&gt; v; 9
 
-11. ∀u. (∀v. (\divalg(\zero)(\next(b)) == \tup(u)(v)) =>
+11. ∀u. (∀v. (\divalg(\zero)(\next(b)) == \tup(u)(v)) =&gt;
       ((\zero == \plus(\times(u)(\next(b)))(v)) /\
         (\leq(v)(b) == \true)))
-     : forall-intro q -> u; 10
+     : forall-intro q -&gt; u; 10
 
-12.   ∀u. (∀v. (\divalg(n)(\next(b)) == \tup(u)(v)) =>
+12.   ∀u. (∀v. (\divalg(n)(\next(b)) == \tup(u)(v)) =&gt;
         ((n == \plus(\times(u)(\next(b)))(v)) /\
           (\leq(v)(b) == \true)))
        : hypothesis n
 
-13.   ∀v. (\divalg(n)(\next(b)) == \tup(\quo(n)(\next(b)))(v)) =>
+13.   ∀v. (\divalg(n)(\next(b)) == \tup(\quo(n)(\next(b)))(v)) =&gt;
         ((n == \plus(\times(\quo(n)(\next(b)))(\next(b)))(v)) /\
           (\leq(v)(b) == \true))
-       : forall-elim u -> \quo(n)(\next(b)); 12
+       : forall-elim u -&gt; \quo(n)(\next(b)); 12
 
-14.   (\divalg(n)(\next(b)) == \tup(\quo(n)(\next(b)))(\rem(n)(\next(b)))) =>
+14.   (\divalg(n)(\next(b)) == \tup(\quo(n)(\next(b)))(\rem(n)(\next(b)))) =&gt;
         ((n == \plus(\times(\quo(n)(\next(b)))(\next(b)))(\rem(n)(\next(b)))) /\
           (\leq(\rem(n)(\next(b)))(b) == \true))
-       : forall-elim v -> \rem(n)(\next(b)); 13
+       : forall-elim v -&gt; \rem(n)(\next(b)); 13
 
 15.   \divalg(n)(\next(b)) == \tup(\quo(n)(\next(b)))(\rem(n)(\next(b)))
        : use divalg-quo-rem;
@@ -251,7 +316,7 @@ proof
 29.       (\next(n) == \plus(\times(q)(\next(b)))(r)) /\ (\leq(r)(b) == \true)
            : use conj-intro; 27, 28
 
-30.     (\eq(\next(b))(\next(\rem(n)(\next(b)))) == \true) =>
+30.     (\eq(\next(b))(\next(\rem(n)(\next(b)))) == \true) =&gt;
           ((\next(n) == \plus(\times(q)(\next(b)))(r)) /\ (\leq(r)(b) == \true))
          : discharge t; 29
 
@@ -348,74 +413,71 @@ proof
 40.       (\next(n) == \plus(\times(q)(\next(b)))(r)) /\ (\leq(r)(b) == \true)
            : use conj-intro; 36, 39
 
-41.     (\eq(\next(b))(\next(\rem(n)(\next(b)))) == \false) =>
+41.     (\eq(\next(b))(\next(\rem(n)(\next(b)))) == \false) =&gt;
           ((\next(n) == \plus(\times(q)(\next(b)))(r)) /\ (\leq(r)(b) == \true))
          : discharge f; 40
 
 42.     (\next(n) == \plus(\times(q)(\next(b)))(r)) /\ (\leq(r)(b) == \true)
          : use disj-elim; 20, 30, 41
 
-43.   (\divalg(\next(n))(\next(b)) == \tup(q)(r)) =>
+43.   (\divalg(\next(n))(\next(b)) == \tup(q)(r)) =&gt;
         ((\next(n) == \plus(\times(q)(\next(b)))(r)) /\ (\leq(r)(b) == \true))
        : discharge next; 42
 
-44.   ∀v. (\divalg(\next(n))(\next(b)) == \tup(q)(v)) =>
+44.   ∀v. (\divalg(\next(n))(\next(b)) == \tup(q)(v)) =&gt;
         ((\next(n) == \plus(\times(q)(\next(b)))(v)) /\ (\leq(v)(b) == \true))
-       : forall-intro r -> v; 43
+       : forall-intro r -&gt; v; 43
 
-45.   ∀u. (∀v. (\divalg(\next(n))(\next(b)) == \tup(u)(v)) =>
+45.   ∀u. (∀v. (\divalg(\next(n))(\next(b)) == \tup(u)(v)) =&gt;
         ((\next(n) == \plus(\times(u)(\next(b)))(v)) /\ (\leq(v)(b) == \true)))
-       : forall-intro q -> u; 44
+       : forall-intro q -&gt; u; 44
 
-46. (∀u. (∀v. (\divalg(n)(\next(b)) == \tup(u)(v)) =>
+46. (∀u. (∀v. (\divalg(n)(\next(b)) == \tup(u)(v)) =&gt;
         ((n == \plus(\times(u)(\next(b)))(v)) /\
-          (\leq(v)(b) == \true)))) =>
-      (∀u. (∀v. (\divalg(\next(n))(\next(b)) == \tup(u)(v)) =>
+          (\leq(v)(b) == \true)))) =&gt;
+      (∀u. (∀v. (\divalg(\next(n))(\next(b)) == \tup(u)(v)) =&gt;
         ((\next(n) == \plus(\times(u)(\next(b)))(v)) /\
           (\leq(v)(b) == \true))))
      : discharge n; 45
 
-47. ∀k. ((∀u. (∀v. (\divalg(k)(\next(b)) == \tup(u)(v)) =>
+47. ∀k. ((∀u. (∀v. (\divalg(k)(\next(b)) == \tup(u)(v)) =&gt;
         ((k == \plus(\times(u)(\next(b)))(v)) /\
-          (\leq(v)(b) == \true)))) =>
-      (∀u. (∀v. (\divalg(\next(k))(\next(b)) == \tup(u)(v)) =>
+          (\leq(v)(b) == \true)))) =&gt;
+      (∀u. (∀v. (\divalg(\next(k))(\next(b)) == \tup(u)(v)) =&gt;
         ((\next(k) == \plus(\times(u)(\next(b)))(v)) /\
           (\leq(v)(b) == \true)))))
-     : forall-intro n -> k; 46
+     : forall-intro n -&gt; k; 46
 
-48. ∀k. (∀u. (∀v. (\divalg(k)(\next(b)) == \tup(u)(v)) =>
+48. ∀k. (∀u. (∀v. (\divalg(k)(\next(b)) == \tup(u)(v)) =&gt;
       ((k == \plus(\times(u)(\next(b)))(v)) /\
         (\leq(v)(b) == \true))))
      : invoke nat-induction
-       [P :-> ∀u. (∀v. (\divalg(_)(\next(b)) == \tup(u)(v)) =>
+       [P :-&gt; ∀u. (∀v. (\divalg(_)(\next(b)) == \tup(u)(v)) =&gt;
                 ((_ == \plus(\times(u)(\next(b)))(v)) /\
                   (\leq(v)(b) == \true)))]; 11, 47
 
-49. ∀u. (∀v. (\divalg(a)(\next(b)) == \tup(u)(v)) =>
+49. ∀u. (∀v. (\divalg(a)(\next(b)) == \tup(u)(v)) =&gt;
       ((a == \plus(\times(u)(\next(b)))(v)) /\
         (\leq(v)(b) == \true)))
-     : forall-elim k -> a; 48
+     : forall-elim k -&gt; a; 48
 
-50. ∀v. (\divalg(a)(\next(b)) == \tup(q)(v)) =>
+50. ∀v. (\divalg(a)(\next(b)) == \tup(q)(v)) =&gt;
       ((a == \plus(\times(q)(\next(b)))(v)) /\
         (\leq(v)(b) == \true))
-     : forall-elim u -> q; 49
+     : forall-elim u -&gt; q; 49
 
-51. (\divalg(a)(\next(b)) == \tup(q)(r)) =>
+51. (\divalg(a)(\next(b)) == \tup(q)(r)) =&gt;
       ((a == \plus(\times(q)(\next(b)))(r)) /\
         (\leq(r)(b) == \true))
-     : forall-elim v -> r; 50
+     : forall-elim v -&gt; r; 50
 
 52. \divalg(a)(\next(b)) == \tup(q)(r)
      : assumption 1
 
 53. (a == \plus(\times(q)(\next(b)))(r)) /\
       (\leq(r)(b) == \true)
-     : use impl-elim; 52, 51
-~~~
-
-~~~ {.mycelium}
-theorem divalg-unique-lemma
+     : use impl-elim; 52, 51</code></pre>
+<pre class="mycelium"><code>theorem divalg-unique-lemma
 if
   * \plus(\times(a1)(\next(b)))(c1) == \plus(\times(a2)(\next(b)))(c2)
   * \leq(c1)(b) == \true
@@ -471,7 +533,7 @@ proof
             : use plus-assoc-r;
 
 11.       ∃h. c1 == \plus(\next(b))(h)
-           : exists-intro h <- \plus(\times(w)(\next(b)))(c2); 10
+           : exists-intro h &lt;- \plus(\times(w)(\next(b)))(c2); 10
 
 12.       \leq(\next(b))(c1) == \true
            : use plus-impl-leq; 11
@@ -479,11 +541,11 @@ proof
 13.       \leq(\next(b))(b) == \true
            : use leq-trans; 12, 4
 
-14.     (a2 == \next(w)) => (\leq(\next(b))(b) == \true)
+14.     (a2 == \next(w)) =&gt; (\leq(\next(b))(b) == \true)
          : discharge a2-next-w; 13
 
 15.     \leq(\next(b))(b) == \true
-         : exists-elim w <- t; 8, 14
+         : exists-elim w &lt;- t; 8, 14
 
 16.     \true : chain
          == \leq(\next(b))(b)
@@ -491,7 +553,7 @@ proof
          == \false
           : use leq-next-self;
 
-17.   (∃t. a2 == \next(t)) => (\true == \false)
+17.   (∃t. a2 == \next(t)) =&gt; (\true == \false)
        : discharge a2-next; 16
 
 18.   ~(\true == \false)
@@ -522,17 +584,17 @@ proof
        : use conj-intro; 21, 22
 
 24. ((\plus(\times(\zero)(\next(b)))(c1) == \plus(\times(a2)(\next(b)))(c2)) /\
-        ((\leq(c1)(b) == \true) /\ (\leq(c2)(b) == \true))) =>
+        ((\leq(c1)(b) == \true) /\ (\leq(c2)(b) == \true))) =&gt;
       ((\zero == a2) /\ (c1 == c2))
      : discharge zero; 23
 
 25. ∀u2. ((\plus(\times(\zero)(\next(b)))(c1) == \plus(\times(u2)(\next(b)))(c2)) /\
-        ((\leq(c1)(b) == \true) /\ (\leq(c2)(b) == \true))) =>
+        ((\leq(c1)(b) == \true) /\ (\leq(c2)(b) == \true))) =&gt;
       ((\zero == u2) /\ (c1 == c2))
-     : forall-intro a2 -> u2; 24
+     : forall-intro a2 -&gt; u2; 24
 
 26.   ∀u2. ((\plus(\times(n)(\next(b)))(c1) == \plus(\times(u2)(\next(b)))(c2)) /\
-        ((\leq(c1)(b) == \true) /\ (\leq(c2)(b) == \true))) =>
+        ((\leq(c1)(b) == \true) /\ (\leq(c2)(b) == \true))) =&gt;
           ((n == u2) /\ (c1 == c2))
        : hypothesis n
 
@@ -576,7 +638,7 @@ proof
             : use plus-assoc-r;
 
 35.       ∃h. c2 == \plus(\next(b))(h)
-           : exists-intro h <- \plus(\times(n)(\next(b)))(c1); 34
+           : exists-intro h &lt;- \plus(\times(n)(\next(b)))(c1); 34
 
 36.       \leq(\next(b))(c2) == \true
            : use plus-impl-leq; 35
@@ -590,7 +652,7 @@ proof
            == \false
             : use leq-next-self;
 
-39.     (u == \zero) => (\true == \false)
+39.     (u == \zero) =&gt; (\true == \false)
          : discharge u-zero; 38
 
 40.     ~(\true == \false)
@@ -626,9 +688,9 @@ proof
            : use plus-cancel-l; 44
 
 46.       ((\plus(\times(n)(\next(b)))(c1) == \plus(\times(w)(\next(b)))(c2)) /\
-            ((\leq(c1)(b) == \true) /\ (\leq(c2)(b) == \true))) =>
+            ((\leq(c1)(b) == \true) /\ (\leq(c2)(b) == \true))) =&gt;
               ((n == w) /\ (c1 == c2))
-           : forall-elim u2 -> w; 26
+           : forall-elim u2 -&gt; w; 26
 
 47.       ((\plus(\times(n)(\next(b)))(c1) == \plus(\times(w)(\next(b)))(c2)) /\
             ((\leq(c1)(b) == \true) /\ (\leq(c2)(b) == \true)))
@@ -652,55 +714,55 @@ proof
 52.       (\next(n) == u) /\ (c1 == c2)
            : use conj-intro; 51, 50
 
-53.     (u == \next(w)) => ((\next(n) == u) /\ (c1 == c2))
+53.     (u == \next(w)) =&gt; ((\next(n) == u) /\ (c1 == c2))
          : discharge u-next-w; 52
 
 54.     (\next(n) == u) /\ (c1 == c2)
-         : exists-elim w <- t; 42, 53
+         : exists-elim w &lt;- t; 42, 53
 
 55.   ((\plus(\times(\next(n))(\next(b)))(c1) == \plus(\times(u)(\next(b)))(c2)) /\
-        ((\leq(c1)(b) == \true) /\ (\leq(c2)(b) == \true))) =>
+        ((\leq(c1)(b) == \true) /\ (\leq(c2)(b) == \true))) =&gt;
           ((\next(n) == u) /\ (c1 == c2))
        : discharge next; 54
 
 56.   ∀u2. ((\plus(\times(\next(n))(\next(b)))(c1) == \plus(\times(u2)(\next(b)))(c2)) /\
-        ((\leq(c1)(b) == \true) /\ (\leq(c2)(b) == \true))) =>
+        ((\leq(c1)(b) == \true) /\ (\leq(c2)(b) == \true))) =&gt;
           ((\next(n) == u2) /\ (c1 == c2))
-       : forall-intro u -> u2; 55
+       : forall-intro u -&gt; u2; 55
 
 57. (∀u2. ((\plus(\times(n)(\next(b)))(c1) == \plus(\times(u2)(\next(b)))(c2)) /\
-        ((\leq(c1)(b) == \true) /\ (\leq(c2)(b) == \true))) =>
-          ((n == u2) /\ (c1 == c2))) =>
+        ((\leq(c1)(b) == \true) /\ (\leq(c2)(b) == \true))) =&gt;
+          ((n == u2) /\ (c1 == c2))) =&gt;
       (∀u2. ((\plus(\times(\next(n))(\next(b)))(c1) == \plus(\times(u2)(\next(b)))(c2)) /\
-        ((\leq(c1)(b) == \true) /\ (\leq(c2)(b) == \true))) =>
+        ((\leq(c1)(b) == \true) /\ (\leq(c2)(b) == \true))) =&gt;
           ((\next(n) == u2) /\ (c1 == c2)))
      : discharge n; 56
 
 58. ∀k. ((∀u2. ((\plus(\times(k)(\next(b)))(c1) == \plus(\times(u2)(\next(b)))(c2)) /\
-        ((\leq(c1)(b) == \true) /\ (\leq(c2)(b) == \true))) =>
-          ((k == u2) /\ (c1 == c2))) =>
+        ((\leq(c1)(b) == \true) /\ (\leq(c2)(b) == \true))) =&gt;
+          ((k == u2) /\ (c1 == c2))) =&gt;
       (∀u2. ((\plus(\times(\next(k))(\next(b)))(c1) == \plus(\times(u2)(\next(b)))(c2)) /\
-        ((\leq(c1)(b) == \true) /\ (\leq(c2)(b) == \true))) =>
+        ((\leq(c1)(b) == \true) /\ (\leq(c2)(b) == \true))) =&gt;
           ((\next(k) == u2) /\ (c1 == c2))))
-     : forall-intro n -> k; 57
+     : forall-intro n -&gt; k; 57
 
 59. ∀k. (∀u2. ((\plus(\times(k)(\next(b)))(c1) == \plus(\times(u2)(\next(b)))(c2)) /\
-        ((\leq(c1)(b) == \true) /\ (\leq(c2)(b) == \true))) =>
+        ((\leq(c1)(b) == \true) /\ (\leq(c2)(b) == \true))) =&gt;
           ((k == u2) /\ (c1 == c2)))
      : invoke nat-induction
-       [P :-> (∀u2. ((\plus(\times(_)(\next(b)))(c1) == \plus(\times(u2)(\next(b)))(c2)) /\
-         ((\leq(c1)(b) == \true) /\ (\leq(c2)(b) == \true))) =>
+       [P :-&gt; (∀u2. ((\plus(\times(_)(\next(b)))(c1) == \plus(\times(u2)(\next(b)))(c2)) /\
+         ((\leq(c1)(b) == \true) /\ (\leq(c2)(b) == \true))) =&gt;
            ((_ == u2) /\ (c1 == c2)))]; 25, 58
 
 60. ∀u2. ((\plus(\times(a1)(\next(b)))(c1) == \plus(\times(u2)(\next(b)))(c2)) /\
-      ((\leq(c1)(b) == \true) /\ (\leq(c2)(b) == \true))) =>
+      ((\leq(c1)(b) == \true) /\ (\leq(c2)(b) == \true))) =&gt;
         ((a1 == u2) /\ (c1 == c2))
-     : forall-elim k -> a1; 59
+     : forall-elim k -&gt; a1; 59
 
 61. ((\plus(\times(a1)(\next(b)))(c1) == \plus(\times(a2)(\next(b)))(c2)) /\
-      ((\leq(c1)(b) == \true) /\ (\leq(c2)(b) == \true))) =>
+      ((\leq(c1)(b) == \true) /\ (\leq(c2)(b) == \true))) =&gt;
         ((a1 == a2) /\ (c1 == c2))
-     : forall-elim u2 -> a2; 60
+     : forall-elim u2 -&gt; a2; 60
 
 62. \plus(\times(a1)(\next(b)))(c1) == \plus(\times(a2)(\next(b)))(c2)
      : assumption 1
@@ -719,11 +781,8 @@ proof
      : use conj-intro; 62, 65
 
 67. (a1 == a2) /\ (c1 == c2)
-     : use impl-elim; 66, 61
-~~~
-
-~~~ {.mycelium}
-theorem divalg-unique
+     : use impl-elim; 66, 61</code></pre>
+<pre class="mycelium"><code>theorem divalg-unique
 if
   * a == \plus(\times(q)(\next(b)))(r)
   * \leq(r)(b) == \true
@@ -763,11 +822,8 @@ proof
      == \tup(\quo(a)(\next(b)))(\rem(a)(\next(b)))
       : use divalg-quo-rem;
      == \tup(q)(r)
-      : flop use tup-eq-2; 8
-~~~
-
-~~~ {.mycelium}
-theorem divalg-nat-one
+      : flop use tup-eq-2; 8</code></pre>
+<pre class="mycelium"><code>theorem divalg-nat-one
 * \divalg(a)(\next(\zero)) == \tup(a)(\zero)
 
 proof
@@ -782,11 +838,8 @@ proof
     : use leq-refl;
 
 3. \divalg(a)(\next(\zero)) == \tup(a)(\zero)
-    : use divalg-unique; 1, 2
-~~~
-
-~~~ {.mycelium}
-theorem divalg-leq
+    : use divalg-unique; 1, 2</code></pre>
+<pre class="mycelium"><code>theorem divalg-leq
 if
   * \leq(a)(b) == \true
 then
@@ -804,11 +857,8 @@ proof
     : assumption 1
 
 3. \divalg(a)(\next(b)) == \tup(\zero)(a)
-    : use divalg-unique; 1, 2
-~~~
-
-~~~ {.mycelium}
-theorem divalg-self-pos
+    : use divalg-unique; 1, 2</code></pre>
+<pre class="mycelium"><code>theorem divalg-self-pos
 * \divalg(\next(a))(\next(a)) == \tup(\next(\zero))(\zero)
 
 proof
@@ -823,11 +873,8 @@ proof
     : use leq-zero-l;
 
 3. \divalg(\next(a))(\next(a)) == \tup(\next(\zero))(\zero)
-    : use divalg-unique; 1, 2
-~~~
-
-~~~ {.mycelium}
-theorem divalg-times
+    : use divalg-unique; 1, 2</code></pre>
+<pre class="mycelium"><code>theorem divalg-times
 * \divalg(\times(a)(\next(b)))(\next(b)) == \tup(a)(\zero)
 
 proof
@@ -839,5 +886,13 @@ proof
     : use leq-zero-l;
 
 3. \divalg(\times(a)(\next(b)))(\next(b)) == \tup(a)(\zero)
-    : use divalg-unique; 1, 2
-~~~
+    : use divalg-unique; 1, 2</code></pre>
+
+    </main>
+
+    <footer>
+      Site generated by
+      <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+    </footer>
+  </body>
+</html>

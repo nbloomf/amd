@@ -47,4 +47,5 @@ Contents
       * [Less Than](/src/Naturals/LessThan.html)
     * [Max and Min](/src/Naturals/MaxAndMin.html)
     * [Division Algorithm](/src/Naturals/DivisionAlgorithm.html)
+    * [Divides](/src/Naturals/Divides.html)
 * Lists

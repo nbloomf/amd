@@ -31,7 +31,8 @@ modules = \
   src/Naturals/LessThanOrEqualTo.lhs \
   src/Naturals/LessThan.lhs \
   src/Naturals/MaxAndMin.lhs \
-  src/Naturals/DivisionAlgorithm.lhs
+  src/Naturals/DivisionAlgorithm.lhs \
+  src/Naturals/Divides.lhs
 
 build:
 	stack exec site build
