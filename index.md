@@ -2,6 +2,14 @@
 title: Arithmetic Made Difficult
 ---
 
+<blockquote>
+The old idea that there was no reasoning in Arithmetic is dead; the idea that the *general axioms* have no place in Arithmetic is no longer held by a progressive teacher...
+
+<cite>J.B.F. Showalter in "Arithmetic Made Easy", 1897</cite>
+</blockquote>
+
+<p style="text-align: center;">⁂</p>
+
 An experiment in mechanically verified constructive mathematics.
 
 You can see a theorem [dependency graph](/images/dependency-graph.png) (warning: ridiculous).
@@ -49,3 +57,11 @@ Contents
     * [Division Algorithm](/src/Naturals/DivisionAlgorithm.html)
     * [Divides](/src/Naturals/Divides.html)
 * Lists
+
+<p style="text-align: center;">⁂</p>
+
+<blockquote>
+Beware of bugs in the above code; I have only proved it correct, not tried it.
+
+<cite>Donald Knuth in "Notes on the van Emde Boas construction of priority deques: An instructive use of recursion", 1977</cite>
+</blockquote>
