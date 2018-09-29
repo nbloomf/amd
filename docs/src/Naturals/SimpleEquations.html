@@ -130,6 +130,172 @@ proof
      == \plus(a)(b) : flop use reiterate; 13 at z in \plus(z)(b)
      == \zero : assumption 1
 15. (a == \zero) /\ (b == \zero) : use conj-intro; 13, 14</code></pre>
+<p>We can also show that <span class="math inline">\(ab = \next(\zero)\)</span> has only one solution, namely <span class="math inline">\(a == \next(\zero), b = \next(\zero)\)</span>.</p>
+<pre class="mycelium"><code>theorem times-eq-one
+if
+  * \times(a)(b) == \next(\zero)
+then
+  * (a == \next(\zero)) /\ (b == \next(\zero))
+
+proof
+1.    \times(a)(b) == \next(\zero)
+       : hypothesis one
+
+2.    (a == \zero) \/ (∃k. a == \next(k))
+       : use nat-disj-cases-1;
+
+3.      a == \zero
+         : hypothesis a-zero
+
+4.      \zero : chain
+         == \times(\zero)(b)
+          : flop use times-zero-l;
+         == \times(a)(b)
+          : flop hypothesis a-zero at z in
+            \times(z)(b)
+         == \next(\zero)
+          : hypothesis one
+
+5.      ∃k. \zero == \next(k)
+         : exists-intro k &lt;- \zero; 4
+
+6.    (a == \zero) =&gt; (∃k. \zero == \next(k))
+       : discharge a-zero; 5
+
+7.    ~(∃k. \zero == \next(k))
+       : use nat-disc;
+
+8.    ~(a == \zero)
+       : use modus-tollens; 6, 7
+
+9.    ∃k. a == \next(k)
+       : use disj-syllogism-l; 2, 8
+
+10.     a == \next(u)
+         : hypothesis a-next-u
+
+11.     (b == \zero) \/ (∃k. b == \next(k))
+         : use nat-disj-cases-1;
+
+12.       b == \zero
+           : hypothesis b-zero
+
+13.       \zero : chain
+           == \times(a)(\zero)
+            : flop use times-zero-r;
+           == \times(a)(b)
+            : flop hypothesis b-zero at z in
+              \times(a)(z)
+           == \next(\zero)
+            : hypothesis one
+
+14.       ∃k. \zero == \next(k)
+           : exists-intro k &lt;- \zero; 13
+
+15.     (b == \zero) =&gt; (∃k. \zero == \next(k))
+         : discharge b-zero; 14
+
+16.      ~(∃k. \zero == \next(k))
+         : use nat-disc;
+
+17.      ~(b == \zero)
+         : use modus-tollens; 15, 16
+
+18.      ∃k. b == \next(k)
+         : use disj-syllogism-l; 11, 17
+
+19.        b == \next(v)
+            : hypothesis b-next-v
+
+20.        (v == \zero) \/ (∃k. v == \next(k))
+            : use nat-disj-cases-1;
+
+21.          ∃k. v == \next(k)
+              : hypothesis v-next
+
+22.            v == \next(w)
+                : hypothesis v-next-w
+
+23.            \next(\zero) : chain
+                == \times(a)(b)
+                 : flop assumption 1
+                == \times(a)(\next(v))
+                 : hypothesis b-next-v at z in
+                   \times(a)(z)
+                == \times(a)(\next(\next(w)))
+                 : hypothesis v-next-w at z in
+                 \times(a)(\next(z))
+                == \times(\next(u))(\next(\next(w)))
+                 : hypothesis a-next-u at z in
+                   \times(z)(\next(\next(w)))
+                == \plus(\next(\next(w)))(\times(u)(\next(\next(w))))
+                 : use times-next-l;
+                == \next(\plus(\next(w))(\times(u)(\next(\next(w)))))
+                 : use plus-next-l;
+                == \next(\next(\plus(w)(\times(u)(\next(\next(w))))))
+                 : use plus-next-l; at z in
+                   \next(z)
+
+24.            \zero == \next(\plus(w)(\times(u)(\next(\next(w)))))
+                : use next-inj; 23
+
+25.            ∃k. \zero == \next(k)
+                : exists-intro k &lt;- \plus(w)(\times(u)(\next(\next(w)))); 24
+
+26.          (v == \next(w)) =&gt; (∃k. \zero == \next(k))
+              : discharge v-next-w; 25
+
+27.          ∃k. \zero == \next(k)
+              : exists-elim w &lt;- k; 21, 26
+
+28.        (∃k. v == \next(k)) =&gt; (∃k. \zero == \next(k))
+            : discharge v-next; 27
+
+29.        ~(∃k. v == \next(k))
+            : use modus-tollens; 28, 7
+
+30.        v == \zero
+            : use disj-syllogism-r; 20, 29
+
+31.        b : chain
+            == \next(v)
+             : hypothesis b-next-v
+            == \next(\zero)
+             : use reiterate; 30 at z in
+               \next(z)
+
+32.      (b == \next(v)) =&gt; (b == \next(\zero))
+          : discharge b-next-v; 31
+
+33.      b == \next(\zero)
+          : exists-elim v &lt;- k; 18, 32
+
+34.   (a == \next(u)) =&gt; (b == \next(\zero))
+       : discharge a-next-u; 33
+
+35.   b == \next(\zero)
+       : exists-elim u &lt;- k; 9, 34
+
+36.   a : chain
+       == \times(a)(\next(\zero))
+        : flop use times-one-r;
+       == \times(a)(b)
+        : flop use reiterate; 35 at z in
+          \times(a)(z)
+       == \next(\zero)
+        : hypothesis one
+
+37.   (a == \next(\zero)) /\ (b == \next(\zero))
+       : use conj-intro; 36, 35
+
+38. (\times(a)(b) == \next(\zero)) =&gt; ((a == \next(\zero)) /\ (b == \next(\zero)))
+     : discharge one; 37
+
+39. \times(a)(b) == \next(\zero)
+     : assumption 1
+
+40. (a == \next(\zero)) /\ (b == \next(\zero))
+     : use impl-elim; 39, 38</code></pre>
 
     </main>
 
