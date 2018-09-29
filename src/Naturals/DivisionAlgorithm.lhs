@@ -64,6 +64,73 @@ proof
 ~~~
 
 ~~~ {.mycelium}
+theorem divalg-zero-r
+* \divalg(a)(\zero) == \tup(\zero)(a)
+
+proof
+1.  \divalg(\zero)(\zero) : chain
+     == \tup(\zero)(\zero)
+      : use divalg-zero-l;
+
+2.    \divalg(n)(\zero) == \tup(\zero)(n)
+       : hypothesis n
+
+3.    \divalg(\next(n))(\zero) : chain
+       == \flip(\simprec(\const(\tup(\zero)(\zero)))(\divalgH))(\next(n))(\zero)
+        : use def-divalg; at f in f(\next(n))(\zero)
+       == \simprec(\const(\tup(\zero)(\zero)))(\divalgH)(\zero)(\next(n))
+        : use def-flip;
+       == \divalgH(\zero)(n)(\simprec(\const(\tup(\zero)(\zero)))(\divalgH)(\zero)(n))
+        : use simprec-next;
+       == \divalgH(\zero)(n)(\flip(\simprec(\const(\tup(\zero)(\zero)))(\divalgH))(n)(\zero))
+        : flop use def-flip; at z in
+          \divalgH(\zero)(n)(z)
+       == \divalgH(\zero)(n)(\divalg(n)(\zero))
+        : flop use def-divalg; at z in
+          \divalgH(\zero)(n)(z(n)(\zero))
+       == \divalgH(\zero)(n)(\tup(\zero)(n))
+        : hypothesis n at z in
+          \divalgH(\zero)(n)(z)
+       == \if(
+            \tup(\next(\fst(\tup(\zero)(n))))(\zero))(
+            \tup(\fst(\tup(\zero)(n)))(\next(\snd(\tup(\zero)(n)))))(
+            \eq(\zero)(\next(\snd(\tup(\zero)(n)))))
+        : use def-divalgH;
+       == \if(
+            \tup(\next(\fst(\tup(\zero)(n))))(\zero))(
+            \tup(\fst(\tup(\zero)(n)))(\next(\snd(\tup(\zero)(n)))))(
+            \false)
+        : use bool-disc-eq; at z in
+          \if(
+            \tup(\next(\fst(\tup(\zero)(n))))(\zero))(
+            \tup(\fst(\tup(\zero)(n)))(\next(\snd(\tup(\zero)(n)))))(
+            z)
+       == \tup(\fst(\tup(\zero)(n)))(\next(\snd(\tup(\zero)(n))))
+        : use if-false;
+       == \tup(\zero)(\next(\snd(\tup(\zero)(n))))
+        : use fst-tup; at z in
+          \tup(z)(\next(\snd(\tup(\zero)(n))))
+       == \tup(\zero)(\next(n))
+        : use snd-tup; at z in
+          \tup(\zero)(\next(z))
+
+4.  (\divalg(n)(\zero) == \tup(\zero)(n)) =>
+      (\divalg(\next(n))(\zero) == \tup(\zero)(\next(n)))
+     : discharge n; 3
+
+5.  ∀k. (\divalg(k)(\zero) == \tup(\zero)(k)) =>
+      (\divalg(\next(k))(\zero) == \tup(\zero)(\next(k)))
+     : forall-intro n -> k; 4
+
+6.  ∀k. \divalg(k)(\zero) == \tup(\zero)(k)
+     : invoke nat-induction
+       [P :-> \divalg(_)(\zero) == \tup(\zero)(_)]; 1, 5
+
+7.  \divalg(a)(\zero) == \tup(\zero)(a)
+     : forall-elim k -> a; 6
+~~~
+
+~~~ {.mycelium}
 theorem divalg-exists
 if
   * \divalg(a)(\next(b)) == \tup(q)(r)
@@ -412,6 +479,38 @@ proof
 53. (a == \plus(\times(q)(\next(b)))(r)) /\
       (\leq(r)(b) == \true)
      : use impl-elim; 52, 51
+~~~
+
+~~~ {.mycelium}
+theorem divalg-decomp
+* a == \plus(\times(\quo(a)(\next(b)))(\next(b)))(\rem(a)(\next(b)))
+
+proof
+1. \divalg(a)(\next(b)) == \tup(\quo(a)(\next(b)))(\rem(a)(\next(b)))
+    : use divalg-quo-rem;
+
+2. (a == \plus(\times(\quo(a)(\next(b)))(\next(b)))(\rem(a)(\next(b)))) /\
+     (\leq(\rem(a)(\next(b)))(b) == \true)
+    : use divalg-exists; 1
+
+3. a == \plus(\times(\quo(a)(\next(b)))(\next(b)))(\rem(a)(\next(b)))
+    : use conj-elim-l; 2
+~~~
+
+~~~ {.mycelium}
+theorem divalg-bound
+* \leq(\rem(a)(\next(b)))(b) == \true
+
+proof
+1. \divalg(a)(\next(b)) == \tup(\quo(a)(\next(b)))(\rem(a)(\next(b)))
+    : use divalg-quo-rem;
+
+2. (a == \plus(\times(\quo(a)(\next(b)))(\next(b)))(\rem(a)(\next(b)))) /\
+     (\leq(\rem(a)(\next(b)))(b) == \true)
+    : use divalg-exists; 1
+
+3. \leq(\rem(a)(\next(b)))(b) == \true
+    : use conj-elim-r; 2
 ~~~
 
 ~~~ {.mycelium}
