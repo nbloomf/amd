@@ -77,6 +77,15 @@
 \(\newcommand{\prev}{\mathsf{prev}}\)
 \(\newcommand{\plus}{\mathsf{plus}}\)
 \(\newcommand{\times}{\mathsf{times}}\)
+\(\newcommand{\minus}{\mathsf{minus}}\)
+\(\newcommand{\leq}{\mathsf{leq}}\)
+\(\newcommand{\lt}{\mathsf{lt}}\)
+\(\newcommand{\max}{\mathsf{max}}\)
+\(\newcommand{\min}{\mathsf{min}}\)
+\(\newcommand{\divalg}{\mathsf{divalg}}\)
+\(\newcommand{\quo}{\mathsf{quo}}\)
+\(\newcommand{\rem}{\mathsf{rem}}\)
+\(\newcommand{\div}{\mathsf{div}}\)
 </div>
 <!-- End LaTeX Macros -->
 
@@ -612,6 +621,75 @@ proof
 
 13. \div(a)(c) == \true
      : use times-impl-div; 12</code></pre>
+<pre class="mycelium"><code>theorem div-plus-compat
+if
+  * \div(c)(a) == \true
+  * \div(c)(b) == \true
+then
+  * \div(c)(\plus(a)(b)) == \true
+
+proof
+1. \div(c)(a) == \true
+    : assumption 1
+
+2. \div(c)(b) == \true
+    : assumption 2
+
+3. \plus(a)(b) : chain
+    == \plus(a)(\times(c)(\quo(b)(c)))
+     : use div-times-quo; 2 at z in
+       \plus(a)(z)
+    == \plus(\times(c)(\quo(a)(c)))(\times(c)(\quo(b)(c)))
+     : use div-times-quo; 1 at z in
+       \plus(z)(\times(c)(\quo(b)(c)))
+    == \times(c)(\plus(\quo(a)(c))(\quo(b)(c)))
+     : flop use times-plus-dist-l;
+
+4. ∃k. \plus(a)(b) == \times(c)(k)
+    : exists-intro k &lt;- \plus(\quo(a)(c))(\quo(b)(c)); 3
+
+5. \div(c)(\plus(a)(b)) == \true
+    : use times-impl-div; 4</code></pre>
+<pre class="mycelium"><code>theorem div-times-absorb-l
+if
+  * \div(c)(a) == \true
+then
+  * \div(c)(\times(a)(b)) == \true
+
+proof
+1. \div(c)(a) == \true
+    : assumption 1
+
+2. \times(a)(b) : chain
+    == \times(\times(c)(\quo(a)(c)))(b)
+     : use div-times-quo; 1 at z in
+       \times(z)(b)
+    == \times(c)(\times(\quo(a)(c))(b))
+     : use times-assoc-r;
+
+3. ∃k. \times(a)(b) == \times(c)(k)
+    : exists-intro k &lt;- \times(\quo(a)(c))(b); 2
+
+4. \div(c)(\times(a)(b)) == \true
+    : use times-impl-div; 3
+
+
+theorem div-times-absorb-r
+if
+  * \div(c)(a) == \true
+then
+  * \div(c)(\times(b)(a)) == \true
+
+proof
+1. \div(c)(a) == \true
+    : assumption 1
+
+2. \div(c)(\times(b)(a)) : chain
+    == \div(c)(\times(a)(b))
+     : use times-comm; at z in
+       \div(c)(z)
+    == \true
+     : use div-times-absorb-l; 1</code></pre>
 
     </main>
 
