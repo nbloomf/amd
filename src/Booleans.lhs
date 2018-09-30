@@ -51,6 +51,12 @@ then
   * ∀u. P[_ :-> u]
 ~~~
 
+This rule is very different from the others we've seen; it comes with an explicit _substitution_, in square brackets.
+
+This rule represents an infinite family of concrete inference rules, obtained by choosing a judgement to substitute for $P$ and then applying the substitutions in square brackets. In this sense it is an _inference schema_. Except for the square brackets, so far this works a lot like the other inference rules have. But there's a big difference: substitution for judgement variables in a normal inference rule is done in a _capture-avoiding_ manner, meaning that variables bound by a quantifier are renamed before carrying out the substitution to avoid capture. But doing that would make the extra substitution useless. Instead, substitution here is done in a _capture-tolerant_ manner.
+
+This rule (and others like it) are referenced with `invoke`, rather than `use`.
+
 ~~~ {.mycelium}
 theorem bool-cases
 * (q == \true) \/ (q == \false)
@@ -63,7 +69,8 @@ proof
 4. (\false == \true) \/ (\false == \false)
     : use disj-intro-r; 3
 5. ∀u. (u == \true) \/ (u == \false)
-    : invoke bool-induction [P :-> (_ == \true) \/ (_ == \false)]; 2, 4
+    : invoke bool-induction
+      [P :-> (_ == \true) \/ (_ == \false)]; 2, 4
 6. (q == \true) \/ (q == \false)
     : forall-elim u -> q; 5
 ~~~
@@ -91,6 +98,8 @@ proof
 2. \const(a)(\false) == a : use def-const;
 3. \const(a) == \if(a)(a) : use if-unique; 1, 2
 ~~~
+
+It is important to remember that _booleans are not judgements_. We've been careful not to refer to judgements as "true" or "false", but rather as "supported" or "unsupported". But we can promote intuition about booleans to the level of judgements.
 
 ~~~ {.mycelium}
 theorem not-eq-true

@@ -37,14 +37,16 @@ Here we've also given this rule a name: _reiterate_. This syntax is understood b
 Compound Judgements
 -------------------
 
-We can think of the judgement variable $P$ above as a _simple_ judgement. It is also possible to form _compound_ judgements using the following special logical symbols **and no others**: $\wedge$, $\vee$, $\Rightarrow$, $\Leftrightarrow$, and $\neg$. For example, if $P$, $Q$, and $R$ are judgements, then the following strings of symbols are also judgements.
+We can think of the judgement variable $P$ above as a _simple_ judgement. It is also possible to form _compound_ judgements using the _unary_ symbol $\neg$ and the _binary_ symbols $\wedge$, $\vee$, $\Rightarrow$, and $\Leftrightarrow$. For example, if $P$, $Q$, and $R$ are judgements, then the following strings of symbols are also judgements.
 
 $$\begin{array}{ccc}
 P \wedge Q & \neg P & P \vee Q \\
 P \Rightarrow Q & (P \wedge Q) \Leftrightarrow \neg R & P \vee (Q \vee R)
 \end{array}$$
 
-We can use inference rules to govern the behavior of each of these symbols. To be systematic about it, each symbol has one or more _introduction_ rules, where the symbol appears in the consequence, and one or more _elimination_ rules, where the symbol appears among the premises. Some of these inference rules are baked into the checking tool for reasons we'll explain as we go. But most of them can be defined like `reiterate` above.
+If you've read about formal logic before (and I suspect you have) you'll recognize these symbols as meaning _not_, _and_, _or_, _implies_, and _iff_. But here it's important that we not imbue the symbols with meaning, at least not yet.
+
+We can use inference rules to govern the behavior of each of these symbols, and that behavior _is_ the meaning of the logical symbols. To be systematic about it, each symbol has one or more _introduction_ rules, where the symbol appears in the consequence, and one or more _elimination_ rules, where the symbol appears among the premises. Some of these inference rules are baked into the checking tool for reasons we'll explain as we go. But most of them can be defined like `reiterate` above.
 
 For example, here is the elimination rule for $\Rightarrow$.
 
@@ -116,7 +118,7 @@ proof
 
 This proof introduces two new kinds of evidence: `hypothesis` and `discharge`. Together these are the introduction rule for $\Rightarrow$. `hypothesis` lets us pull a supported judgement out of thin air, but this comes with a price: the hypothesis must be `discharge`d before the proof is done, and the judgement must appear on the left of a $\Rightarrow$. Hypotheses are also given a name (`hyp-P` here) so we can tell them apart.
 
-Typically when writing natural deduction proofs hypotheses and statements that depend on them are indented, to help us remember that they need to be discharged. The proof checking tool doesn't need this, but it's easier on human eyes.
+Typically when writing natural deduction proofs hypotheses and statements that depend on them are indented, to help us remember that they need to be discharged. The proof checking tool doesn't need this, but it's easier on human eyes, and makes writing the proof easier, as the indentation level acts like a natural "stack" of undischarged proof obligations.
 
 Hypotheses and assumptions are similar; both let us pull judgements out of nowhere. But hypotheses must be discharged and can't be used again after that, while assumptions are never discharged. Here's another example.
 

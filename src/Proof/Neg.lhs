@@ -105,3 +105,5 @@ proof
 3. ~Q : assumption 2
 4. P : use disj-syllogism-l; 2, 3
 ~~~
+
+We will get a lot of mileage out of modus tollens and disjunctive syllogism.

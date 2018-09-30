@@ -2,7 +2,7 @@
 title: For All
 ---
 
-Equality is the first kind of judgement that allows reasoning about expressions; the other is _universal quantification_. If $P$ is a judgement, and $x$ an expression variable, then $$\forall x . P$$ is a judgement, representing the statement _for all $x$, we have $P$_. The introduction and elimination rules for $\forall$ are a little different from our other rules because they involve _side conditions_.
+Equality is the first kind of judgement that allows reasoning about expressions; another is _universal quantification_. If $P$ is a judgement, and $x$ an expression variable, then $$\forall x . P$$ is a judgement, representing the statement _for all $x$, we have $P$_. The introduction and elimination rules for $\forall$ are a little different from our other rules (and have to be built in to the syntax) because they involve _side conditions_.
 
 The $\forall$-introduction rule looks like this:
 

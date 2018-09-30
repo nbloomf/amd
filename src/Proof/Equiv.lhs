@@ -90,6 +90,8 @@ proof
 5. P <=> S : use equiv-trans; 3, 4
 ~~~
 
+We have an $\Leftrightarrow$-centric statement that equality is symmetric.
+
 ~~~ {.mycelium}
 theorem eq-sym-equiv
 * (a == b) <=> (b == a)

@@ -97,12 +97,13 @@ then
   * P</code></pre>
 <p>Here we’ve also given this rule a name: <em>reiterate</em>. This syntax is understood by a special tool that knows how to check natural deduction proofs. We’ll revisit this point later.</p>
 <h2 id="compound-judgements">Compound Judgements</h2>
-<p>We can think of the judgement variable <span class="math inline">\(P\)</span> above as a <em>simple</em> judgement. It is also possible to form <em>compound</em> judgements using the following special logical symbols <strong>and no others</strong>: <span class="math inline">\(\wedge\)</span>, <span class="math inline">\(\vee\)</span>, <span class="math inline">\(\Rightarrow\)</span>, <span class="math inline">\(\Leftrightarrow\)</span>, and <span class="math inline">\(\neg\)</span>. For example, if <span class="math inline">\(P\)</span>, <span class="math inline">\(Q\)</span>, and <span class="math inline">\(R\)</span> are judgements, then the following strings of symbols are also judgements.</p>
+<p>We can think of the judgement variable <span class="math inline">\(P\)</span> above as a <em>simple</em> judgement. It is also possible to form <em>compound</em> judgements using the <em>unary</em> symbol <span class="math inline">\(\neg\)</span> and the <em>binary</em> symbols <span class="math inline">\(\wedge\)</span>, <span class="math inline">\(\vee\)</span>, <span class="math inline">\(\Rightarrow\)</span>, and <span class="math inline">\(\Leftrightarrow\)</span>. For example, if <span class="math inline">\(P\)</span>, <span class="math inline">\(Q\)</span>, and <span class="math inline">\(R\)</span> are judgements, then the following strings of symbols are also judgements.</p>
 <p><span class="math display">\[\begin{array}{ccc}
 P \wedge Q &amp; \neg P &amp; P \vee Q \\
 P \Rightarrow Q &amp; (P \wedge Q) \Leftrightarrow \neg R &amp; P \vee (Q \vee R)
 \end{array}\]</span></p>
-<p>We can use inference rules to govern the behavior of each of these symbols. To be systematic about it, each symbol has one or more <em>introduction</em> rules, where the symbol appears in the consequence, and one or more <em>elimination</em> rules, where the symbol appears among the premises. Some of these inference rules are baked into the checking tool for reasons we’ll explain as we go. But most of them can be defined like <code>reiterate</code> above.</p>
+<p>If you’ve read about formal logic before (and I suspect you have) you’ll recognize these symbols as meaning <em>not</em>, <em>and</em>, <em>or</em>, <em>implies</em>, and <em>iff</em>. But here it’s important that we not imbue the symbols with meaning, at least not yet.</p>
+<p>We can use inference rules to govern the behavior of each of these symbols, and that behavior <em>is</em> the meaning of the logical symbols. To be systematic about it, each symbol has one or more <em>introduction</em> rules, where the symbol appears in the consequence, and one or more <em>elimination</em> rules, where the symbol appears among the premises. Some of these inference rules are baked into the checking tool for reasons we’ll explain as we go. But most of them can be defined like <code>reiterate</code> above.</p>
 <p>For example, here is the elimination rule for <span class="math inline">\(\Rightarrow\)</span>.</p>
 <p><span class="math display">\[\begin{array}{ccc}
 P &amp;   &amp; P \Rightarrow Q \\ \hline
@@ -150,7 +151,7 @@ proof
 4.   R : use impl-elim-2; 1, 2, 3
 5. P =&gt; R : discharge hyp-P; 4</code></pre>
 <p>This proof introduces two new kinds of evidence: <code>hypothesis</code> and <code>discharge</code>. Together these are the introduction rule for <span class="math inline">\(\Rightarrow\)</span>. <code>hypothesis</code> lets us pull a supported judgement out of thin air, but this comes with a price: the hypothesis must be <code>discharge</code>d before the proof is done, and the judgement must appear on the left of a <span class="math inline">\(\Rightarrow\)</span>. Hypotheses are also given a name (<code>hyp-P</code> here) so we can tell them apart.</p>
-<p>Typically when writing natural deduction proofs hypotheses and statements that depend on them are indented, to help us remember that they need to be discharged. The proof checking tool doesn’t need this, but it’s easier on human eyes.</p>
+<p>Typically when writing natural deduction proofs hypotheses and statements that depend on them are indented, to help us remember that they need to be discharged. The proof checking tool doesn’t need this, but it’s easier on human eyes, and makes writing the proof easier, as the indentation level acts like a natural “stack” of undischarged proof obligations.</p>
 <p>Hypotheses and assumptions are similar; both let us pull judgements out of nowhere. But hypotheses must be discharged and can’t be used again after that, while assumptions are never discharged. Here’s another example.</p>
 <pre class="mycelium"><code>theorem impl-idemp
 * P =&gt; P

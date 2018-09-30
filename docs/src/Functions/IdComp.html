@@ -80,7 +80,9 @@
 </div>
 <!-- End LaTeX Macros -->
 
-<p>The object language of our logic is <em>simply typed lambda calculus</em>. Later we’ll start defining interesting types, but to begin we need to define some basic, generic functions.</p>
+<p>The object language of our logic is <em>simply typed lambda calculus</em>.</p>
+<p>Recall that lambda calculus expressions are built inductively from “variables” and “constants” using two special forms: <em>application</em> of one expression to another and <em>abstraction</em> of a lambda. Essentially, every lambda expression is a <em>function</em>.</p>
+<p>Our lambda expression syntax includes the common <em>let</em> form as well, which is redundant but has nice implications for typing. Our lambda expressions are subject to type checking using a Damas-Hindley-Milner style type inference algorithm. Later we’ll start defining interesting types, but to begin we need to define some basic, generic functions.</p>
 <p>Before we get too far, we need to nail down what it means for two functions to be equal. First, lets think about one of the <em>consequences</em> of two functions being equal.</p>
 <pre class="mycelium"><code>theorem fun-ap
 if
@@ -89,9 +91,11 @@ then
   * f(x) == g(x)
 
 proof
-1. f == g : assumption 1
-2. f(x) == f(x) : eq-intro
-3. f(x) == g(x) : eq-elim h (f(x) == h(x)); 1, 2</code></pre>
+1. f(x) : chain
+    == g(x)
+     : assumption 1 at h in
+       h(x)</code></pre>
+<p>Here we’ve used the <code>chain</code> syntax again; this time using an assumption as intermediate evidence. Here’s another: functions are well-defined.</p>
 <pre class="mycelium"><code>theorem ap-eq
 if
   * x == y
@@ -116,14 +120,16 @@ then
   * f(x)(y) == g(x)(y)
 
 proof
-1. f == g : assumption 1
-2. f(x) == g(x) : use fun-ap; 1
-3. f(x)(y) == g(x)(y) : use fun-ap; 2</code></pre>
-<p>The simplest function is the <em>identity</em>, which takes an input and returns it unchanged.</p>
+1. f(x)(y) : chain
+    == g(x)(y)
+     : assumption 1 at h in
+       h(x)(y)</code></pre>
+<p>We’re ready to define some functions. The simplest function is the <em>identity</em>, which takes an input and returns it unchanged.</p>
 <pre class="mycelium"><code>type \id :: a -&gt; a
 
 definition def-id
 * \id(x) == x</code></pre>
+<p>Here we’ve introduced some new notation. The line starting with <code>type</code> is a <em>type declaration</em>. <code>\id</code> is a <em>constant</em>, and <code>a -&gt; a</code> is a <em>type</em>. The <code>::</code> is pronounced “has type”. <code>a</code> is a <em>type variable</em>, which is implicity universally quantified over the type.</p>
 <p>There’s not a whole lot we can do with the identity function by itself, but things get a little more interesting when we can <em>compose</em> functions. If <span class="math inline">\(f : a \rightarrow b\)</span> and <span class="math inline">\(g : b \rightarrow c\)</span> are functions, then their composite <span class="math inline">\(g \circ f\)</span> is the function <span class="math inline">\(a \rightarrow c\)</span> that applies <span class="math inline">\(g\)</span> to the output of <span class="math inline">\(f\)</span>.</p>
 <pre class="mycelium"><code>type \comp :: (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 
@@ -137,7 +143,8 @@ proof
 1. \comp(\id)(f)(a) : chain
     == \id(f(a)) : use def-comp;
     == f(a) : use def-id;
-2. ∀x. \comp(\id)(f)(x) == f(x) : forall-intro a -&gt; x; 1
+2. ∀x. \comp(\id)(f)(x) == f(x)
+    : forall-intro a -&gt; x; 1
 3. \comp(\id)(f) == f : use fun-eq; 2</code></pre>
 <p>As well as from the right.</p>
 <pre class="mycelium"><code>theorem comp-id-r
@@ -147,7 +154,8 @@ proof
 1. \comp(f)(\id)(a) : chain
     == f(\id(a)) : use def-comp;
     == f(a) : use def-id; at z in f(z)
-2. ∀x. \comp(f)(\id)(x) == f(x) : forall-intro a -&gt; x; 1
+2. ∀x. \comp(f)(\id)(x) == f(x)
+    : forall-intro a -&gt; x; 1
 3. \comp(f)(\id) == f : use fun-eq; 2</code></pre>
 <p>We can also reify function application with <span class="math inline">\(\app\)</span>.</p>
 <pre class="mycelium"><code>type \app :: (a -&gt; b) -&gt; a -&gt; b
@@ -160,14 +168,43 @@ rule def-app
 
 proof
 1. \app(\comp(g)(f))(x) : chain
-    == \comp(g)(f)(x) : use def-app;
-    == g(f(x)) : use def-comp;
-    == \app(g)(f(x)) : flop use def-app;
-    == \app(g)(\app(f)(x)) : flop use def-app; at z in \app(g)(z)
-    == \comp(\app(g))(\app(f))(x) : flop use def-comp;
+    == \comp(g)(f)(x)
+     : use def-app;
+    == g(f(x))
+     : use def-comp;
+    == \app(g)(f(x))
+     : flop use def-app;
+    == \app(g)(\app(f)(x))
+     : flop use def-app; at z in
+       \app(g)(z)
+    == \comp(\app(g))(\app(f))(x)
+     : flop use def-comp;
 2. ∀u. \app(\comp(g)(f))(u) == \comp(\app(g))(\app(f))(u)
     : forall-intro x -&gt; u; 1
-3. \app(\comp(g)(f)) == \comp(\app(g))(\app(f)) : use fun-eq; 2</code></pre>
+3. \app(\comp(g)(f)) == \comp(\app(g))(\app(f))
+    : use fun-eq; 2</code></pre>
+<p>This proof is our first usage of another special feature of chain notation: <code>flop</code>. Each evidence reference used in a chain must have a conclusion of the form <code>a == b</code>; <code>flop</code> implicitly rewrites the evidence as <code>b == a</code>. What’s happening behind the scenes is that <code>flop</code> gets “compiled” to an inline <em>proof</em> of <code>b == a</code> in terms of <code>a == b</code>; this is the main reason why the <code>eq-intro</code> rule is built in to the syntax.</p>
+<p>And composition is associative.</p>
+<pre class="mycelium"><code>theorem comp-assoc-l
+* \comp(f)(\comp(g)(h)) == \comp(\comp(f)(g))(h)
+
+proof
+1. \comp(f)(\comp(g)(h))(x) : chain
+    == f(\comp(g)(h)(x))
+     : use def-comp;
+    == f(g(h(x)))
+     : use def-comp; at z in
+       f(z)
+    == \comp(f)(g)(h(x))
+     : flop use def-comp;
+    == \comp(\comp(f)(g))(h)(x)
+     : flop use def-comp;
+
+2. ∀u. \comp(f)(\comp(g)(h))(u) == \comp(\comp(f)(g))(h)(u)
+    : forall-intro x -&gt; u; 1
+
+3. \comp(f)(\comp(g)(h)) == \comp(\comp(f)(g))(h)
+    : use fun-eq; 2</code></pre>
 
     </main>
 
