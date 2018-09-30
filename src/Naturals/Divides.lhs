@@ -10,6 +10,26 @@ definition def-div
 ~~~
 
 ~~~ {.mycelium}
+theorem div-rem-zero
+if
+  * \div(a)(b) == \true
+then
+  * \rem(b)(a) == \zero
+
+proof
+1. \eq(\rem(b)(a))(\zero) : chain
+    == \eq(\zero)(\rem(b)(a))
+     : use eq-comm;
+    == \div(a)(b)
+     : flop use def-div;
+    == \true
+     : assumption 1
+
+2. \rem(b)(a) == \zero
+    : use eq-dereify; 1
+~~~
+
+~~~ {.mycelium}
 theorem div-zero-r
 * \div(a)(\zero) == \true
 
@@ -61,6 +81,86 @@ proof
 
 3. a == \zero
     : use eq-dereify; 2
+~~~
+
+~~~ {.mycelium}
+theorem div-times-quo
+if
+  * \div(a)(b) == \true
+then
+  * b == \times(a)(\quo(b)(a))
+
+proof
+1.  (a == \zero) \/ (∃k. a == \next(k))
+     : use nat-disj-cases-1;
+
+2.    a == \zero
+       : hypothesis zero
+
+3.    \div(\zero)(b) : chain
+       == \div(a)(b)
+        : flop hypothesis zero at z in
+          \div(z)(b)
+       == \true
+        : assumption 1
+
+4.    b : chain
+       == \zero
+        : use div-zero-l; 3
+       == \times(\zero)(\quo(b)(a))
+        : flop use times-zero-l;
+       == \times(a)(\quo(b)(a))
+        : flop hypothesis zero at z in
+          \times(z)(\quo(b)(a))
+
+5.  (a == \zero) =>
+      (b == \times(a)(\quo(b)(a)))
+     : discharge zero; 4
+
+6.    ∃k. a == \next(k)
+       : hypothesis next
+
+7.      a == \next(t)
+         : hypothesis next-t
+
+8.      \div(a)(b) == \true
+         : assumption 1
+
+9.      \rem(b)(a) == \zero
+         : use div-rem-zero; 8
+
+10.     b : chain
+         == \plus(\times(\quo(b)(\next(t)))(\next(t)))(\rem(b)(\next(t)))
+          : use divalg-decomp;
+         == \plus(\times(\next(t))(\quo(b)(\next(t))))(\rem(b)(\next(t)))
+          : use times-comm; at z in
+            \plus(z)(\rem(b)(\next(t)))
+         == \plus(\times(\next(t))(\quo(b)(\next(t))))(\rem(b)(a))
+          : flop hypothesis next-t at z in
+            \plus(\times(\next(t))(\quo(b)(\next(t))))(\rem(b)(z))
+         == \plus(\times(\next(t))(\quo(b)(\next(t))))(\zero)
+          : use reiterate; 9 at z in
+            \plus(\times(\next(t))(\quo(b)(\next(t))))(z)
+         == \times(\next(t))(\quo(b)(\next(t)))
+          : use plus-zero-r;
+         == \times(a)(\quo(b)(\next(t)))
+          : flop hypothesis next-t at z in
+            \times(z)(\quo(b)(\next(t)))
+         == \times(a)(\quo(b)(a))
+          : flop hypothesis next-t at z in
+            \times(a)(\quo(b)(z))
+
+11.   (a == \next(t)) => (b == \times(a)(\quo(b)(a)))
+       : discharge next-t; 10
+
+12.   b == \times(a)(\quo(b)(a))
+       : exists-elim t <- k; 6, 11
+
+13. (∃k. a == \next(k)) => (b == \times(a)(\quo(b)(a)))
+     : discharge next; 12
+
+14. b == \times(a)(\quo(b)(a))
+     : use disj-elim; 1, 5, 13
 ~~~
 
 ~~~ {.mycelium}
@@ -405,4 +505,61 @@ proof
 
 36. a == b
      : use impl-elim; 35, 32
+~~~
+
+~~~ {.mycelium}
+theorem div-trans
+if
+  * \div(a)(b) == \true
+  * \div(b)(c) == \true
+then
+  * \div(a)(c) == \true
+
+proof
+1.  \div(a)(b) == \true
+     : assumption 1
+
+2.  ∃k. b == \times(a)(k)
+     : use div-impl-times; 1
+
+3.    b == \times(a)(u)
+       : hypothesis b
+
+4.    \div(b)(c) == \true
+       : assumption 2
+
+5.    ∃k. c == \times(b)(k)
+       : use div-impl-times; 4
+
+6.      c == \times(b)(v)
+         : hypothesis c
+
+7.      c : chain
+         == \times(b)(v)
+          : hypothesis c
+         == \times(\times(a)(u))(v)
+          : hypothesis b at z in
+            \times(z)(v)
+         == \times(a)(\times(u)(v))
+          : use times-assoc-r;
+
+8.      ∃k. c == \times(a)(k)
+         : exists-intro k <- \times(u)(v); 7
+
+9.    (c == \times(b)(v)) =>
+        (∃k. c == \times(a)(k))
+       : discharge c; 8
+
+10.   ∃k. c == \times(a)(k)
+       : exists-elim v <- k; 5, 9
+
+11. (b == \times(a)(u)) =>
+      (∃k. c == \times(a)(k))
+     : discharge b; 10
+
+12. ∃k. c == \times(a)(k)
+     : exists-elim u <- k; 2, 11
+
+13. \div(a)(c) == \true
+     : use times-impl-div; 12
 ~~~
