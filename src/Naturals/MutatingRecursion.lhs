@@ -26,7 +26,7 @@ there is a unique arrow $\Psi : \Nat \rightarrow a \rightarrow b$ satisfying the
 
 $$\left\{\begin{array}{l}
  \Psi(\zero)(a) = \phi(a) \\
- \Psi(\next(m),a) = \mu(m,a,\Psi(m,\omega(m,a)))
+ \Psi(\next(m))(a) = \mu(m,a,\Psi(m,\omega(m,a)))
 \end{array}\right.$$
 
 Note how $\omega$ and $\mu$ work together to let us do things with $a$ inside the recursive call to $\Psi$ as well as outside.

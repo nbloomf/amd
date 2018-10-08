@@ -1,0 +1,949 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Arithmetic Made Difficult - Iterative Norms</title>
+    <link rel="stylesheet" href="../../css/default.css" />
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  </head>
+
+  <body>
+    <header>
+      <div class="logo">
+        <a href="../../">Arithmetic Made Difficult</a>
+      </div>
+      <nav>
+        <a href="../../">Contents</a>
+        <a href="../../about.html">About</a>
+      </nav>
+    </header>
+
+    <main role="main">
+      <h1>Iterative Norms</h1>
+      <!-- LaTeX Macros -->
+<div style="display:none;">
+<!-- Functions -->
+\(\newcommand{\id}{\mathsf{id}}\)
+\(\newcommand{\comp}{\mathsf{comp}}\)
+\(\newcommand{\app}{\mathsf{app}}\)
+\(\newcommand{\const}{\mathsf{const}}\)
+\(\newcommand{\flip}{\mathsf{flip}}\)
+\(\newcommand{\clone}{\mathsf{clone}}\)
+
+<!-- Unit -->
+\(\newcommand{\Unit}{\mathsf{Unit}}\)
+\(\newcommand{\unit}{\mathsf{unit}}\)
+\(\newcommand{\only}{\mathsf{only}}\)
+
+<!-- Pair -->
+\(\newcommand{\Pair}{\mathsf{Pair}}\)
+\(\newcommand{\pair}{\mathsf{pair}}\)
+\(\newcommand{\fst}{\mathsf{fst}}\)
+\(\newcommand{\snd}{\mathsf{snd}}\)
+\(\newcommand{\tup}{\mathsf{tup}}\)
+\(\newcommand{\uncurry}{\mathsf{uncurry}}\)
+
+<!-- Either -->
+\(\newcommand{\Either}{\mathsf{Either}}\)
+\(\newcommand{\either}{\mathsf{either}}\)
+\(\newcommand{\lft}{\mathsf{lft}}\)
+\(\newcommand{\rgt}{\mathsf{rgt}}\)
+
+<!-- Maybe -->
+\(\newcommand{\Maybe}{\mathsf{Maybe}}\)
+\(\newcommand{\nothing}{\mathsf{nothing}}\)
+\(\newcommand{\just}{\mathsf{just}}\)
+\(\newcommand{\opt}{\mathsf{opt}}\)
+
+<!-- Bool -->
+\(\newcommand{\Bool}{\mathsf{Bool}}\)
+\(\newcommand{\true}{\mathsf{true}}\)
+\(\newcommand{\false}{\mathsf{false}}\)
+\(\newcommand{\if}{\mathsf{if}}\)
+\(\newcommand{\and}{\mathsf{and}}\)
+\(\newcommand{\or}{\mathsf{or}}\)
+\(\newcommand{\not}{\mathsf{not}}\)
+\(\newcommand{\eq}{\mathsf{eq}}\)
+
+<!-- Nat -->
+\(\newcommand{\Nat}{\mathsf{Nat}}\)
+\(\newcommand{\zero}{\mathsf{zero}}\)
+\(\newcommand{\next}{\mathsf{next}}\)
+\(\newcommand{\natrec}{\mathsf{natrec}}\)
+\(\newcommand{\simprec}{\mathsf{simprec}}\)
+\(\newcommand{\mutrec}{\mathsf{mutrec}}\)
+\(\newcommand{\prev}{\mathsf{prev}}\)
+\(\newcommand{\plus}{\mathsf{plus}}\)
+\(\newcommand{\times}{\mathsf{times}}\)
+\(\newcommand{\minus}{\mathsf{minus}}\)
+\(\newcommand{\leq}{\mathsf{leq}}\)
+\(\newcommand{\lt}{\mathsf{lt}}\)
+\(\newcommand{\max}{\mathsf{max}}\)
+\(\newcommand{\min}{\mathsf{min}}\)
+\(\newcommand{\divalg}{\mathsf{divalg}}\)
+\(\newcommand{\quo}{\mathsf{quo}}\)
+\(\newcommand{\rem}{\mathsf{rem}}\)
+\(\newcommand{\div}{\mathsf{div}}\)
+</div>
+<!-- End LaTeX Macros -->
+
+<pre class="mycelium"><code>definition def-iterative-norm
+* (&lt;eta, phi&gt; 'is &quot;iterative-norm&quot;) &lt;=&gt;
+    ((∀u. (eta(u) == \zero) =&gt; (eta(phi(u)) == \zero)) /\
+      (∀u. (eta(u) == \next(n)) =&gt; (\leq(eta(phi(u)))(n) == \true)))</code></pre>
+<pre class="mycelium"><code>theorem iterative-norm-zero
+if
+  * &lt;eta, phi&gt; 'is &quot;iterative-norm&quot;
+then
+  * ∀u. (eta(u) == \zero) =&gt; (eta(phi(u)) == \zero)
+
+proof
+1. &lt;eta, phi&gt; 'is &quot;iterative-norm&quot;
+    : assumption 1
+
+2.  (&lt;eta, phi&gt; 'is &quot;iterative-norm&quot;) &lt;=&gt;
+      ((∀u. (eta(u) == \zero) =&gt; (eta(phi(u)) == \zero)) /\
+        (∀u. (eta(u) == \next(n)) =&gt; (\leq(eta(phi(u)))(n) == \true)))
+     : use def-iterative-norm;
+
+3.  (∀u. (eta(u) == \zero) =&gt; (eta(phi(u)) == \zero)) /\
+      (∀u. (eta(u) == \next(n)) =&gt; (\leq(eta(phi(u)))(n) == \true))
+     : use equiv-to-l; 2, 1
+
+4.  ∀u. (eta(u) == \zero) =&gt; (eta(phi(u)) == \zero)
+     : use conj-elim-l; 3
+
+
+theorem iterative-norm-next
+if
+  * &lt;eta, phi&gt; 'is &quot;iterative-norm&quot;
+then
+  * ∀u. (eta(u) == \next(n)) =&gt; (\leq(eta(phi(u)))(n) == \true)
+
+proof
+1. &lt;eta, phi&gt; 'is &quot;iterative-norm&quot;
+    : assumption 1
+
+2.  (&lt;eta, phi&gt; 'is &quot;iterative-norm&quot;) &lt;=&gt;
+      ((∀u. (eta(u) == \zero) =&gt; (eta(phi(u)) == \zero)) /\
+        (∀u. (eta(u) == \next(n)) =&gt; (\leq(eta(phi(u)))(n) == \true)))
+     : use def-iterative-norm;
+
+3.  (∀u. (eta(u) == \zero) =&gt; (eta(phi(u)) == \zero)) /\
+      (∀u. (eta(u) == \next(n)) =&gt; (\leq(eta(phi(u)))(n) == \true))
+     : use equiv-to-l; 2, 1
+
+4.  ∀u. (eta(u) == \next(n)) =&gt; (\leq(eta(phi(u)))(n) == \true)
+     : use conj-elim-r; 3
+
+
+theorem is-iterative-norm
+if
+  * ∀u. (eta(u) == \zero) =&gt; (eta(phi(u)) == \zero)
+  * ∀u. (eta(u) == \next(n)) =&gt; (\leq(eta(phi(u)))(n) == \true)
+then
+  * &lt;eta, phi&gt; 'is &quot;iterative-norm&quot;
+
+proof
+1. ∀u. (eta(u) == \zero) =&gt; (eta(phi(u)) == \zero)
+    : assumption 1
+
+2. ∀u. (eta(u) == \next(n)) =&gt; (\leq(eta(phi(u)))(n) == \true)
+    : assumption 2
+
+3. (∀u. (eta(u) == \zero) =&gt; (eta(phi(u)) == \zero)) /\
+     (∀u. (eta(u) == \next(n)) =&gt; (\leq(eta(phi(u)))(n) == \true))
+    : use conj-intro; 1, 2
+
+4.  (&lt;eta, phi&gt; 'is &quot;iterative-norm&quot;) &lt;=&gt;
+      ((∀u. (eta(u) == \zero) =&gt; (eta(phi(u)) == \zero)) /\
+        (∀u. (eta(u) == \next(n)) =&gt; (\leq(eta(phi(u)))(n) == \true)))
+     : use def-iterative-norm;
+
+5. &lt;eta, phi&gt; 'is &quot;iterative-norm&quot;
+    : use equiv-to-r; 4, 3</code></pre>
+<pre class="mycelium"><code>type \normrecW :: (a -&gt; a) -&gt; Nat -&gt; a -&gt; a
+
+definition def-normrecW
+* \normrecW(phi)(m)(a) == phi(a)
+
+
+type \normrecH :: (a -&gt; Nat) -&gt; (a -&gt; b) -&gt; Nat -&gt; a -&gt; b -&gt; b
+
+definition def-normrecH
+* \normrecH(eta)(chi)(m)(a)(b) == \if(chi(a))(b)(\eq(\zero)(eta(a)))
+
+
+type \normrec :: (a -&gt; a) -&gt; (a -&gt; Nat) -&gt; (a -&gt; b) -&gt; a -&gt; b
+
+definition def-normrec
+* \normrec(phi)(eta)(chi)(a) ==
+    \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(eta(a))(a)</code></pre>
+<pre class="mycelium"><code>theorem normrec-lemma
+if
+  * &lt;eta, phi&gt; 'is &quot;iterative-norm&quot;
+then
+  * \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+      \plus(eta(phi(a)))(k))(phi(a))
+     == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+          eta(phi(a)))(phi(a))
+
+proof
+1.  &lt;eta, phi&gt; 'is &quot;iterative-norm&quot;
+     : assumption 1
+
+2.  (&lt;eta, phi&gt; 'is &quot;iterative-norm&quot;) &lt;=&gt;
+      ((∀u. (eta(u) == \zero) =&gt; (eta(phi(u)) == \zero)) /\
+        (∀u. (eta(u) == \next(n)) =&gt; (\leq(eta(phi(u)))(n) == \true)))
+     : use def-iterative-norm;
+
+3.  (∀u. (eta(u) == \zero) =&gt; (eta(phi(u)) == \zero)) /\
+      (∀u. (eta(u) == \next(n)) =&gt; (\leq(eta(phi(u)))(n) == \true))
+     : use equiv-to-l; 2, 1
+
+4.  ∀u. (eta(u) == \zero) =&gt; (eta(phi(u)) == \zero)
+     : use conj-elim-l; 3
+
+5.  ∀u. (eta(u) == \next(n)) =&gt; (\leq(eta(phi(u)))(n) == \true)
+     : use conj-elim-r; 3
+
+6.    \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+        \plus(eta(phi(a)))(\zero))(phi(a)) : chain
+       == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+            eta(phi(a)))(phi(a))
+        : use plus-zero-r; at z in
+          \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+            z)(phi(a))
+
+7.  (\leq(eta(phi(a)))(\zero) == \true) =&gt;
+      (\mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+        \plus(eta(phi(a)))(\zero))(phi(a))
+       == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+            eta(phi(a)))(phi(a)))
+     : use simp; 6
+
+8.    (\leq(eta(phi(a)))(\zero) == \true) =&gt;
+        (\mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+          \plus(eta(phi(a)))(u))(phi(a))
+         == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+              eta(phi(a)))(phi(a)))
+       : hypothesis u
+
+9.      \leq(eta(phi(a)))(\zero) == \true
+         : hypothesis u-next
+
+10.     eta(phi(a)) == \zero
+         : use leq-zero-is-zero; 9
+
+11.     \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+          \plus(eta(phi(a)))(u))(phi(a))
+         == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+              eta(phi(a)))(phi(a))
+          : use impl-elim; 9, 8
+
+12.     \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+          u)(phi(a)) : chain
+
+         == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+              \plus(\zero)(u))(phi(a))
+          : flop use plus-zero-l; at z in
+            \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+              z)(phi(a))
+
+         == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+              \plus(eta(phi(a)))(u))(phi(a))
+          : flop use reiterate; 10 at z in
+            \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+              \plus(z)(u))(phi(a))
+
+         == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+              eta(phi(a)))(phi(a))
+          : use reiterate; 11
+
+13.     \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+          \plus(eta(phi(a)))(\next(u)))(phi(a)) : chain
+
+         == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+              \plus(\zero)(\next(u)))(phi(a))
+          : use reiterate; 10 at z in
+            \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+              \plus(z)(\next(u)))(phi(a))
+
+         == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+              \next(u))(phi(a))
+          : use plus-zero-l; at z in
+            \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+              z)(phi(a))
+
+         == \normrecH(eta)(chi)(u)(phi(a))(
+              \mutrec(chi)(\normrecW(phi))(
+                \normrecH(eta)(chi))(u)(
+                \normrecW(phi)(u)(phi(a))))
+          : use mutrec-next;
+
+         == \if(chi(phi(a)))(
+              \mutrec(chi)(\normrecW(phi))(
+                \normrecH(eta)(chi))(u)(
+                \normrecW(phi)(u)(phi(a))))(
+              \eq(\zero)(eta(phi(a))))
+          : use def-normrecH;
+
+         == \if(chi(phi(a)))(
+              \mutrec(chi)(\normrecW(phi))(
+                \normrecH(eta)(chi))(u)(
+                \normrecW(phi)(u)(phi(a))))(
+              \eq(\zero)(\zero))
+          : use reiterate; 10 at z in
+            \if(chi(phi(a)))(
+              \mutrec(chi)(\normrecW(phi))(
+                \normrecH(eta)(chi))(u)(
+                \normrecW(phi)(u)(phi(a))))(
+              \eq(\zero)(z))
+
+         == \if(chi(phi(a)))(
+              \mutrec(chi)(\normrecW(phi))(
+                \normrecH(eta)(chi))(u)(
+                \normrecW(phi)(u)(phi(a))))(
+              \true)
+          : use eq-refl; at z in
+            \if(chi(phi(a)))(
+              \mutrec(chi)(\normrecW(phi))(
+                \normrecH(eta)(chi))(u)(
+                \normrecW(phi)(u)(phi(a))))(
+              z)
+
+         == chi(phi(a))
+          : use if-true;
+
+         == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+              \zero)(phi(a))
+          : flop use mutrec-zero;
+
+         == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+              eta(phi(a)))(phi(a))
+          : flop use reiterate; 10 at z in
+            \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+              z)(phi(a))
+
+14.   (\leq(eta(phi(a)))(\zero) == \true) =&gt;
+        (\mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+          \plus(eta(phi(a)))(\next(u)))(phi(a))
+         == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+              eta(phi(a)))(phi(a)))
+       : discharge u-next; 13
+
+15. ((\leq(eta(phi(a)))(\zero) == \true) =&gt;
+      (\mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+        \plus(eta(phi(a)))(u))(phi(a))
+       == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+            eta(phi(a)))(phi(a)))) =&gt;
+      ((\leq(eta(phi(a)))(\zero) == \true) =&gt;
+        (\mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+          \plus(eta(phi(a)))(\next(u)))(phi(a))
+         == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+              eta(phi(a)))(phi(a))))
+     : use simp; 14
+
+16. ∀t. ((\leq(eta(phi(a)))(\zero) == \true) =&gt;
+      (\mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+        \plus(eta(phi(a)))(t))(phi(a))
+       == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+            eta(phi(a)))(phi(a)))) =&gt;
+      ((\leq(eta(phi(a)))(\zero) == \true) =&gt;
+        (\mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+          \plus(eta(phi(a)))(\next(t)))(phi(a))
+         == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+              eta(phi(a)))(phi(a))))
+     : forall-intro u -&gt; t; 15
+
+17. ∀t. (\leq(eta(phi(a)))(\zero) == \true) =&gt;
+      (\mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+        \plus(eta(phi(a)))(t))(phi(a))
+       == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+            eta(phi(a)))(phi(a)))
+     : invoke nat-induction
+       [P :-&gt; (\leq(eta(phi(a)))(\zero) == \true) =&gt;
+         (\mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+           \plus(eta(phi(a)))(_))(phi(a))
+          == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+               eta(phi(a)))(phi(a)))]; 7, 16
+
+18. ∀x. (∀t. (\leq(eta(phi(x)))(\zero) == \true) =&gt;
+      (\mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+        \plus(eta(phi(x)))(t))(phi(x))
+       == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+            eta(phi(x)))(phi(x))))
+     : forall-intro a -&gt; x; 17
+
+19.   ∀x. (∀t. (\leq(eta(phi(x)))(n) == \true) =&gt;
+        (\mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+          \plus(eta(phi(x)))(t))(phi(x))
+         == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+              eta(phi(x)))(phi(x))))
+       : hypothesis n
+
+20.     \leq(eta(phi(a)))(\next(n)) == \true
+         : hypothesis next-n
+
+21.     (\leq(eta(phi(a)))(n) == \true) \/
+          (\eq(eta(phi(a)))(\next(n)) == \true)
+         : use leq-next-cases; 20
+
+22.       \leq(eta(phi(a)))(n) == \true
+           : hypothesis leq-n
+
+23.       ∀t. (\leq(eta(phi(a)))(n) == \true) =&gt;
+            (\mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+              \plus(eta(phi(a)))(t))(phi(a))
+             == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+                  eta(phi(a)))(phi(a)))
+           : forall-elim x -&gt; a; 19
+
+24.       (\leq(eta(phi(a)))(n) == \true) =&gt;
+            (\mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+              \plus(eta(phi(a)))(w))(phi(a))
+             == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+                  eta(phi(a)))(phi(a)))
+            : forall-elim t -&gt; w; 23
+
+25.       \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+            \plus(eta(phi(a)))(w))(phi(a))
+           == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+                eta(phi(a)))(phi(a))
+           : use impl-elim; 22, 24
+
+26.     (\leq(eta(phi(a)))(n) == \true) =&gt;
+          (\mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+            \plus(eta(phi(a)))(w))(phi(a))
+           == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+                eta(phi(a)))(phi(a)))
+         : discharge leq-n; 25
+
+27.       \eq(eta(phi(a)))(\next(n)) == \true
+           : hypothesis eq-n
+
+28.       eta(phi(a)) == \next(n)
+           : use eq-dereify; 27
+
+29.       (eta(phi(a)) == \next(n)) =&gt;
+            (\leq(eta(phi(phi(a))))(n) == \true)
+           : forall-elim u -&gt; phi(a); 5
+
+30.       \leq(eta(phi(phi(a))))(n) == \true
+           : use impl-elim; 28, 29
+
+31.       ∃k. n == \plus(eta(phi(phi(a))))(k)
+           : use leq-impl-plus; 30
+
+32.         n == \plus(eta(phi(phi(a))))(h)
+             : hypothesis h
+
+33.         \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+              \plus(eta(phi(a)))(\zero))(phi(a)) : chain
+
+             == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+                  eta(phi(a)))(phi(a))
+              : use plus-zero-r; at z in
+                \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+                  z)(phi(a))
+
+34.         ∀t. (\leq(eta(phi(phi(a))))(n) == \true) =&gt;
+              (\mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+                \plus(eta(phi(phi(a))))(t))(phi(phi(a)))
+               == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+                    eta(phi(phi(a))))(phi(phi(a))))
+                : forall-elim x -&gt; phi(a); 19
+
+35.         (\leq(eta(phi(phi(a))))(n) == \true) =&gt;
+              (\mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+                \plus(eta(phi(phi(a))))(\plus(h)(w)))(phi(phi(a)))
+               == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+                    eta(phi(phi(a))))(phi(phi(a))))
+             : forall-elim t -&gt; \plus(h)(w); 34
+
+36.         \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+              \plus(eta(phi(phi(a))))(\plus(h)(w)))(phi(phi(a)))
+             == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+                  eta(phi(phi(a))))(phi(phi(a)))
+              : use impl-elim; 30, 35
+
+37.         (\leq(eta(phi(phi(a))))(n) == \true) =&gt;
+              (\mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+                \plus(eta(phi(phi(a))))(h))(phi(phi(a)))
+               == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+                    eta(phi(phi(a))))(phi(phi(a))))
+             : forall-elim t -&gt; h; 34
+
+38.         \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+              \plus(eta(phi(phi(a))))(h))(phi(phi(a)))
+             == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+                  eta(phi(phi(a))))(phi(phi(a)))
+              : use impl-elim; 30, 37
+
+39.         \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+              \plus(eta(phi(a)))(w))(phi(a)) : chain
+
+             == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+                  \plus(\next(n))(w))(phi(a))
+              : use reiterate; 28 at z in
+                \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+                  \plus(z)(w))(phi(a))
+
+             == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+                  \next(\plus(n)(w)))(phi(a))
+              : use plus-next-l; at z in
+                \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+                  z)(phi(a))
+
+             == \normrecH(eta)(chi)(\plus(n)(w))(phi(a))(
+                  \mutrec(chi)(\normrecW(phi))(
+                    \normrecH(eta)(chi))(\plus(n)(w))(
+                    \normrecW(phi)(\plus(n)(w))(phi(a))))
+              : use mutrec-next;
+
+             == \if(chi(phi(a)))(
+                  \mutrec(chi)(\normrecW(phi))(
+                    \normrecH(eta)(chi))(\plus(n)(w))(
+                    \normrecW(phi)(\plus(n)(w))(phi(a))))(
+                  \eq(\zero)(eta(phi(a))))
+              : use def-normrecH;
+
+             == \if(chi(phi(a)))(
+                  \mutrec(chi)(\normrecW(phi))(
+                    \normrecH(eta)(chi))(\plus(n)(w))(
+                    \normrecW(phi)(\plus(n)(w))(phi(a))))(
+                  \eq(\zero)(\next(n)))
+              : use reiterate; 28 at z in
+                \if(chi(phi(a)))(
+                  \mutrec(chi)(\normrecW(phi))(
+                    \normrecH(eta)(chi))(\plus(n)(w))(
+                    \normrecW(phi)(\plus(n)(w))(phi(a))))(
+                  \eq(\zero)(z))
+
+             == \if(chi(phi(a)))(
+                  \mutrec(chi)(\normrecW(phi))(
+                    \normrecH(eta)(chi))(\plus(n)(w))(
+                    \normrecW(phi)(\plus(n)(w))(phi(a))))(
+                  \false)
+              : use eq-zero-next; at z in
+                \if(chi(phi(a)))(
+                  \mutrec(chi)(\normrecW(phi))(
+                    \normrecH(eta)(chi))(\plus(n)(w))(
+                    \normrecW(phi)(\plus(n)(w))(phi(a))))(
+                  z)
+
+             == \mutrec(chi)(\normrecW(phi))(
+                  \normrecH(eta)(chi))(\plus(n)(w))(
+                  \normrecW(phi)(\plus(n)(w))(phi(a)))
+              : use if-false;
+
+             == \mutrec(chi)(\normrecW(phi))(
+                  \normrecH(eta)(chi))(\plus(n)(w))(
+                  phi(phi(a)))
+              : use def-normrecW; at z in
+                \mutrec(chi)(\normrecW(phi))(
+                  \normrecH(eta)(chi))(\plus(n)(w))(
+                  z)
+
+             == \mutrec(chi)(\normrecW(phi))(
+                  \normrecH(eta)(chi))(
+                    \plus(\plus(eta(phi(phi(a))))(h))(w))(
+                  phi(phi(a)))
+              : hypothesis h at z in
+                \mutrec(chi)(\normrecW(phi))(
+                  \normrecH(eta)(chi))(\plus(z)(w))(
+                  phi(phi(a)))
+
+             == \mutrec(chi)(\normrecW(phi))(
+                  \normrecH(eta)(chi))(
+                    \plus(eta(phi(phi(a))))(\plus(h)(w)))(
+                  phi(phi(a)))
+              : use plus-assoc-r; at z in
+                \mutrec(chi)(\normrecW(phi))(
+                  \normrecH(eta)(chi))(z)(
+                  phi(phi(a)))
+
+             == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+                  eta(phi(phi(a))))(phi(phi(a)))
+              : use reiterate; 36
+
+             == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+                  \plus(eta(phi(phi(a))))(h))(phi(phi(a)))
+              : flop use reiterate; 38
+
+             == \mutrec(chi)(\normrecW(phi))(
+                  \normrecH(eta)(chi))(n)(
+                  phi(phi(a)))
+              : flop hypothesis h at z in
+                \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+                  z)(phi(phi(a)))
+
+             == \if(chi(phi(a)))(
+                  \mutrec(chi)(\normrecW(phi))(
+                    \normrecH(eta)(chi))(n)(
+                    phi(phi(a))))(
+                  \false)
+              : flop use if-false;
+
+             == \if(chi(phi(a)))(
+                  \mutrec(chi)(\normrecW(phi))(
+                    \normrecH(eta)(chi))(n)(
+                    phi(phi(a))))(
+                  \eq(\zero)(\next(n)))
+              : flop use eq-zero-next; at z in
+                \if(chi(phi(a)))(
+                  \mutrec(chi)(\normrecW(phi))(
+                    \normrecH(eta)(chi))(n)(
+                    phi(phi(a))))(
+                  z)
+
+             == \if(chi(phi(a)))(
+                  \mutrec(chi)(\normrecW(phi))(
+                    \normrecH(eta)(chi))(n)(
+                    phi(phi(a))))(
+                  \eq(\zero)(eta(phi(a))))
+              : flop use reiterate; 28 at z in
+                \if(chi(phi(a)))(
+                  \mutrec(chi)(\normrecW(phi))(
+                    \normrecH(eta)(chi))(n)(
+                    phi(phi(a))))(
+                  \eq(\zero)(z))
+
+             == \normrecH(eta)(chi)(n)(phi(a))(
+                  \mutrec(chi)(\normrecW(phi))(
+                    \normrecH(eta)(chi))(n)(
+                    phi(phi(a))))
+              : flop use def-normrecH;
+
+             == \normrecH(eta)(chi)(n)(phi(a))(
+                  \mutrec(chi)(\normrecW(phi))(
+                    \normrecH(eta)(chi))(n)(
+                    \normrecW(phi)(n)(phi(a))))
+              : flop use def-normrecW; at z in
+                \normrecH(eta)(chi)(n)(phi(a))(
+                  \mutrec(chi)(\normrecW(phi))(
+                    \normrecH(eta)(chi))(n)(
+                    z))
+
+             == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+                  \next(n))(phi(a))
+              : flop use mutrec-next;
+
+             == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+                  eta(phi(a)))(phi(a))
+              : flop use reiterate; 28 at z in
+                \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+                  z)(phi(a))
+
+40.       (n == \plus(eta(phi(phi(a))))(h)) =&gt;
+            ((\mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+              \plus(eta(phi(a)))(w))(phi(a)))
+             == (\mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+                  eta(phi(a)))(phi(a))))
+           : discharge h; 39
+
+41.       (\mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+              \plus(eta(phi(a)))(w))(phi(a)))
+             == (\mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+                  eta(phi(a)))(phi(a)))
+           : exists-elim h &lt;- k; 31, 40
+
+42.     (\eq(eta(phi(a)))(\next(n)) == \true) =&gt;
+          ((\mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+            \plus(eta(phi(a)))(w))(phi(a)))
+           == (\mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+                eta(phi(a)))(phi(a))))
+         : discharge eq-n; 41
+
+43.     \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+          \plus(eta(phi(a)))(w))(phi(a))
+         == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+              eta(phi(a)))(phi(a))
+          : use disj-elim; 21, 26, 42
+
+44.   (\leq(eta(phi(a)))(\next(n)) == \true) =&gt;
+        (\mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+          \plus(eta(phi(a)))(w))(phi(a))
+         == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+              eta(phi(a)))(phi(a)))
+       : discharge next-n; 43
+
+45.   ∀t. (\leq(eta(phi(a)))(\next(n)) == \true) =&gt;
+        (\mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+          \plus(eta(phi(a)))(t))(phi(a))
+         == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+              eta(phi(a)))(phi(a)))
+       : forall-intro w -&gt; t; 44
+
+46.   ∀x. (∀t. (\leq(eta(phi(x)))(\next(n)) == \true) =&gt;
+        (\mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+          \plus(eta(phi(x)))(t))(phi(x))
+         == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+              eta(phi(x)))(phi(x))))
+       : forall-intro a -&gt; x; 45
+
+47. (∀x. (∀t. (\leq(eta(phi(x)))(n) == \true) =&gt;
+      (\mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+        \plus(eta(phi(x)))(t))(phi(x))
+       == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+            eta(phi(x)))(phi(x))))) =&gt;
+      (∀x. (∀t. (\leq(eta(phi(x)))(\next(n)) == \true) =&gt;
+        (\mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+          \plus(eta(phi(x)))(t))(phi(x))
+         == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+              eta(phi(x)))(phi(x)))))
+     : discharge n; 46
+
+48. ∀m. (∀x. (∀t. (\leq(eta(phi(x)))(m) == \true) =&gt;
+      (\mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+        \plus(eta(phi(x)))(t))(phi(x))
+       == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+            eta(phi(x)))(phi(x))))) =&gt;
+      (∀x. (∀t. (\leq(eta(phi(x)))(\next(m)) == \true) =&gt;
+        (\mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+          \plus(eta(phi(x)))(t))(phi(x))
+         == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+              eta(phi(x)))(phi(x)))))
+     : forall-intro n -&gt; m; 47
+
+49. ∀m. (∀x. (∀t. (\leq(eta(phi(x)))(m) == \true) =&gt;
+      (\mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+        \plus(eta(phi(x)))(t))(phi(x))
+       == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+            eta(phi(x)))(phi(x)))))
+     : invoke nat-induction
+       [P :-&gt; ∀x. (∀t. (\leq(eta(phi(x)))(_) == \true) =&gt;
+         (\mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+           \plus(eta(phi(x)))(t))(phi(x))
+          == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+               eta(phi(x)))(phi(x))))]; 18, 48
+
+50. ∀x. (∀t. (\leq(eta(phi(x)))(u) == \true) =&gt;
+      (\mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+        \plus(eta(phi(x)))(t))(phi(x))
+       == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+            eta(phi(x)))(phi(x))))
+     : forall-elim m -&gt; u; 49
+
+51. ∀t. (\leq(eta(phi(a)))(u) == \true) =&gt;
+      (\mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+        \plus(eta(phi(a)))(t))(phi(a))
+       == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+            eta(phi(a)))(phi(a)))
+     : forall-elim x -&gt; a; 50
+
+52. ∀m. (∀t. (\leq(eta(phi(a)))(m) == \true) =&gt;
+      (\mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+        \plus(eta(phi(a)))(t))(phi(a))
+       == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+            eta(phi(a)))(phi(a))))
+     : forall-intro u -&gt; m; 51
+
+53. ∀t. (\leq(eta(phi(a)))(eta(phi(a))) == \true) =&gt;
+      (\mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+        \plus(eta(phi(a)))(t))(phi(a))
+       == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+            eta(phi(a)))(phi(a)))
+     : forall-elim m -&gt; eta(phi(a)); 52
+
+54. (\leq(eta(phi(a)))(eta(phi(a))) == \true) =&gt;
+      (\mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+        \plus(eta(phi(a)))(k))(phi(a))
+       == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+            eta(phi(a)))(phi(a)))
+     : forall-elim t -&gt; k; 53
+
+55. \leq(eta(phi(a)))(eta(phi(a))) == \true
+     : use leq-refl;
+
+56. \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+        \plus(eta(phi(a)))(k))(phi(a))
+       == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+            eta(phi(a)))(phi(a))
+     : use impl-elim; 55, 54</code></pre>
+<pre class="mycelium"><code>theorem normrec-expand
+if
+  * &lt;eta, phi&gt; 'is &quot;iterative-norm&quot;
+then
+  * \normrec(phi)(eta)(chi)(a)
+     == \if(
+          chi(a))(
+          \normrec(phi)(eta)(chi)(phi(a)))(
+          \eq(\zero)(eta(a)))
+
+proof
+1. &lt;eta, phi&gt; 'is &quot;iterative-norm&quot;
+    : assumption 1
+
+2. (eta(a) == \zero) \/ (∃k. eta(a) == \next(k))
+    : use nat-disj-cases-1;
+
+3.   eta(a) == \zero
+      : hypothesis zero
+
+4.   \normrec(phi)(eta)(chi)(a) : chain
+
+      == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+          eta(a))(a)
+       : use def-normrec;
+
+      == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+          \zero)(a)
+       : hypothesis zero at z in
+         \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+          z)(a)
+
+      == chi(a)
+       : use mutrec-zero;
+
+      == \if(chi(a))(\normrec(phi)(eta)(chi)(phi(a)))(
+           \true)
+       : flop use if-true;
+
+      == \if(chi(a))(\normrec(phi)(eta)(chi)(phi(a)))(
+           \eq(\zero)(\zero))
+       : flop use eq-refl; at z in
+         \if(chi(a))(\normrec(phi)(eta)(chi)(phi(a)))(
+           z)
+
+      == \if(chi(a))(\normrec(phi)(eta)(chi)(phi(a)))(
+           \eq(\zero)(eta(a)))
+       : flop hypothesis zero at z in
+         \if(chi(a))(\normrec(phi)(eta)(chi)(phi(a)))(
+           \eq(\zero)(z))
+
+5. (eta(a) == \zero) =&gt;
+     ((\normrec(phi)(eta)(chi)(a))
+       == (\if(chi(a))(\normrec(phi)(eta)(chi)(phi(a)))(
+            \eq(\zero)(eta(a)))))
+    : discharge zero; 4
+
+6.   ∃k. eta(a) == \next(k)
+      : hypothesis next
+
+7.     eta(a) == \next(u)
+        : hypothesis next-u
+
+8.     ∀w. (eta(w) == \next(u)) =&gt;
+         (\leq(eta(phi(w)))(u) == \true)
+        : use iterative-norm-next; 1
+
+9.     (eta(a) == \next(u)) =&gt;
+         (\leq(eta(phi(a)))(u) == \true)
+        : forall-elim w -&gt; a; 8
+
+10.    \leq(eta(phi(a)))(u) == \true
+        : use impl-elim; 7, 9
+
+11.    ∃k. u == \plus(eta(phi(a)))(k)
+        : use leq-impl-plus; 10
+
+12.      u == \plus(eta(phi(a)))(w)
+          : hypothesis u
+
+13.      \normrec(phi)(eta)(chi)(a) : chain
+
+          == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+               eta(a))(a)
+           : use def-normrec;
+
+          == \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+               \next(u))(a)
+           : use reiterate; 7 at z in
+             \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+               z)(a)
+
+          == \normrecH(eta)(chi)(u)(a)(
+               \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+                 u)(\normrecW(phi)(u)(a)))
+           : use mutrec-next;
+
+          == \if(
+               chi(a))(
+               \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+                 u)(\normrecW(phi)(u)(a)))(
+               \eq(\zero)(eta(a)))
+           : use def-normrecH;
+
+          == \if(
+               chi(a))(
+               \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+                 u)(phi(a)))(
+               \eq(\zero)(eta(a)))
+           : use def-normrecW; at z in
+             \if(
+               chi(a))(
+               \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+                 u)(z))(
+               \eq(\zero)(eta(a)))
+
+          == \if(
+               chi(a))(
+               \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+                 \plus(eta(phi(a)))(w))(phi(a)))(
+               \eq(\zero)(eta(a)))
+           : hypothesis u at z in
+             \if(
+               chi(a))(
+               \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+                 z)(phi(a)))(
+               \eq(\zero)(eta(a)))
+
+          == \if(
+               chi(a))(
+               \mutrec(chi)(\normrecW(phi))(\normrecH(eta)(chi))(
+                 eta(phi(a)))(phi(a)))(
+               \eq(\zero)(eta(a)))
+           : use normrec-lemma; 1 at z in
+             \if(chi(a))(z)(\eq(\zero)(eta(a)))
+
+          == \if(
+               chi(a))(
+               \normrec(phi)(eta)(chi)(phi(a)))(
+               \eq(\zero)(eta(a)))
+           : flop use def-normrec; at z in
+             \if(chi(a))(z)(\eq(\zero)(eta(a)))
+
+14.    (u == \plus(eta(phi(a)))(w)) =&gt;
+         (\normrec(phi)(eta)(chi)(a)
+          == \if(chi(a))(\normrec(phi)(eta)(chi)(phi(a)))(
+               \eq(\zero)(eta(a))))
+        : discharge u; 13
+
+15.    \normrec(phi)(eta)(chi)(a)
+        == \if(chi(a))(\normrec(phi)(eta)(chi)(phi(a)))(
+             \eq(\zero)(eta(a)))
+        : exists-elim w &lt;- k; 11, 14
+
+16.  (eta(a) == \next(u)) =&gt;
+       (\normrec(phi)(eta)(chi)(a)
+        == \if(chi(a))(\normrec(phi)(eta)(chi)(phi(a)))(
+             \eq(\zero)(eta(a))))
+      : discharge next-u; 15
+
+17.   \normrec(phi)(eta)(chi)(a)
+        == \if(chi(a))(\normrec(phi)(eta)(chi)(phi(a)))(
+             \eq(\zero)(eta(a)))
+       : exists-elim u &lt;- k; 6, 16
+
+18. (∃k. eta(a) == \next(k)) =&gt;
+      (\normrec(phi)(eta)(chi)(a)
+        == \if(chi(a))(\normrec(phi)(eta)(chi)(phi(a)))(
+             \eq(\zero)(eta(a))))
+     : discharge next; 17
+
+19. \normrec(phi)(eta)(chi)(a)
+     == \if(chi(a))(\normrec(phi)(eta)(chi)(phi(a)))(
+          \eq(\zero)(eta(a)))
+      : use disj-elim; 2, 5, 18</code></pre>
+
+    </main>
+
+    <footer>
+      Site generated by
+      <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+    </footer>
+  </body>
+</html>

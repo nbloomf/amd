@@ -986,6 +986,66 @@ proof
 
 3. \divalg(\times(a)(\next(b)))(\next(b)) == \tup(a)(\zero)
     : use divalg-unique; 1, 2</code></pre>
+<pre class="mycelium"><code>theorem rem-self
+* \rem(a)(a) == \zero
+
+proof
+1.  (a == \zero) \/ (∃k. a == \next(k))
+     : use nat-disj-cases-1;
+
+2.    a == \zero
+       : hypothesis zero
+
+3.    \rem(a)(a) : chain
+       == \rem(\zero)(a)
+        : hypothesis zero at z in
+          \rem(z)(a)
+       == \snd(\divalg(\zero)(a))
+        : use def-rem;
+       == \snd(\tup(\zero)(\zero))
+        : use divalg-zero-l; at z in
+          \snd(z)
+       == \zero
+        : use snd-tup;
+
+4.  (a == \zero) =&gt;
+      (\rem(a)(a) == \zero)
+     : discharge zero; 3
+
+5.    ∃k. a == \next(k)
+       : hypothesis next
+
+6.      a == \next(t)
+         : hypothesis next-t
+
+7.      \rem(a)(a) : chain
+         == \rem(\next(t))(a)
+          : hypothesis next-t at z in
+            \rem(z)(a)
+         == \rem(\next(t))(\next(t))
+          : hypothesis next-t at z in
+            \rem(\next(t))(z)
+         == \snd(\divalg(\next(t))(\next(t)))
+          : use def-rem;
+         == \snd(\tup(\next(\zero))(\zero))
+          : use divalg-self-pos; at z in
+            \snd(z)
+         == \zero
+          : use snd-tup;
+
+8.    (a == \next(t)) =&gt;
+        (\rem(a)(a) == \zero)
+       : discharge next-t; 7
+
+9.    \rem(a)(a) == \zero
+       : exists-elim t &lt;- k; 5, 8
+
+10. (∃k. a == \next(k)) =&gt;
+      (\rem(a)(a) == \zero)
+     : discharge next; 9
+
+11. \rem(a)(a) == \zero
+     : use disj-elim; 1, 4, 10</code></pre>
 
     </main>
 

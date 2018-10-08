@@ -107,7 +107,7 @@
 <p>there is a unique arrow <span class="math inline">\(\Psi : \Nat \rightarrow a \rightarrow b\)</span> satisfying the following system of equations.</p>
 <p><span class="math display">\[\left\{\begin{array}{l}
  \Psi(\zero)(a) = \phi(a) \\
- \Psi(\next(m),a) = \mu(m,a,\Psi(m,\omega(m,a)))
+ \Psi(\next(m))(a) = \mu(m,a,\Psi(m,\omega(m,a)))
 \end{array}\right.\]</span></p>
 <p>Note how <span class="math inline">\(\omega\)</span> and <span class="math inline">\(\mu\)</span> work together to let us do things with <span class="math inline">\(a\)</span> inside the recursive call to <span class="math inline">\(\Psi\)</span> as well as outside.</p>
 <p><span class="math display">\[\begin{array}{l}

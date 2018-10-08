@@ -32,7 +32,9 @@ modules = \
   src/Naturals/LessThan.lhs \
   src/Naturals/MaxAndMin.lhs \
   src/Naturals/DivisionAlgorithm.lhs \
-  src/Naturals/Divides.lhs
+  src/Naturals/Divides.lhs \
+  src/Naturals/IterativeNorm.lhs \
+  src/Naturals/GreatestCommonDivisor.lhs
 
 build:
 	stack exec site build

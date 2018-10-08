@@ -25,6 +25,35 @@ then
   * Q => P
 ~~~
 
+~~~ {.mycelium}
+theorem equiv-to-l
+if
+  * P <=> Q
+  * P
+then
+  * Q
+
+proof
+1. P <=> Q : assumption 1
+2. P : assumption 2
+3. P => Q : use equiv-elim-r; 1
+4. Q : use impl-elim; 2, 3
+
+
+theorem equiv-to-r
+if
+  * P <=> Q
+  * Q
+then
+  * P
+
+proof
+1. P <=> Q : assumption 1
+2. Q : assumption 2
+3. Q => P : use equiv-elim-l; 1
+4. P : use impl-elim; 2, 3
+~~~
+
 We won't need to use equivalence a ton, but here are some basic properties anyway.
 
 ~~~ {.mycelium}

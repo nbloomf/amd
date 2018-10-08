@@ -152,6 +152,51 @@ proof
 ~~~
 
 ~~~ {.mycelium}
+theorem leq-zero-is-zero
+if
+  * \leq(a)(\zero) == \true
+then
+  * a == \zero
+
+proof
+1.  (a == \zero) \/ (∃k. a == \next(k))
+     : use nat-disj-cases-1;
+
+2.    ∃k. a == \next(k)
+       : hypothesis next
+
+3.      a == \next(t)
+         : hypothesis a-next-t
+
+4.      \true : chain
+         == \leq(a)(\zero)
+          : flop assumption 1
+         == \leq(\next(t))(\zero)
+          : hypothesis a-next-t at z in
+            \leq(z)(\zero)
+         == \false
+          : use leq-next-zero;
+
+5.    (a == \next(t)) => (\true == \false)
+       : discharge a-next-t; 4
+
+6.    \true == \false
+       : exists-elim t <- k; 2, 5
+
+7.  (∃k. a == \next(k)) => (\true == \false)
+     : discharge next; 6
+
+8.  ~(\true == \false)
+     : use bool-disc;
+
+9.  ~(∃k. a == \next(k))
+     : use modus-tollens; 7, 8
+
+10. a == \zero
+     : use disj-syllogism-r; 1, 9
+~~~
+
+~~~ {.mycelium}
 theorem leq-next-next
 * \leq(\next(a))(\next(b)) == \leq(a)(b)
 
@@ -460,4 +505,95 @@ proof
 
 16. \leq(b)(a) == \true
      : exists-elim t <- k; 12, 15
+~~~
+
+~~~ {.mycelium}
+theorem leq-next-cases
+if
+  * \leq(a)(\next(b)) == \true
+then
+  * (\leq(a)(b) == \true) \/ (\eq(a)(\next(b)) == \true)
+
+proof
+1.  \leq(a)(\next(b)) == \true
+     : assumption 1
+
+2.  ∃k. \next(b) == \plus(a)(k)
+     : use leq-impl-plus; 1
+
+3.    \next(b) == \plus(a)(t)
+       : hypothesis t
+
+4.    (t == \zero) \/ (∃k. t == \next(k))
+       : use nat-disj-cases-1;
+
+5.      t == \zero
+         : hypothesis t-zero
+
+6.      a : chain
+         == \plus(a)(\zero)
+          : flop use plus-zero-r;
+         == \plus(a)(t)
+          : flop hypothesis t-zero at z in
+            \plus(a)(z)
+         == \next(b)
+          : flop use reiterate; 3
+
+7.      \eq(a)(\next(b)) == \true
+         : use eq-reify; 6
+
+8.      (\leq(a)(b) == \true) \/ (\eq(a)(\next(b)) == \true)
+         : use disj-intro-r; 7
+
+9.    (t == \zero) =>
+        ((\leq(a)(b) == \true) \/ (\eq(a)(\next(b)) == \true))
+       : discharge t-zero; 8
+
+10.     ∃k. t == \next(k)
+         : hypothesis next
+
+11.       t == \next(u)
+           : hypothesis u
+
+12.       \next(b) : chain
+           == \plus(a)(t)
+            : hypothesis t
+           == \plus(a)(\next(u))
+            : hypothesis u at z in
+              \plus(a)(z)
+           == \next(\plus(a)(u))
+            : use plus-next-r;
+
+13.       b == \plus(a)(u)
+           : use next-inj; 12
+
+14.       ∃k. b == \plus(a)(k)
+           : exists-intro k <- u; 13
+
+15.       \leq(a)(b) == \true
+           : use plus-impl-leq; 14
+
+16.       (\leq(a)(b) == \true) \/ (\eq(a)(\next(b)) == \true)
+           : use disj-intro-l; 15
+
+17.     (t == \next(u)) =>
+          ((\leq(a)(b) == \true) \/ (\eq(a)(\next(b)) == \true))
+         : discharge u; 16
+
+18.     (\leq(a)(b) == \true) \/ (\eq(a)(\next(b)) == \true)
+         : exists-elim u <- k; 10, 17
+
+19.   (∃k. t == \next(k)) =>
+        ((\leq(a)(b) == \true) \/ (\eq(a)(\next(b)) == \true))
+       : discharge next; 18
+
+20.   (\leq(a)(b) == \true) \/ (\eq(a)(\next(b)) == \true)
+       : use disj-elim; 4, 9, 19
+
+21. (\next(b) == \plus(a)(t)) =>
+      ((\leq(a)(b) == \true) \/ (\eq(a)(\next(b)) == \true))
+     : discharge t; 20
+
+22. (\leq(a)(b) == \true) \/ (\eq(a)(\next(b)) == \true)
+     : exists-elim t <- k; 2, 21
 ~~~

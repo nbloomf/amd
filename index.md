@@ -56,6 +56,8 @@ Contents
     * [Max and Min](/src/Naturals/MaxAndMin.html)
     * [Division Algorithm](/src/Naturals/DivisionAlgorithm.html)
     * [Divides](/src/Naturals/Divides.html)
+    * [Iterative Norms](/src/Naturals/IterativeNorm.html)
+    * [Greatest Common Divisor](/src/Naturals/GreatestCommonDivisor.html)
 * Lists
 
 <p style="text-align: center;">⁂</p>
