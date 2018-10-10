@@ -348,6 +348,29 @@ proof
     == \plus(a)(b) : use plus-comm;
 
 2. b == \zero : use plus-self-cancel-l; 1</code></pre>
+<pre class="mycelium"><code>theorem plus-abide
+* \plus(\plus(a)(b))(\plus(c)(d)) == \plus(\plus(a)(c))(\plus(b)(d))
+
+proof
+1. \plus(\plus(a)(b))(\plus(c)(d)) : chain
+
+    == \plus(a)(\plus(b)(\plus(c)(d)))
+     : use plus-assoc-r;
+
+    == \plus(a)(\plus(\plus(b)(c))(d))
+     : use plus-assoc-l; at z in
+       \plus(a)(z)
+
+    == \plus(a)(\plus(\plus(c)(b))(d))
+     : use plus-comm; at z in
+       \plus(a)(\plus(z)(d))
+
+    == \plus(a)(\plus(c)(\plus(b)(d)))
+     : use plus-assoc-r; at z in
+       \plus(a)(z)
+
+    == \plus(\plus(a)(c))(\plus(b)(d))
+     : use plus-assoc-l;</code></pre>
 
     </main>
 

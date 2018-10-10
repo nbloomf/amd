@@ -849,6 +849,244 @@ proof
 44. (\div(\gcd(a)(b))(a) == \true) /\
       (\div(\gcd(a)(b))(b) == \true)
      : use impl-elim; 43, 42</code></pre>
+<pre class="mycelium"><code>theorem gcd-glb
+if
+  * \div(c)(a) == \true
+  * \div(c)(b) == \true
+then
+  * \div(c)(\gcd(a)(b)) == \true
+
+proof
+1.    \leq(b)(\zero) == \true
+       : hypothesis zero
+
+2.    b == \zero
+       : use leq-zero-is-zero; 1
+
+3.      (\div(c)(a) == \true) /\ (\div(c)(b) == \true)
+         : hypothesis zero-div
+
+4.      \div(c)(\gcd(a)(b)) : chain
+
+         == \div(c)(\gcd(a)(\zero))
+          : use reiterate; 2 at z in
+            \div(c)(\gcd(a)(z))
+
+         == \div(c)(a)
+          : use gcd-zero-r; at z in
+            \div(c)(z)
+
+         == \true
+          : use conj-elim-l; 3
+
+5.    ((\div(c)(a) == \true) /\ (\div(c)(b) == \true)) =&gt;
+        (\div(c)(\gcd(a)(b)) == \true)
+       : discharge zero-div; 4
+
+6.    ∀u. ((\div(c)(u) == \true) /\ (\div(c)(b) == \true)) =&gt;
+        (\div(c)(\gcd(u)(b)) == \true)
+       : forall-intro a -&gt; u; 5
+
+7.  (\leq(b)(\zero) == \true) =&gt;
+      (∀u. ((\div(c)(u) == \true) /\ (\div(c)(b) == \true)) =&gt;
+        (\div(c)(\gcd(u)(b)) == \true))
+     : discharge zero; 6
+
+8.  ∀v. (\leq(v)(\zero) == \true) =&gt;
+      (∀u. ((\div(c)(u) == \true) /\ (\div(c)(v) == \true)) =&gt;
+        (\div(c)(\gcd(u)(v)) == \true))
+     : forall-intro b -&gt; u; 7
+
+9.    ∀v. (\leq(v)(n) == \true) =&gt;
+        (∀u. ((\div(c)(u) == \true) /\ (\div(c)(v) == \true)) =&gt;
+          (\div(c)(\gcd(u)(v)) == \true))
+       : hypothesis n
+
+10.     \leq(b)(\next(n)) == \true
+         : hypothesis next
+
+11.     (\leq(b)(n) == \true) \/ (\eq(b)(\next(n)) == \true)
+         : use leq-next-cases; 10
+
+12.       \leq(b)(n) == \true
+           : hypothesis leq-n
+
+13.       (\leq(b)(n) == \true) =&gt;
+            (∀u. ((\div(c)(u) == \true) /\ (\div(c)(b) == \true)) =&gt;
+              (\div(c)(\gcd(u)(b)) == \true))
+           : forall-elim v -&gt; b; 9
+
+14.       ∀u. ((\div(c)(u) == \true) /\ (\div(c)(b) == \true)) =&gt;
+            (\div(c)(\gcd(u)(b)) == \true)
+           : use impl-elim; 12, 13
+
+15.     (\leq(b)(n) == \true) =&gt;
+          (∀u. ((\div(c)(u) == \true) /\ (\div(c)(b) == \true)) =&gt;
+            (\div(c)(\gcd(u)(b)) == \true))
+         : discharge leq-n; 14
+
+16.       \eq(b)(\next(n)) == \true
+           : hypothesis eq-next
+
+17.         (\div(c)(a) == \true) /\ (\div(c)(b) == \true)
+             : hypothesis conj
+
+18.         \div(c)(\next(n)) : chain
+             == \div(c)(b)
+              : flop use eq-dereify; 16 at z in
+                \div(c)(z)
+             == \true
+              : use conj-elim-r; 17
+
+19.         \div(c)(\times(\quo(a)(\next(n)))(\next(n)))
+             == \true
+              : use div-times-absorb-r; 18
+
+20.         \div(c)(\plus(\times(\quo(a)(\next(n)))(\next(n)))(\rem(a)(\next(n)))) : chain
+
+             == \div(c)(a)
+              : flop use divalg-decomp; at z in
+                \div(c)(z)
+
+             == \true
+              : use conj-elim-l; 17
+
+21.         \div(c)(\rem(a)(\next(n))) == \true
+             : use div-plus-impl-l; 19, 20
+
+22.         \div(c)(b) == \true
+             : use conj-elim-r; 17
+
+23.         \leq(\rem(a)(\next(n)))(n) == \true
+             : use divalg-bound;
+
+24.         (\leq(\rem(a)(\next(n)))(n) == \true) =&gt;
+              (∀u. ((\div(c)(u) == \true) /\ (\div(c)(\rem(a)(\next(n))) == \true)) =&gt;
+                (\div(c)(\gcd(u)(\rem(a)(\next(n)))) == \true))
+             : forall-elim v -&gt; \rem(a)(\next(n)); 9
+
+25.         ∀u. ((\div(c)(u) == \true) /\ (\div(c)(\rem(a)(\next(n))) == \true)) =&gt;
+              (\div(c)(\gcd(u)(\rem(a)(\next(n)))) == \true)
+             : use impl-elim; 23, 24
+
+26.         ((\div(c)(b) == \true) /\ (\div(c)(\rem(a)(\next(n))) == \true)) =&gt;
+              (\div(c)(\gcd(b)(\rem(a)(\next(n)))) == \true)
+             : forall-elim u -&gt; b; 25
+
+27.         (\div(c)(b) == \true) /\ (\div(c)(\rem(a)(\next(n))) == \true)
+             : use conj-intro; 22, 21
+
+28.         \div(c)(\gcd(b)(\rem(a)(\next(n)))) == \true
+             : use impl-elim; 27, 26
+
+29.         \div(c)(\gcd(a)(b)) : chain
+
+             == \div(c)(\if(a)(\gcd(b)(\rem(a)(b)))(\eq(\zero)(b)))
+              : use gcd-recur; at z in
+                \div(c)(z)
+
+             == \div(c)(\if(a)(\gcd(b)(\rem(a)(b)))(\eq(\zero)(\next(n))))
+              : use eq-dereify; 16 at z in
+                \div(c)(\if(a)(\gcd(b)(\rem(a)(b)))(\eq(\zero)(z)))
+
+             == \div(c)(\if(a)(\gcd(b)(\rem(a)(b)))(\false))
+              : use eq-zero-next; at z in
+                \div(c)(\if(a)(\gcd(b)(\rem(a)(b)))(z))
+
+             == \div(c)(\gcd(b)(\rem(a)(b)))
+              : use if-false; at z in
+                \div(c)(z)
+
+             == \div(c)(\gcd(b)(\rem(a)(\next(n))))
+              : use eq-dereify; 16 at z in
+                \div(c)(\gcd(b)(\rem(a)(z)))
+
+             == \true
+              : use reiterate; 28
+
+30.       ((\div(c)(a) == \true) /\ (\div(c)(b) == \true)) =&gt;
+            (\div(c)(\gcd(a)(b)) == \true)
+           : discharge conj; 29
+
+31.       ∀u. ((\div(c)(u) == \true) /\ (\div(c)(b) == \true)) =&gt;
+            (\div(c)(\gcd(u)(b)) == \true)
+           : forall-intro a -&gt; u; 30
+
+32.     (\eq(b)(\next(n)) == \true) =&gt;
+          (∀u. ((\div(c)(u) == \true) /\ (\div(c)(b) == \true)) =&gt;
+            (\div(c)(\gcd(u)(b)) == \true))
+         : discharge eq-next; 31
+
+33.     ∀u. ((\div(c)(u) == \true) /\ (\div(c)(b) == \true)) =&gt;
+          (\div(c)(\gcd(u)(b)) == \true)
+         : use disj-elim; 11, 15, 32
+
+34.   (\leq(b)(\next(n)) == \true) =&gt;
+        (∀u. ((\div(c)(u) == \true) /\ (\div(c)(b) == \true)) =&gt;
+          (\div(c)(\gcd(u)(b)) == \true))
+       : discharge next; 33
+
+35.   ∀v. ((\leq(v)(\next(n)) == \true) =&gt;
+        (∀u. ((\div(c)(u) == \true) /\ (\div(c)(v) == \true)) =&gt;
+          (\div(c)(\gcd(u)(v)) == \true)))
+       : forall-intro b -&gt; v; 34
+
+36. (∀v. (\leq(v)(n) == \true) =&gt;
+      (∀u. ((\div(c)(u) == \true) /\ (\div(c)(v) == \true)) =&gt;
+        (\div(c)(\gcd(u)(v)) == \true))) =&gt;
+      (∀v. ((\leq(v)(\next(n)) == \true) =&gt;
+        (∀u. ((\div(c)(u) == \true) /\ (\div(c)(v) == \true)) =&gt;
+          (\div(c)(\gcd(u)(v)) == \true))))
+     : discharge n; 35
+
+37. ∀k. (∀v. (\leq(v)(k) == \true) =&gt;
+      (∀u. ((\div(c)(u) == \true) /\ (\div(c)(v) == \true)) =&gt;
+        (\div(c)(\gcd(u)(v)) == \true))) =&gt;
+      (∀v. ((\leq(v)(\next(k)) == \true) =&gt;
+        (∀u. ((\div(c)(u) == \true) /\ (\div(c)(v) == \true)) =&gt;
+          (\div(c)(\gcd(u)(v)) == \true))))
+     : forall-intro n -&gt; k; 36
+
+38. ∀k. (∀v. (\leq(v)(k) == \true) =&gt;
+      (∀u. ((\div(c)(u) == \true) /\ (\div(c)(v) == \true)) =&gt;
+        (\div(c)(\gcd(u)(v)) == \true)))
+     : invoke nat-induction
+       [P :-&gt; ∀v. (\leq(v)(_) == \true) =&gt;
+                (∀u. ((\div(c)(u) == \true) /\ (\div(c)(v) == \true)) =&gt;
+                  (\div(c)(\gcd(u)(v)) == \true))]; 8, 37
+
+39. ∀v. (\leq(v)(b) == \true) =&gt;
+      (∀u. ((\div(c)(u) == \true) /\ (\div(c)(v) == \true)) =&gt;
+        (\div(c)(\gcd(u)(v)) == \true))
+     : forall-elim k -&gt; b; 38
+
+40. (\leq(b)(b) == \true) =&gt;
+      (∀u. ((\div(c)(u) == \true) /\ (\div(c)(b) == \true)) =&gt;
+        (\div(c)(\gcd(u)(b)) == \true))
+     : forall-elim v -&gt; b; 39
+
+41. \leq(b)(b) == \true
+     : use leq-refl;
+
+42. ∀u. ((\div(c)(u) == \true) /\ (\div(c)(b) == \true)) =&gt;
+      (\div(c)(\gcd(u)(b)) == \true)
+     : use impl-elim; 41, 40
+
+43. ((\div(c)(a) == \true) /\ (\div(c)(b) == \true)) =&gt;
+      (\div(c)(\gcd(a)(b)) == \true)
+     : forall-elim u -&gt; a; 42
+
+44. \div(c)(a) == \true
+     : assumption 1
+
+45. \div(c)(b) == \true
+     : assumption 2
+
+46. (\div(c)(a) == \true) /\ (\div(c)(b) == \true)
+     : use conj-intro; 44, 45
+
+47. \div(c)(\gcd(a)(b)) == \true
+     : use impl-elim; 46, 43</code></pre>
 
     </main>
 

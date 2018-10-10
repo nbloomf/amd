@@ -650,6 +650,238 @@ proof
 
 5. \div(c)(\plus(a)(b)) == \true
     : use times-impl-div; 4</code></pre>
+<pre class="mycelium"><code>theorem div-minus-compat
+if
+  * \div(c)(a) == \true
+  * \div(c)(b) == \true
+  * \minus(b)(a) == \just(e)
+then
+  * \div(c)(e) == \true
+
+proof
+1.  (c == \zero) \/ (∃k. c == \next(k))
+     : use nat-disj-cases-1;
+
+2.    c == \zero
+       : hypothesis zero
+
+3.    \div(\zero)(a) : chain
+
+       == \div(c)(a)
+        : flop hypothesis zero at z in
+          \div(z)(a)
+
+       == \true
+        : assumption 1
+
+4.    a == \zero
+       : use div-zero-l; 3
+
+5.    \div(\zero)(b) : chain
+
+       == \div(c)(b)
+        : flop hypothesis zero at z in
+          \div(z)(b)
+
+       == \true
+        : assumption 2
+
+6.    b == \zero
+       : use div-zero-l; 5
+
+7.    \just(e) : chain
+
+       == \minus(b)(a)
+        : flop assumption 3
+
+       == \minus(\zero)(a)
+        : use reiterate; 6 at z in
+          \minus(z)(a)
+
+       == \minus(\zero)(\zero)
+        : use reiterate; 4 at z in
+          \minus(\zero)(z)
+
+       == \just(\zero)
+        : use minus-self;
+
+8.    e == \zero
+       : use just-inj; 7
+
+9.    \div(c)(e) : chain
+
+       == \div(c)(\zero)
+        : use reiterate; 8 at z in
+          \div(c)(z)
+
+       == \true
+        : use div-zero-r;
+
+10.  (c == \zero) =&gt; (\div(c)(e) == \true)
+      : discharge zero; 9
+
+11.    ∃k. c == \next(k)
+        : hypothesis next
+
+12.      c == \next(w)
+          : hypothesis next-w
+
+13.      \div(\next(w))(a) : chain
+
+          == \div(c)(a)
+           : flop use reiterate; 12 at z in
+             \div(z)(a)
+
+          == \true
+           : assumption 1
+
+14.      a : chain
+          == \times(\next(w))(\quo(a)(\next(w)))
+           : use div-times-quo; 13
+          == \times(\quo(a)(\next(w)))(\next(w))
+           : use times-comm;
+
+15.      \div(\next(w))(b) : chain
+
+          == \div(c)(b)
+           : flop use reiterate; 12 at z in
+             \div(z)(b)
+
+          == \true
+           : assumption 2
+
+16.      b : chain
+          == \times(\next(w))(\quo(b)(\next(w)))
+           : use div-times-quo; 15
+          == \times(\quo(b)(\next(w)))(\next(w))
+           : use times-comm;
+
+17.      \minus(b)(a) == \just(e)
+          : assumption 3
+
+18.      \zero : chain
+
+          == \rem(\times(\quo(b)(\next(w)))(\next(w)))(\next(w))
+           : flop use rem-times;
+
+          == \rem(b)(\next(w))
+           : flop use reiterate; 16 at z in
+             \rem(z)(\next(w))
+
+          == \rem(\plus(e)(a))(\next(w))
+           : use minus-to-plus; 17 at z in
+             \rem(z)(\next(w))
+
+          == \rem(
+               \plus(
+                 \rem(e)(\next(w)))(
+                 \rem(a)(\next(w))))(
+               \next(w))
+           : use rem-plus-l;
+
+          == \rem(
+               \plus(
+                 \rem(e)(\next(w)))(
+                 \rem(\times(\quo(a)(\next(w)))(\next(w)))(\next(w))))(
+               \next(w))
+           : use reiterate; 14 at z in
+             \rem(
+               \plus(
+                 \rem(e)(\next(w)))(
+                 \rem(z)(\next(w))))(
+               \next(w))
+
+          == \rem(
+               \plus(
+                 \rem(e)(\next(w)))(
+                 \zero))(
+               \next(w))
+           : use rem-times; at z in
+             \rem(
+               \plus(
+                 \rem(e)(\next(w)))(
+                 z))(
+               \next(w))
+
+          == \rem(\rem(e)(\next(w)))(\next(w))
+           : use plus-zero-r; at z in
+             \rem(z)(\next(w))
+
+          == \rem(e)(\next(w))
+           : use rem-rem;
+
+19.      \div(c)(e) : chain
+
+          == \div(\next(w))(e)
+           : hypothesis next-w at z in
+             \div(z)(e)
+
+          == \eq(\zero)(\rem(e)(\next(w)))
+           : use def-div;
+
+          == \eq(\zero)(\zero)
+           : flop use reiterate; 18 at z in
+             \eq(\zero)(z)
+
+          == \true
+           : use eq-refl;
+
+20.    (c == \next(w)) =&gt;
+         (\div(c)(e) == \true)
+        : discharge next-w; 19
+
+21.    \div(c)(e) == \true
+        : exists-elim w &lt;- k; 11, 20
+
+22. (∃k. c == \next(k)) =&gt;
+      (\div(c)(e) == \true)
+     : discharge next; 21
+
+23. \div(c)(e) == \true
+     : use disj-elim; 1, 10, 22</code></pre>
+<pre class="mycelium"><code>theorem div-plus-impl-l
+if
+  * \div(c)(a) == \true
+  * \div(c)(\plus(a)(b)) == \true
+then
+  * \div(c)(b) == \true
+
+proof
+1.  \div(c)(a) == \true
+     : assumption 1
+
+2.  \div(c)(\plus(a)(b)) == \true
+     : assumption 2
+
+3.  \minus(\plus(a)(b))(a) == \just(b)
+     : use minus-plus-inverse-l;
+
+4.  \div(c)(b) == \true
+     : use div-minus-compat; 1, 2, 3
+
+
+theorem div-plus-impl-r
+if
+  * \div(c)(b) == \true
+  * \div(c)(\plus(a)(b)) == \true
+then
+  * \div(c)(a) == \true
+
+proof
+1. \div(c)(b) == \true
+    : assumption 1
+
+2. \div(c)(\plus(b)(a)) : chain
+
+    == \div(c)(\plus(a)(b))
+     : use plus-comm; at z in
+       \div(c)(z)
+
+    == \true
+     : assumption 2
+
+3. \div(c)(a) == \true
+    : use div-plus-impl-l; 1, 2</code></pre>
 <pre class="mycelium"><code>theorem div-times-absorb-l
 if
   * \div(c)(a) == \true

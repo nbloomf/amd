@@ -61,6 +61,20 @@ proof
      : use simprec-zero;
     == \tup(\zero)(\zero)
      : use def-const;
+
+
+theorem rem-zero-l
+* \rem(\zero)(b) == \zero
+
+proof
+1. \rem(\zero)(b) : chain
+    == \snd(\divalg(\zero)(b))
+     : use def-rem;
+    == \snd(\tup(\zero)(\zero))
+     : use divalg-zero-l; at z in
+       \snd(z)
+    == \zero
+     : use snd-tup;
 ~~~
 
 ~~~ {.mycelium}
@@ -128,6 +142,39 @@ proof
 
 7.  \divalg(a)(\zero) == \tup(\zero)(a)
      : forall-elim k -> a; 6
+
+
+theorem rem-zero-r
+* \rem(a)(\zero) == a
+
+proof
+1. \rem(a)(\zero) : chain
+
+    == \snd(\divalg(a)(\zero))
+     : use def-rem;
+
+    == \snd(\tup(\zero)(a))
+     : use divalg-zero-r; at z in
+       \snd(z)
+
+    == a
+     : use snd-tup;
+
+theorem quo-zero-r
+* \quo(a)(\zero) == \zero
+
+proof
+1. \quo(a)(\zero) : chain
+
+    == \fst(\divalg(a)(\zero))
+     : use def-quo;
+
+    == \fst(\tup(\zero)(a))
+     : use divalg-zero-r; at z in
+       \fst(z)
+
+    == \zero
+     : use fst-tup;
 ~~~
 
 ~~~ {.mycelium}
@@ -495,6 +542,80 @@ proof
 
 3. a == \plus(\times(\quo(a)(\next(b)))(\next(b)))(\rem(a)(\next(b)))
     : use conj-elim-l; 2
+~~~
+
+~~~ {.mycelium}
+theorem divalg-decomp-u
+* a == \plus(\times(\quo(a)(b))(b))(\rem(a)(b))
+
+proof
+1.  (b == \zero) \/ (∃k. b == \next(k))
+     : use nat-disj-cases-1;
+
+2.    b == \zero
+       : hypothesis zero
+
+3.    a : chain
+
+       == \plus(\zero)(a)
+        : flop use plus-zero-l;
+
+       == \plus(\times(\quo(a)(b))(\zero))(a)
+        : flop use times-zero-r; at z in
+          \plus(z)(a)
+
+       == \plus(\times(\quo(a)(b))(b))(a)
+        : flop hypothesis zero at z in
+          \plus(\times(\quo(a)(b))(z))(a)
+
+       == \plus(\times(\quo(a)(b))(b))(\rem(a)(\zero))
+        : flop use rem-zero-r; at z in
+          \plus(\times(\quo(a)(b))(b))(z)
+
+       == \plus(\times(\quo(a)(b))(b))(\rem(a)(b))
+        : flop hypothesis zero at z in
+          \plus(\times(\quo(a)(b))(b))(\rem(a)(z))
+
+4.  (b == \zero) =>
+      (a == \plus(\times(\quo(a)(b))(b))(\rem(a)(b)))
+     : discharge zero; 3
+
+5.    ∃k. b == \next(k)
+       : hypothesis next
+
+6.      b == \next(w)
+         : hypothesis next-w
+
+7.      a : chain
+
+         == \plus(\times(\quo(a)(\next(w)))(\next(w)))(\rem(a)(\next(w)))
+          : use divalg-decomp;
+
+         == \plus(\times(\quo(a)(b))(\next(w)))(\rem(a)(\next(w)))
+          : flop hypothesis next-w at z in
+            \plus(\times(\quo(a)(z))(\next(w)))(\rem(a)(\next(w)))
+
+         == \plus(\times(\quo(a)(b))(b))(\rem(a)(\next(w)))
+          : flop hypothesis next-w at z in
+            \plus(\times(\quo(a)(b))(z))(\rem(a)(\next(w)))
+
+         == \plus(\times(\quo(a)(b))(b))(\rem(a)(b))
+          : flop hypothesis next-w at z in
+            \plus(\times(\quo(a)(b))(b))(\rem(a)(z))
+
+8.    (b == \next(w)) =>
+        (a == \plus(\times(\quo(a)(b))(b))(\rem(a)(b)))
+       : discharge next-w; 7
+
+9.    a == \plus(\times(\quo(a)(b))(b))(\rem(a)(b))
+       : exists-elim w <- k; 5, 8
+
+10. (∃k. b == \next(k)) =>
+      (a == \plus(\times(\quo(a)(b))(b))(\rem(a)(b)))
+     : discharge next; 9
+
+11. a == \plus(\times(\quo(a)(b))(b))(\rem(a)(b))
+     : use disj-elim; 1, 4, 10
 ~~~
 
 ~~~ {.mycelium}
@@ -866,6 +987,31 @@ proof
 ~~~
 
 ~~~ {.mycelium}
+theorem divalg-unique-rem
+if
+  * a == \plus(\times(q)(\next(b)))(r)
+  * \leq(r)(b) == \true
+then
+  * \rem(a)(\next(b)) == r
+
+proof
+1. a == \plus(\times(q)(\next(b)))(r)
+    : assumption 1
+
+2. \leq(r)(b) == \true
+    : assumption 2
+
+3. \rem(a)(\next(b)) : chain
+    == \snd(\divalg(a)(\next(b)))
+     : use def-rem;
+    == \snd(\tup(q)(r))
+     : use divalg-unique; 1, 2 at z in
+       \snd(z)
+    == r
+     : use snd-tup;
+~~~
+
+~~~ {.mycelium}
 theorem divalg-nat-one
 * \divalg(a)(\next(\zero)) == \tup(a)(\zero)
 
@@ -939,6 +1085,23 @@ proof
 
 3. \divalg(\times(a)(\next(b)))(\next(b)) == \tup(a)(\zero)
     : use divalg-unique; 1, 2
+
+
+theorem rem-times
+* \rem(\times(a)(\next(b)))(\next(b)) == \zero
+
+proof
+1. \rem(\times(a)(\next(b)))(\next(b)) : chain
+
+    == \snd(\divalg(\times(a)(\next(b)))(\next(b)))
+     : use def-rem;
+
+    == \snd(\tup(a)(\zero))
+     : use divalg-times; at z in
+       \snd(z)
+
+    == \zero
+     : use snd-tup;
 ~~~
 
 ~~~ {.mycelium}
@@ -1002,4 +1165,200 @@ proof
 
 11. \rem(a)(a) == \zero
      : use disj-elim; 1, 4, 10
+~~~
+
+~~~ {.mycelium}
+theorem rem-plus-quo
+* \rem(\plus(\times(n)(q))(a))(n) == \rem(a)(n)
+
+proof
+1.  (n == \zero) \/ (∃k. n == \next(k))
+     : use nat-disj-cases-1;
+
+2.    n == \zero
+       : hypothesis zero
+
+3.    \rem(\plus(\times(n)(q))(a))(n) : chain
+
+       == \rem(\plus(\times(\zero)(q))(a))(n)
+        : hypothesis zero at z in
+          \rem(\plus(\times(z)(q))(a))(n)
+
+       == \rem(\plus(\zero)(a))(n)
+        : use times-zero-l; at z in
+          \rem(\plus(z)(a))(n)
+
+       == \rem(a)(n)
+        : use plus-zero-l; at z in
+          \rem(z)(n)
+
+4.  (n == \zero) =>
+      (\rem(\plus(\times(n)(q))(a))(n) == \rem(a)(n))
+     : discharge zero; 3
+
+5.    ∃k. n == \next(k)
+       : hypothesis next
+
+6.      n == \next(w)
+         : hypothesis next-w
+
+7.      \plus(\times(n)(q))(a) : chain
+
+         == \plus(\times(q)(n))(a)
+          : use times-comm; at z in
+            \plus(z)(a)
+
+         == \plus(\times(q)(\next(w)))(a)
+          : hypothesis next-w at z in
+            \plus(\times(q)(z))(a)
+
+         == \plus(\times(q)(\next(w)))(
+              \plus(\times(\quo(a)(\next(w)))(\next(w)))(\rem(a)(\next(w))))
+          : use divalg-decomp; at z in
+            \plus(\times(q)(\next(w)))(z)
+
+         == \plus(
+              \plus(
+                \times(q)(\next(w)))(
+                \times(\quo(a)(\next(w)))(\next(w))))(
+              \rem(a)(\next(w)))
+          : use plus-assoc-l;
+
+         == \plus(
+              \times(\plus(q)(\quo(a)(\next(w))))(\next(w)))(
+              \rem(a)(\next(w)))
+          : flop use times-plus-dist-r; at z in
+            \plus(z)(\rem(a)(\next(w)))
+
+8.      \leq(\rem(a)(\next(w)))(w) == \true
+         : use divalg-bound;
+
+9.      \rem(\plus(\times(n)(q))(a))(n) : chain
+
+         == \rem(\plus(\times(n)(q))(a))(\next(w))
+          : hypothesis next-w at z in
+            \rem(\plus(\times(n)(q))(a))(z)
+
+         == \rem(a)(\next(w))
+          : use divalg-unique-rem; 7, 8
+
+         == \rem(a)(n)
+          : flop hypothesis next-w at z in
+            \rem(a)(z)
+
+10.   (n == \next(w)) =>
+        (\rem(\plus(\times(n)(q))(a))(n) == \rem(a)(n))
+       : discharge next-w; 9
+
+11.   \rem(\plus(\times(n)(q))(a))(n) == \rem(a)(n)
+       : exists-elim w <- k; 5, 10
+
+12. (∃k. n == \next(k)) =>
+      (\rem(\plus(\times(n)(q))(a))(n) == \rem(a)(n))
+     : discharge next; 11
+
+13. \rem(\plus(\times(n)(q))(a))(n) == \rem(a)(n)
+     : use disj-elim; 1, 4, 12
+~~~
+
+~~~ {.mycelium}
+theorem rem-plus-l
+* \rem(\plus(a)(b))(n) == \rem(\plus(\rem(a)(n))(\rem(b)(n)))(n)
+
+proof
+1. \rem(\plus(a)(b))(n) : chain
+
+    == \rem(
+         \plus(
+           \plus(\times(\quo(a)(n))(n))(\rem(a)(n)))(
+           b))(
+         n)
+     : use divalg-decomp-u; at z in
+       \rem(\plus(z)(b))(n)
+
+    == \rem(
+         \plus(
+           \plus(
+             \times(\quo(a)(n))(n))(
+             \rem(a)(n)))(
+           \plus(
+             \times(\quo(b)(n))(n))(
+             \rem(b)(n))))(
+         n)
+     : use divalg-decomp-u; at z in
+       \rem(
+         \plus(
+           \plus(\times(\quo(a)(n))(n))(\rem(a)(n)))(
+           z))(
+         n)
+
+    == \rem(
+         \plus(
+           \plus(
+             \times(\quo(a)(n))(n))(
+             \times(\quo(b)(n))(n)))(
+           \plus(
+             \rem(a)(n))(
+             \rem(b)(n))))(
+         n)
+     : use plus-abide; at z in
+       \rem(z)(n)
+
+    == \rem(
+         \plus(
+           \times(\plus(\quo(a)(n))(\quo(b)(n)))(n))(
+           \plus(
+             \rem(a)(n))(
+             \rem(b)(n))))(
+         n)
+     : flop use times-plus-dist-r; at z in
+       \rem(
+         \plus(
+           z)(
+           \plus(
+             \rem(a)(n))(
+             \rem(b)(n))))(
+         n)
+
+    == \rem(
+         \plus(
+           \times(n)(\plus(\quo(a)(n))(\quo(b)(n))))(
+           \plus(
+             \rem(a)(n))(
+             \rem(b)(n))))(
+         n)
+     : flop use times-comm; at z in
+       \rem(
+         \plus(
+           z)(
+           \plus(
+             \rem(a)(n))(
+             \rem(b)(n))))(
+         n)
+
+    == \rem(\plus(\rem(a)(n))(\rem(b)(n)))(n)
+     : use rem-plus-quo;
+~~~
+
+~~~ {.mycelium}
+theorem rem-rem
+* \rem(\rem(a)(n))(n) == \rem(a)(n)
+
+proof
+1. \rem(\rem(a)(n))(n) : chain
+
+    == \rem(\plus(\rem(a)(n))(\zero))(n)
+     : flop use plus-zero-r; at z in
+       \rem(z)(n)
+
+    == \rem(\plus(\rem(a)(n))(\rem(\zero)(n)))(n)
+     : flop use rem-zero-l; at z in
+       \rem(\plus(\rem(a)(n))(z))(n)
+
+    == \rem(\plus(a)(\zero))(n)
+     : flop use rem-plus-l;
+
+    == \rem(a)(n)
+     : use plus-zero-r; at z in
+       \rem(z)(n)
 ~~~

@@ -231,6 +231,27 @@ proof
 
 11. \times(a)(\plus(b)(c)) == \plus(\times(a)(b))(\times(a)(c))
      : forall-elim k -> b; 10
+
+
+theorem times-plus-dist-r
+* \times(\plus(b)(c))(a) == \plus(\times(b)(a))(\times(c)(a))
+
+proof
+1. \times(\plus(b)(c))(a) : chain
+
+    == \times(a)(\plus(b)(c))
+     : use times-comm;
+
+    == \plus(\times(a)(b))(\times(a)(c))
+     : use times-plus-dist-l;
+
+    == \plus(\times(b)(a))(\times(a)(c))
+     : use times-comm; at z in
+       \plus(z)(\times(a)(c))
+
+    == \plus(\times(b)(a))(\times(c)(a))
+     : use times-comm; at z in
+       \plus(\times(b)(a))(z)
 ~~~
 
 $\times$ is associative.

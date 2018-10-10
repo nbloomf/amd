@@ -1197,3 +1197,31 @@ proof
     == \minus(a)(b)
      : use minus-plus-cancel-r;
 ~~~
+
+~~~ {.mycelium}
+theorem minus-times-cancel-l
+if
+  * \minus(\times(\next(c))(a))(\times(\next(c))(b))
+     == \just(\times(\next(c))(e))
+then
+  * \minus(a)(b) == \just(e)
+
+proof
+1. \minus(\times(\next(c))(a))(\times(\next(c))(b))
+    == \just(\times(\next(c))(e))
+     : assumption 1
+
+2. \times(\next(c))(a) : chain
+
+    == \plus(\times(\next(c))(e))(\times(\next(c))(b))
+     : use minus-to-plus; 1
+
+    == \times(\next(c))(\plus(e)(b))
+     : flop use times-plus-dist-l;
+
+3. a == \plus(e)(b)
+    : use times-cancel-l; 2
+
+4. \minus(a)(b) == \just(e)
+    : use plus-to-minus; 3
+~~~
