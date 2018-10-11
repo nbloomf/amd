@@ -360,7 +360,7 @@ proof
 ~~~
 
 ~~~ {.mycelium}
-theorem div-sym
+theorem div-antisym
 if
   * \div(a)(b) == \true
   * \div(b)(a) == \true
@@ -875,4 +875,42 @@ proof
        \div(c)(z)
     == \true
      : use div-times-absorb-l; 1
+~~~
+
+~~~ {.mycelium}
+theorem div-one-is-one
+if
+  * \div(a)(\next(\zero)) == \true
+then
+  * a == \next(\zero)
+
+proof
+1. \div(a)(\next(\zero)) == \true
+    : assumption 1
+
+2. \times(a)(\quo(\next(\zero))(a)) : chain
+    == \next(\zero)
+     : flop use div-times-quo; 1
+
+3. (a == \next(\zero)) /\
+     (\quo(\next(\zero))(a) == \next(\zero))
+    : use times-eq-one; 2
+
+4. a == \next(\zero)
+    : use conj-elim-l; 3
+~~~
+
+~~~ {.mycelium}
+theorem div-one-l
+* \div(\next(\zero))(a) == \true
+
+proof
+1. \div(\next(\zero))(a) : chain
+    == \eq(\zero)(\rem(a)(\next(\zero)))
+     : use def-div;
+    == \eq(\zero)(\zero)
+     : use rem-one-r; at z in
+       \eq(\zero)(z)
+    == \true
+     : use eq-refl;
 ~~~

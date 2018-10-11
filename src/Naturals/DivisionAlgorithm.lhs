@@ -1362,3 +1362,35 @@ proof
      : use plus-zero-r; at z in
        \rem(z)(n)
 ~~~
+
+~~~ {.mycelium}
+theorem divalg-one-r
+* \divalg(a)(\next(\zero)) == \tup(a)(\zero)
+
+proof
+1. a : chain
+    == \times(a)(\next(\zero))
+     : flop use times-one-r;
+    == \plus(\times(a)(\next(\zero)))(\zero)
+     : flop use plus-zero-r;
+
+2. \leq(\zero)(\zero) == \true
+    : use leq-refl;
+
+3. \divalg(a)(\next(\zero)) == \tup(a)(\zero)
+    : use divalg-unique; 1, 2
+
+
+theorem rem-one-r
+* \rem(a)(\next(\zero)) == \zero
+
+proof
+1. \rem(a)(\next(\zero)) : chain
+    == \snd(\divalg(a)(\next(\zero)))
+     : use def-rem;
+    == \snd(\tup(a)(\zero))
+     : use divalg-one-r; at z in
+       \snd(z)
+    == \zero
+     : use snd-tup;
+~~~

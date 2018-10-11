@@ -784,6 +784,31 @@ proof
 ~~~
 
 ~~~ {.mycelium}
+theorem gcd-div-l
+* \div(\gcd(a)(b))(a) == \true
+
+proof
+1. (\div(\gcd(a)(b))(a) == \true) /\
+     (\div(\gcd(a)(b))(b) == \true)
+    : use gcd-div;
+
+2. \div(\gcd(a)(b))(a) == \true
+    : use conj-elim-l; 1
+
+
+theorem gcd-div-r
+* \div(\gcd(a)(b))(b) == \true
+
+proof
+1. (\div(\gcd(a)(b))(a) == \true) /\
+     (\div(\gcd(a)(b))(b) == \true)
+    : use gcd-div;
+
+2. \div(\gcd(a)(b))(b) == \true
+    : use conj-elim-r; 1
+~~~
+
+~~~ {.mycelium}
 theorem gcd-glb
 if
   * \div(c)(a) == \true
@@ -1022,4 +1047,227 @@ proof
 
 47. \div(c)(\gcd(a)(b)) == \true
      : use impl-elim; 46, 43
+~~~
+
+~~~ {.mycelium}
+theorem gcd-unique
+if
+  * (\div(m)(a) == \true) /\ (\div(m)(b) == \true)
+  * ∀u. ((\div(u)(a) == \true) /\ (\div(u)(b) == \true)) =>
+      (\div(u)(m) == \true)
+then
+  * m == \gcd(a)(b)
+
+proof
+1. (\div(\gcd(a)(b))(a) == \true) /\
+     (\div(\gcd(a)(b))(b) == \true)
+    : use gcd-div;
+
+2. ∀u. ((\div(u)(a) == \true) /\
+     (\div(u)(b) == \true)) =>
+       (\div(u)(m) == \true)
+    : assumption 2
+
+3. ((\div(\gcd(a)(b))(a) == \true) /\
+     (\div(\gcd(a)(b))(b) == \true)) =>
+       (\div(\gcd(a)(b))(m) == \true)
+    : forall-elim u -> \gcd(a)(b); 2
+
+4. \div(\gcd(a)(b))(m) == \true
+    : use impl-elim; 1, 3
+
+5. (\div(m)(a) == \true) /\ (\div(m)(b) == \true)
+    : assumption 1
+
+6. \div(m)(a) == \true
+    : use conj-elim-l; 5
+
+7. \div(m)(b) == \true
+    : use conj-elim-r; 5
+
+8. \div(m)(\gcd(a)(b)) == \true
+    : use gcd-glb; 6, 7
+
+9. m == \gcd(a)(b)
+    : use div-antisym; 8, 4
+~~~
+
+~~~ {.mycelium}
+theorem gcd-idemp
+* \gcd(a)(a) == a
+
+proof
+1.  \div(a)(a) == \true
+     : use div-refl;
+
+2.  (\div(a)(a) == \true) /\ (\div(a)(a) == \true)
+     : use conj-intro; 1, 1
+
+3.    (\div(x)(a) == \true) /\ (\div(x)(a) == \true)
+       : hypothesis div
+
+4.    \div(x)(a) == \true
+       : use conj-elim-l; 3
+
+5.  ((\div(x)(a) == \true) /\ (\div(x)(a) == \true)) =>
+      (\div(x)(a) == \true)
+     : discharge div; 4
+
+6.  ∀u. ((\div(u)(a) == \true) /\ (\div(u)(a) == \true)) =>
+      (\div(u)(a) == \true)
+     : forall-intro x -> u; 5
+
+7.  a == \gcd(a)(a)
+     : use gcd-unique; 2, 6
+
+8.  \gcd(a)(a) == a
+     : use eq-sym; 7
+~~~
+
+~~~ {.mycelium}
+theorem gcd-comm
+* \gcd(a)(b) == \gcd(b)(a)
+
+proof
+1. (\div(\gcd(a)(b))(a) == \true) /\
+     (\div(\gcd(a)(b))(b) == \true)
+    : use gcd-div;
+
+2. \div(\gcd(a)(b))(a) == \true
+    : use conj-elim-l; 1
+
+3. \div(\gcd(a)(b))(b) == \true
+    : use conj-elim-r; 1
+
+4. \div(\gcd(a)(b))(\gcd(b)(a)) == \true
+    : use gcd-glb; 3, 2
+
+5. (\div(\gcd(b)(a))(b) == \true) /\
+     (\div(\gcd(b)(a))(a) == \true)
+    : use gcd-div;
+
+6. \div(\gcd(b)(a))(b) == \true
+    : use conj-elim-l; 5
+
+7. \div(\gcd(b)(a))(a) == \true
+    : use conj-elim-r; 5
+
+8. \div(\gcd(b)(a))(\gcd(a)(b)) == \true
+    : use gcd-glb; 7, 6
+
+9. \gcd(a)(b) == \gcd(b)(a)
+    : use div-antisym; 4, 8
+~~~
+
+~~~ {.mycelium}
+theorem gcd-assoc-l
+* \gcd(a)(\gcd(b)(c)) == \gcd(\gcd(a)(b))(c)
+
+proof
+1.  \div(\gcd(a)(\gcd(b)(c)))(a) == \true
+     : use gcd-div-l;
+
+2.  \div(\gcd(a)(\gcd(b)(c)))(\gcd(b)(c)) == \true
+     : use gcd-div-r;
+
+3.  \div(\gcd(b)(c))(b) == \true
+     : use gcd-div-l;
+
+4.  \div(\gcd(a)(\gcd(b)(c)))(b) == \true
+     : use div-trans; 2, 3
+
+5.  \div(\gcd(b)(c))(c) == \true
+     : use gcd-div-r;
+
+6.  \div(\gcd(a)(\gcd(b)(c)))(c) == \true
+     : use div-trans; 2, 5
+
+7.  \div(\gcd(a)(\gcd(b)(c)))(\gcd(a)(b)) == \true
+     : use gcd-glb; 1, 4
+
+8.  \div(\gcd(a)(\gcd(b)(c)))(\gcd(\gcd(a)(b))(c)) == \true
+     : use gcd-glb; 7, 6
+
+9.  \div(\gcd(\gcd(a)(b))(c))(c) == \true
+     : use gcd-div-r;
+
+10. \div(\gcd(\gcd(a)(b))(c))(\gcd(a)(b)) == \true
+     : use gcd-div-l;
+
+11. \div(\gcd(a)(b))(a) == \true
+     : use gcd-div-l;
+
+12. \div(\gcd(\gcd(a)(b))(c))(a) == \true
+     : use div-trans; 10, 11
+
+13. \div(\gcd(a)(b))(b) == \true
+     : use gcd-div-r;
+
+14. \div(\gcd(\gcd(a)(b))(c))(b) == \true
+     : use div-trans; 10, 13
+
+15. \div(\gcd(\gcd(a)(b))(c))(\gcd(b)(c)) == \true
+     : use gcd-glb; 14, 9
+
+16. \div(\gcd(\gcd(a)(b))(c))(\gcd(a)(\gcd(b)(c))) == \true
+     : use gcd-glb; 12, 15
+
+17. \gcd(a)(\gcd(b)(c)) == \gcd(\gcd(a)(b))(c)
+     : use div-antisym; 8, 16
+
+
+theorem gcd-assoc-r
+* \gcd(\gcd(a)(b))(c) == \gcd(a)(\gcd(b)(c))
+
+proof
+1. \gcd(a)(\gcd(b)(c)) == \gcd(\gcd(a)(b))(c)
+    : use gcd-assoc-l;
+
+2. \gcd(\gcd(a)(b))(c) == \gcd(a)(\gcd(b)(c))
+    : use eq-sym; 1
+~~~
+
+~~~ {.mycelium}
+theorem gcd-one-r
+* \gcd(a)(\next(\zero)) == \next(\zero)
+
+proof
+1.  \div(\next(\zero))(a) == \true
+     : use div-one-l;
+
+2.  \div(\next(\zero))(\next(\zero)) == \true
+     : use div-refl;
+
+3.  (\div(\next(\zero))(a) == \true) /\
+      (\div(\next(\zero))(\next(\zero)) == \true)
+     : use conj-intro; 1, 2
+
+4.    (\div(x)(a) == \true) /\ (\div(x)(\next(\zero)) == \true)
+       : hypothesis div
+
+5.    \div(x)(\next(\zero)) == \true
+       : use conj-elim-r; 4
+
+6.  ((\div(x)(a) == \true) /\ (\div(x)(\next(\zero)) == \true)) =>
+      (\div(x)(\next(\zero)) == \true)
+     : discharge div; 5
+
+7.  ∀u. ((\div(u)(a) == \true) /\ (\div(u)(\next(\zero)) == \true)) =>
+      (\div(u)(\next(\zero)) == \true)
+     : forall-intro x -> u; 6
+
+8.  \gcd(a)(\next(\zero)) : chain
+     == \next(\zero)
+      : flop use gcd-unique; 3, 7
+
+
+theorem gcd-one-l
+* \gcd(\next(\zero))(a) == \next(\zero)
+
+proof
+1. \gcd(\next(\zero))(a) : chain
+    == \gcd(a)(\next(\zero))
+     : use gcd-comm;
+    == \next(\zero)
+     : use gcd-one-r;
 ~~~
