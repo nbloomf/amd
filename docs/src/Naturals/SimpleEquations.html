@@ -110,7 +110,7 @@ proof
 9.  (∃n. \zero == \plus(\next(\zero))(n)) =&gt;
       (~(∃n. \zero == \next(n))) : use simp; 8
 10. ~(∃n. \zero == \plus(\next(\zero))(n)) : use neg-intro; 7, 9</code></pre>
-<p>We’ve already shown that <span class="math inline">\(ab = 0\)</span> has only one solution – namely <span class="math inline">\(a = \zero, b = \zero\)</span>. The same is true of <span class="math display">\[0 = a + b.\]</span></p>
+<p>The same is true of <span class="math display">\[0 = a + b.\]</span></p>
 <pre class="mycelium"><code>theorem plus-eq-zero
 if
   * \plus(a)(b) == \zero

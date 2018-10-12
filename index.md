@@ -17,30 +17,31 @@ You can see a theorem [dependency graph](/images/dependency-graph.png) (warning:
 Contents
 --------
 
-* Natural Deduction
-  * [Basics](/src/Proof/Basics.html)
-  * [Conjunction and Disjunction](/src/Proof/ConjDisj.html)
-  * [Equality](/src/Proof/Equality.html)
-  * [Universal Quantification](/src/Proof/ForAll.html)
-  * [Existential Quantification](/src/Proof/Exists.html)
-  * [Negation](/src/Proof/Neg.html)
-  * [Equivalence](/src/Proof/Equiv.html)
-* Functions
-  * [Identity and Composition](/src/Functions/IdComp.html)
-  * [Const](/src/Functions/Const.html)
-  * [Flip](/src/Functions/Flip.html)
-  * [Clone](/src/Functions/Clone.html)
-  * [Helpers](/src/Functions/Helpers.html)
-* [Booleans](/src/Booleans.html)
-  * [And](/src/Booleans/And.html)
-  * [Or](/src/Booleans/Or.html)
-  * [Not](/src/Booleans/Not.html)
-  * [Eq](/src/Booleans/Eq.html)
-* [Types](/src/Types.html)
-  * [Unit](/src/Types/Unit.html)
-  * [Pair](/src/Types/Pair.html)
-  * [Either](/src/Types/Either.html)
-  * [Maybe](/src/Types/Maybe.html)
+* Proofs and Types
+  * Natural Deduction
+    * [Basics](/src/Proof/Basics.html)
+    * [Conjunction and Disjunction](/src/Proof/ConjDisj.html)
+    * [Equality](/src/Proof/Equality.html)
+    * [Universal Quantification](/src/Proof/ForAll.html)
+    * [Existential Quantification](/src/Proof/Exists.html)
+    * [Negation](/src/Proof/Neg.html)
+    * [Equivalence](/src/Proof/Equiv.html)
+  * Functions
+    * [Identity and Composition](/src/Functions/IdComp.html)
+    * [Const](/src/Functions/Const.html)
+    * [Flip](/src/Functions/Flip.html)
+    * [Clone](/src/Functions/Clone.html)
+    * [Helpers](/src/Functions/Helpers.html)
+  * [Booleans](/src/Booleans.html)
+    * [And](/src/Booleans/And.html)
+    * [Or](/src/Booleans/Or.html)
+    * [Not](/src/Booleans/Not.html)
+    * [Eq](/src/Booleans/Eq.html)
+  * [Types](/src/Types.html)
+    * [Unit](/src/Types/Unit.html)
+    * [Pair](/src/Types/Pair.html)
+    * [Either](/src/Types/Either.html)
+    * [Maybe](/src/Types/Maybe.html)
 * [Natural Numbers](/src/Naturals.html)
   * Recursion Operators
     * [Simple Recursion](/src/Naturals/SimpleRecursion.html)
@@ -59,6 +60,8 @@ Contents
     * [Iterative Norms](/src/Naturals/IterativeNorm.html)
     * [Greatest Common Divisor](/src/Naturals/GreatestCommonDivisor.html)
 * Lists
+    * Recursion Operators
+    * Arithmetic
 
 <p style="text-align: center;">⁂</p>
 

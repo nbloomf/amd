@@ -188,7 +188,7 @@ definition def-gcd
 ~~~
 
 ~~~ {.mycelium}
-theorem gcd-recur
+theorem gcd-recur-if
 * \gcd(a)(b) == \if(a)(\gcd(b)(\rem(a)(b)))(\eq(\zero)(b))
 
 proof
@@ -410,7 +410,7 @@ proof
          a)(
          \gcd(\zero)(\rem(a)(\zero)))(
          \eq(\zero)(\zero))
-     : use gcd-recur;
+     : use gcd-recur-if;
 
     == \if(a)(\gcd(\zero)(\rem(a)(\zero)))(\true)
      : use eq-refl; at z in
@@ -462,7 +462,7 @@ proof
               \zero)(
               \gcd(\next(t))(\rem(\zero)(\next(t))))(
               \eq(\zero)(\next(t)))
-          : use gcd-recur;
+          : use gcd-recur-if;
 
          == \if(
               \zero)(
@@ -507,6 +507,73 @@ proof
 
 11. \gcd(\zero)(b) == b
      : use disj-elim; 1, 4, 10
+~~~
+
+~~~ {.mycelium}
+theorem gcd-recur
+* \gcd(a)(b) == \gcd(b)(\rem(a)(b))
+
+proof
+1.  (\eq(\zero)(b) == \true) \/ (\eq(\zero)(b) == \false)
+     : use bool-cases;
+
+2.    \eq(\zero)(b) == \true
+       : hypothesis t
+
+3.    \zero == b
+       : use eq-dereify; 2
+
+4.    \gcd(a)(b) : chain
+
+       == \if(a)(\gcd(b)(\rem(a)(b)))(\eq(\zero)(b))
+        : use gcd-recur-if;
+
+       == \if(a)(\gcd(b)(\rem(a)(b)))(\true)
+        : hypothesis t at z in
+          \if(a)(\gcd(b)(\rem(a)(b)))(z)
+
+       == a
+        : use if-true;
+
+       == \rem(a)(\zero)
+        : flop use rem-zero-r;
+
+       == \rem(a)(b)
+        : use reiterate; 3 at z in
+          \rem(a)(z)
+
+       == \gcd(\zero)(\rem(a)(b))
+        : flop use gcd-zero-l;
+
+       == \gcd(b)(\rem(a)(b))
+        : use reiterate; 3 at z in
+          \gcd(z)(\rem(a)(b))
+
+5.  (\eq(\zero)(b) == \true) =>
+      (\gcd(a)(b) == \gcd(b)(\rem(a)(b)))
+     : discharge t; 4
+
+6.    \eq(\zero)(b) == \false
+       : hypothesis f
+
+7.    \gcd(a)(b) : chain
+
+       == \if(a)(\gcd(b)(\rem(a)(b)))(\eq(\zero)(b))
+        : use gcd-recur-if;
+
+       == \if(a)(\gcd(b)(\rem(a)(b)))(\false)
+        : hypothesis f at z in
+          \if(a)(\gcd(b)(\rem(a)(b)))(z)
+
+       == \gcd(b)(\rem(a)(b))
+        : use if-false;
+
+8.  (\eq(\zero)(b) == \false) =>
+      (\gcd(a)(b) == \gcd(b)(\rem(a)(b)))
+     : discharge f; 7
+
+9.  \gcd(a)(b) == \gcd(b)(\rem(a)(b))
+     : use disj-elim; 1, 5, 8
 ~~~
 
 ~~~ {.mycelium}
@@ -611,7 +678,7 @@ proof
                 a)(
                 \gcd(\next(n))(\rem(a)(\next(n))))(
                 \eq(\zero)(\next(n)))
-            : use gcd-recur;
+            : use gcd-recur-if;
 
            == \if(
                 a)(
@@ -942,7 +1009,7 @@ proof
 29.         \div(c)(\gcd(a)(b)) : chain
 
              == \div(c)(\if(a)(\gcd(b)(\rem(a)(b)))(\eq(\zero)(b)))
-              : use gcd-recur; at z in
+              : use gcd-recur-if; at z in
                 \div(c)(z)
 
              == \div(c)(\if(a)(\gcd(b)(\rem(a)(b)))(\eq(\zero)(\next(n))))
@@ -1270,4 +1337,285 @@ proof
      : use gcd-comm;
     == \next(\zero)
      : use gcd-one-r;
+~~~
+
+~~~ {.mycelium}
+theorem gcd-is-zero
+if
+  * \gcd(a)(b) == \zero
+then
+  * (a == \zero) /\ (b == \zero)
+
+proof
+1. \div(\zero)(a) : chain
+
+    == \div(\gcd(a)(b))(a)
+     : flop assumption 1 at z in
+       \div(z)(a)
+
+    == \true
+     : use gcd-div-l;
+
+2. a == \zero
+    : use div-zero-l; 1
+
+3. \div(\zero)(b) : chain
+
+    == \div(\gcd(a)(b))(b)
+     : flop assumption 1 at z in
+       \div(z)(b)
+
+    == \true
+     : use gcd-div-r;
+
+4. b == \zero
+    : use div-zero-l; 3
+
+5. (a == \zero) /\ (b == \zero)
+    : use conj-intro; 2, 4
+~~~
+
+~~~ {.mycelium}
+theorem gcd-div-impl-l
+if
+  * \div(a)(b) == \true
+then
+  * \gcd(a)(b) == a
+
+proof
+1. \div(a)(b) == \true
+    : assumption 1
+
+2. \rem(b)(a) == \zero
+    : use div-rem-zero; 1
+
+3. \gcd(a)(b) : chain
+    == \gcd(b)(a)
+     : use gcd-comm;
+    == \gcd(a)(\rem(b)(a))
+     : use gcd-recur;
+    == \gcd(a)(\zero)
+     : use reiterate; 2 at z in
+       \gcd(a)(z)
+    == a
+     : use gcd-zero-r;
+
+
+theorem gcd-impl-div-l
+if
+  * \gcd(a)(b) == a
+then
+  * \div(a)(b) == \true
+
+proof
+1. \div(a)(b) : chain
+
+    == \div(\gcd(a)(b))(b)
+     : flop assumption 1 at z in
+       \div(z)(b)
+
+    == \true
+     : use gcd-div-r;
+~~~
+
+~~~ {.mycelium}
+theorem gcd-div-compat
+if
+  * \div(a)(b) == \true
+then
+  * \div(\gcd(a)(c))(\gcd(b)(c)) == \true
+
+proof
+1. \div(a)(b) == \true
+    : assumption 1
+
+2. \gcd(a)(b) == a
+    : use gcd-div-impl-l; 1
+
+3. \gcd(\gcd(a)(c))(\gcd(b)(c)) : chain
+
+    == \gcd(\gcd(\gcd(a)(c))(b))(c)
+     : use gcd-assoc-l;
+
+    == \gcd(\gcd(a)(\gcd(c)(b)))(c)
+     : use gcd-assoc-r; at z in
+       \gcd(z)(c)
+
+    == \gcd(\gcd(a)(\gcd(b)(c)))(c)
+     : use gcd-comm; at z in
+       \gcd(\gcd(a)(z))(c)
+
+    == \gcd(\gcd(\gcd(a)(b))(c))(c)
+     : use gcd-assoc-l; at z in
+       \gcd(z)(c)
+
+    == \gcd(\gcd(a)(b))(\gcd(c)(c))
+     : use gcd-assoc-r;
+
+    == \gcd(\gcd(a)(b))(c)
+     : use gcd-idemp; at z in
+       \gcd(\gcd(a)(b))(z)
+
+    == \gcd(a)(c)
+     : use reiterate; 2 at z in
+       \gcd(z)(c)
+
+4. \div(\gcd(a)(c))(\gcd(b)(c)) == \true
+    : use gcd-impl-div-l; 3
+~~~
+
+~~~ {.mycelium}
+theorem times-gcd-dist-l
+* \times(a)(\gcd(b)(c)) == \gcd(\times(a)(b))(\times(a)(c))
+
+proof
+1.  (a == \zero) \/ (∃k. a == \next(k))
+     : use nat-disj-cases-1;
+
+2.    a == \zero
+       : hypothesis zero
+
+3.    \times(a)(\gcd(b)(c)) : chain
+
+       == \times(\zero)(\gcd(b)(c))
+        : hypothesis zero at z in
+          \times(z)(\gcd(b)(c))
+
+       == \zero
+        : use times-zero-l;
+
+       == \gcd(\zero)(\zero)
+        : flop use gcd-zero-l;
+
+       == \gcd(\times(\zero)(b))(\zero)
+        : flop use times-zero-l; at z in
+          \gcd(z)(\zero)
+
+       == \gcd(\times(\zero)(b))(\times(\zero)(c))
+        : flop use times-zero-l; at z in
+          \gcd(\times(\zero)(b))(z)
+
+       == \gcd(\times(a)(b))(\times(\zero)(c))
+        : flop hypothesis zero at z in
+          \gcd(\times(z)(b))(\times(\zero)(c))
+
+       == \gcd(\times(a)(b))(\times(a)(c))
+        : flop hypothesis zero at z in
+          \gcd(\times(a)(b))(\times(z)(c))
+
+4.  (a == \zero) =>
+      (\times(a)(\gcd(b)(c)) == \gcd(\times(a)(b))(\times(a)(c)))
+     : discharge zero; 3
+
+5.    ∃k. a == \next(k)
+       : hypothesis next
+
+6.      a == \next(u)
+         : hypothesis u
+
+7.      \div(\gcd(b)(c))(b) == \true
+         : use gcd-div-l;
+
+8.      \div(\times(a)(\gcd(b)(c)))(\times(a)(b)) == \true
+         : use div-times-compat-l; 7
+
+9.      \div(\gcd(b)(c))(c) == \true
+         : use gcd-div-r;
+
+10.     \div(\times(a)(\gcd(b)(c)))(\times(a)(c)) == \true
+         : use div-times-compat-l; 9
+
+11.     \div(\times(a)(\gcd(b)(c)))(\gcd(\times(a)(b))(\times(a)(c))) == \true
+         : use gcd-glb; 8, 10
+
+12.     \div(a)(\times(a)(b)) == \true
+         : use div-times-l;
+
+13.     \div(a)(\times(a)(c)) == \true
+         : use div-times-l;
+
+14.     \div(a)(\gcd(\times(a)(b))(\times(a)(c))) == \true
+         : use gcd-glb; 12, 13
+
+15.     ∃k. \gcd(\times(a)(b))(\times(a)(c)) == \times(a)(k)
+         : use div-impl-times; 14
+
+16.       \gcd(\times(a)(b))(\times(a)(c)) == \times(a)(w)
+           : hypothesis w
+
+17.       \div(\times(\next(u))(w))(\times(\next(u))(b)) : chain
+
+           == \div(\times(a)(w))(\times(\next(u))(b))
+            : flop hypothesis u at z in
+              \div(\times(z)(w))(\times(\next(u))(b))
+
+           == \div(\times(a)(w))(\times(a)(b))
+            : flop hypothesis u at z in
+              \div(\times(a)(w))(\times(z)(b))
+
+           == \div(\gcd(\times(a)(b))(\times(a)(c)))(\times(a)(b))
+            : flop hypothesis w at z in
+              \div(z)(\times(a)(b))
+
+           == \true
+            : use gcd-div-l;
+
+18.       \div(w)(b) == \true
+           : use div-times-next-cancel-l; 17
+
+19.       \div(\times(\next(u))(w))(\times(\next(u))(c)) : chain
+
+           == \div(\times(a)(w))(\times(\next(u))(c))
+            : flop hypothesis u at z in
+              \div(\times(z)(w))(\times(\next(u))(c))
+
+           == \div(\times(a)(w))(\times(a)(c))
+            : flop hypothesis u at z in
+              \div(\times(a)(w))(\times(z)(c))
+
+           == \div(\gcd(\times(a)(b))(\times(a)(c)))(\times(a)(c))
+            : flop hypothesis w at z in
+              \div(z)(\times(a)(c))
+
+           == \true
+            : use gcd-div-r;
+
+20.       \div(w)(c) == \true
+           : use div-times-next-cancel-l; 19
+
+21.       \div(w)(\gcd(b)(c)) == \true
+           : use gcd-glb; 18, 20
+
+22.       \div(\gcd(\times(a)(b))(\times(a)(c)))(\times(a)(\gcd(b)(c))) : chain
+
+           == \div(\times(a)(w))(\times(a)(\gcd(b)(c)))
+            : hypothesis w at z in
+              \div(z)(\times(a)(\gcd(b)(c)))
+
+           == \true
+            : use div-times-compat-l; 21
+
+23.       \times(a)(\gcd(b)(c)) == \gcd(\times(a)(b))(\times(a)(c))
+           : use div-antisym; 11, 22
+
+24.     (\gcd(\times(a)(b))(\times(a)(c)) == \times(a)(w)) =>
+          (\times(a)(\gcd(b)(c)) == \gcd(\times(a)(b))(\times(a)(c)))
+         : discharge w; 23
+
+25.     \times(a)(\gcd(b)(c)) == \gcd(\times(a)(b))(\times(a)(c))
+         : exists-elim w <- k; 15, 24
+
+26.   (a == \next(u)) =>
+        (\times(a)(\gcd(b)(c)) == \gcd(\times(a)(b))(\times(a)(c)))
+       : discharge u; 25
+
+27.   \times(a)(\gcd(b)(c)) == \gcd(\times(a)(b))(\times(a)(c))
+       : exists-elim u <- k; 5, 26
+
+28. (∃k. a == \next(k)) =>
+      (\times(a)(\gcd(b)(c)) == \gcd(\times(a)(b))(\times(a)(c)))
+     : discharge next; 27
+
+29. \times(a)(\gcd(b)(c)) == \gcd(\times(a)(b))(\times(a)(c))
+     : use disj-elim; 1, 4, 28
 ~~~

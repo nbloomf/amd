@@ -52,3 +52,6 @@ deploy:
 	stack exec site clean
 	stack exec site build
 	cp -r ./_site ./docs
+
+stats:
+	@echo 'Lines:' && find src -name \*.lhs | xargs cat | wc -l

@@ -914,3 +914,153 @@ proof
     == \true
      : use eq-refl;
 ~~~
+
+~~~ {.mycelium}
+theorem div-times-compat-l
+if
+  * \div(a)(b) == \true
+then
+  * \div(\times(c)(a))(\times(c)(b)) == \true
+
+proof
+1. \div(a)(b) == \true
+    : assumption 1
+
+2. b == \times(a)(\quo(b)(a))
+    : use div-times-quo; 1
+
+3. \times(c)(b) : chain
+    == \times(c)(\times(a)(\quo(b)(a)))
+     : use reiterate; 2 at z in
+       \times(c)(z)
+    == \times(\times(c)(a))(\quo(b)(a))
+     : use times-assoc-l;
+
+4. ∃k. \times(c)(b) == \times(\times(c)(a))(k)
+    : exists-intro k <- \quo(b)(a); 3
+
+5. \div(\times(c)(a))(\times(c)(b)) == \true
+    : use times-impl-div; 4
+
+
+theorem div-times-compat-r
+if
+  * \div(a)(b) == \true
+then
+  * \div(\times(a)(c))(\times(b)(c)) == \true
+
+proof
+1. \div(a)(b) == \true
+    : assumption 1
+
+2. \div(\times(a)(c))(\times(b)(c)) : chain
+
+    == \div(\times(a)(c))(\times(c)(b))
+     : use times-comm; at z in
+       \div(\times(a)(c))(z)
+
+    == \div(\times(c)(a))(\times(c)(b))
+     : use times-comm; at z in
+       \div(z)(\times(c)(b))
+
+    == \true
+     : use div-times-compat-l; 1
+~~~
+
+~~~ {.mycelium}
+theorem div-times-next-cancel-l
+if
+  * \div(\times(\next(c))(a))(\times(\next(c))(b)) == \true
+then
+  * \div(a)(b) == \true
+
+proof
+1.  \div(\times(\next(c))(a))(\times(\next(c))(b)) == \true
+     : assumption 1
+
+2.  ∃k. \times(\next(c))(b) == \times(\times(\next(c))(a))(k)
+     : use div-impl-times; 1
+
+3.    \times(\next(c))(b) == \times(\times(\next(c))(a))(u)
+       : hypothesis u
+
+4.    \times(\next(c))(b) : chain
+
+       == \times(\times(\next(c))(a))(u)
+        : hypothesis u
+
+       == \times(\next(c))(\times(a)(u))
+        : use times-assoc-r;
+
+5.    b == \times(a)(u)
+       : use times-cancel-l; 4
+
+6.    ∃k. b == \times(a)(k)
+       : exists-intro k <- u; 5
+
+7.    \div(a)(b) == \true
+       : use times-impl-div; 6
+
+8.  (\times(\next(c))(b) == \times(\times(\next(c))(a))(u)) =>
+      (\div(a)(b) == \true)
+     : discharge u; 7
+
+9.  \div(a)(b) == \true
+     : exists-elim u <- k; 2, 8
+
+
+theorem div-times-next-cancel-r
+if
+  * \div(\times(a)(\next(c)))(\times(b)(\next(c))) == \true
+then
+  * \div(a)(b) == \true
+
+proof
+1. \true : chain
+
+    == \div(\times(a)(\next(c)))(\times(b)(\next(c)))
+     : flop assumption 1
+
+    == \div(\times(\next(c))(a))(\times(b)(\next(c)))
+     : use times-comm; at z in
+       \div(z)(\times(b)(\next(c)))
+
+    == \div(\times(\next(c))(a))(\times(\next(c))(b))
+     : use times-comm; at z in
+       \div(\times(\next(c))(a))(z)
+
+2. \div(\times(\next(c))(a))(\times(\next(c))(b)) == \true
+    : use eq-sym; 1
+
+3. \div(a)(b) == \true
+     : use div-times-next-cancel-l; 2
+~~~
+
+~~~ {.mycelium}
+theorem div-times-l
+* \div(a)(\times(a)(b)) == \true
+
+proof
+1. \times(a)(b) == \times(a)(b)
+    : eq-intro
+
+2. ∃k. \times(a)(b) == \times(a)(k)
+    : exists-intro k <- b; 1
+
+3. \div(a)(\times(a)(b)) == \true
+    : use times-impl-div; 2
+
+
+theorem div-times-r
+* \div(a)(\times(b)(a)) == \true
+
+proof
+1. \div(a)(\times(b)(a)) : chain
+
+    == \div(a)(\times(a)(b))
+     : use times-comm; at z in
+       \div(a)(z)
+
+    == \true
+     : use div-times-l;
+~~~
